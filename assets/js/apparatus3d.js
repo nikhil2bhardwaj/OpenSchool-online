@@ -724,7 +724,7 @@
       var rig = builder(THREE, scene);
       // minimal drag-orbit (no addons): horizontal drag steers a target
       // yaw; the frame loop damps the rig toward it for smooth motion.
-      var targetYaw = 0, dragging = false, lastX = 0;
+      var targetYaw = 0, dragging = false, lastX = 0, lastTouch = 0;
       var cv = renderer.domElement;
       cv.style.touchAction = "pan-y";
       cv.style.cursor = "grab";
@@ -735,7 +735,7 @@
         try { cv.style.cursor = "grab"; } catch (err) {}
       }
       cv.addEventListener("pointerdown", function (e) {
-        dragging = true; lastX = e.clientX;
+        dragging = true; lastX = e.clientX; lastTouch = performance.now();
         try { cv.style.cursor = "grabbing"; } catch (err) {}
         try { cv.setPointerCapture(e.pointerId); } catch (err) {}
       });
@@ -746,10 +746,11 @@
         if (!dragging) return;
         try { e.preventDefault(); } catch (err) {} // avoid scroll fight mid-drag
         targetYaw += (e.clientX - lastX) * 0.008; lastX = e.clientX;
+        lastTouch = performance.now();
       });
       cv.addEventListener("keydown", function (e) {
-        if (e.key === "ArrowLeft") { targetYaw -= 0.15; try { e.preventDefault(); } catch (err) {} }
-        else if (e.key === "ArrowRight") { targetYaw += 0.15; try { e.preventDefault(); } catch (err) {} }
+        if (e.key === "ArrowLeft") { targetYaw -= 0.15; lastTouch = performance.now(); try { e.preventDefault(); } catch (err) {} }
+        else if (e.key === "ArrowRight") { targetYaw += 0.15; lastTouch = performance.now(); try { e.preventDefault(); } catch (err) {} }
       });
       function onResize() {
         try {
@@ -764,6 +765,7 @@
       (function frame(now) {
         try {
           var dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+          if (!dragging && (now - lastTouch) > 4000) targetYaw += dt * 0.12; // idle turntable
           yawSm += (targetYaw - yawSm) * (1 - Math.exp(-8 * dt)); // damped yaw
           rig.group.rotation.y = yawSm;
           rig.update((now - t0) / 1000);
