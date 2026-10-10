@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool — Kernel Unit Tests (offline)</title>
+<link rel="stylesheet" href="assets/css/lab-theme.css" />
+</head>
+<body>
+<div class="os-app">
+  <header class="os-topbar">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>Kernel Tests<small>OFFLINE · ZERO-BUILD · NO JEST</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <a class="os-btn ghost sm" href="index.html">← Curriculum Hub</a>
+  </header>
+
+  <main class="os-wrap">
+    <div class="os-callout" id="summary">Running…</div>
+    <div class="os-table-wrap">
+      <table class="os-table" id="results">
+        <thead>
+          <tr><th>#</th><th>Test</th><th>Expected</th><th>Actual</th><th>Tolerance</th><th>Status</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="os-callout" id="notes" style="margin-top:12px">
+      <h4>How to run</h4>
+      <span>Open this file directly over <b>file://</b> — no server, no Jest, no build step.
+      Deterministic expected values with absolute tolerances (see <b>assets/js/kernel-tests.js</b>).</span>
+    </div>
+  </main>
+</div>
+
+<script src="assets/js/kernel-tests.js"></script>
+<script>
+(function () {
+  var rows = window.OS_KERNEL_RUN ? window.OS_KERNEL_RUN() : [];
+  var pass = rows.filter(function (r) { return r.pass; }).length;
+  var tbody = document.querySelector("#results tbody");
+  rows.forEach(function (r, i) {
+    var tr = document.createElement("tr");
+    function cell(t, cls) {
+      var td = document.createElement("td");
+      if (cls) td.className = cls;
+      td.textContent = t;
+      return td;
+    }
+    tr.appendChild(cell(String(i + 1)));
+    var name = document.createElement("td");
+    name.innerHTML = "";
+    name.appendChild(document.createTextNode(r.id + "  "));
+    var dim = document.createElement("span");
+    dim.className = "os-dim";
+    dim.style.fontSize = "11px";
+    dim.textContent = r.note;
+    name.appendChild(dim);
+    tr.appendChild(name);
+    tr.appendChild(cell(String(r.expected) + (r.unit ? " " + r.unit : ""), "num"));
+    tr.appendChild(cell(String(typeof r.actual === "number" ? r.actual.toPrecision(7) : r.actual) + (r.unit ? " " + r.unit : ""), "num"));
+    tr.appendChild(cell("±" + String(r.tol), "num"));
+    var st = cell(r.pass ? "PASS" : "FAIL");
+    st.innerHTML = r.pass ? '<span class="os-chip">PASS</span>' : '<span class="os-chip">FAIL</span>';
+    tr.appendChild(st);
+    tbody.appendChild(tr);
+  });
+  var el = document.getElementById("summary");
+  el.className = "os-callout " + (pass === rows.length ? "ok" : "danger");
+  el.innerHTML = "<h4>Kernel tests: " + pass + " / " + rows.length + " passed</h4>" +
+    "<span>Pure deterministic asserts — pendulum, Doppler, photoelectric, decay, microscope, Beer–Lambert, Henderson–Hasselbalch, Ksp, iodine rate, Bohr.</span>";
+})();
+</script>
+</body>
+</html>

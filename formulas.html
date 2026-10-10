@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool — Formula Sheets (Class 9–12)</title>
+<link rel="stylesheet" href="assets/css/lab-theme.css" />
+</head>
+<body>
+<a class="os-skip-link" href="#main-content">Skip to main content</a>
+<div class="os-app">
+
+  <header class="os-topbar">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>OpenSchool<small>FORMULA SHEETS · 9–12</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en" type="button">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi" type="button">हिं</button>
+    </span>
+    <a class="os-btn ghost sm" href="index.html" data-i18n="lab.back">← Curriculum Hub</a>
+    <button class="os-btn sm primary no-print" id="printBtn" type="button" data-i18n="formulas.print">Print</button>
+  </header>
+
+  <main class="os-wrap" id="main-content">
+    <section class="os-hero">
+      <span class="os-kicker">Static · Offline · Zero-dependency</span>
+      <h1 data-i18n="formulas.title">Formula Sheets</h1>
+      <p>Key equations with units for every class and subject. “Lab” links open the matching virtual experiment.</p>
+    </section>
+
+    <div class="os-filters no-print">
+      <div class="os-row" id="classFilters" role="group" aria-label="Filter by class">
+        <button class="os-filter-pill active" data-class="all" aria-pressed="true" data-i18n="filters.allClasses">All Classes</button>
+        <button class="os-filter-pill" data-class="9" aria-pressed="false" data-i18n="filters.class9">Class 9</button>
+        <button class="os-filter-pill" data-class="10" aria-pressed="false" data-i18n="filters.class10">Class 10</button>
+        <button class="os-filter-pill" data-class="11" aria-pressed="false" data-i18n="filters.class11">Class 11</button>
+        <button class="os-filter-pill" data-class="12" aria-pressed="false" data-i18n="filters.class12">Class 12</button>
+      </div>
+      <div class="os-row" id="subjectFilters" role="group" aria-label="Filter by subject">
+        <button class="os-filter-pill active" data-subject="all" aria-pressed="true" data-i18n="filters.allSubjects">All Subjects</button>
+        <button class="os-filter-pill" data-subject="physics" aria-pressed="false" data-i18n="filters.physics">Physics</button>
+        <button class="os-filter-pill" data-subject="chemistry" aria-pressed="false" data-i18n="filters.chemistry">Chemistry</button>
+        <button class="os-filter-pill" data-subject="biology" aria-pressed="false" data-i18n="filters.biology">Biology</button>
+      </div>
+      <label class="os-hidden" for="search">Search formulas</label>
+      <input class="os-input os-search" id="search" type="search" data-i18n-ph="formulas.searchPh" placeholder="Search formula, keyword, or unit…" aria-label="Search formulas" />
+      <span class="os-chip" id="resultCount"><b>0</b> entries</span>
+    </div>
+
+    <div id="sheets">
+
+    <section class="os-panel sheet" data-cls="9" data-subject="physics" style="margin-top:14px">
+      <header><span class="os-kicker">Class 9 · Physics</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">v = u + at</td><td>First equation of motion</td><td>m/s</td><td>—</td></tr>
+        <tr><td class="os-eq">s = ut + ½at²</td><td>Second equation of motion</td><td>m</td><td>—</td></tr>
+        <tr><td class="os-eq">v² = u² + 2as</td><td>Third equation of motion</td><td>m²/s²</td><td>—</td></tr>
+        <tr><td class="os-eq">F = ma</td><td>Newton's second law</td><td>N (kg·m/s²)</td><td>—</td></tr>
+        <tr><td class="os-eq">p = mv</td><td>Linear momentum</td><td>kg·m/s</td><td>—</td></tr>
+        <tr><td class="os-eq">W = Fs · KE = ½mv² · PE = mgh</td><td>Work, kinetic and potential energy</td><td>J</td><td>—</td></tr>
+        <tr><td class="os-eq">P = W/t</td><td>Power</td><td>W (J/s)</td><td>—</td></tr>
+        <tr><td class="os-eq">ρ = m/V</td><td>Density of a solid</td><td>kg/m³</td><td><a href="labs/class9/density_archimedes.html">Density lab</a></td></tr>
+        <tr><td class="os-eq">F_B = V·ρ·g (loss = W_air − W_water)</td><td>Buoyant force / Archimedes' principle</td><td>N</td><td><a href="labs/class9/buoyancy_relation.html">Buoyancy lab</a></td></tr>
+        <tr><td class="os-eq">V = IR</td><td>Ohm's law</td><td>V / A / Ω</td><td><a href="labs/class9/ohm_law_basic.html">Ohm's law lab</a></td></tr>
+        <tr><td class="os-eq">n = sin i / sin r</td><td>Snell's law of refraction</td><td>dimensionless</td><td><a href="labs/class9/refraction_glass_slab.html">Glass slab lab</a></td></tr>
+        <tr><td class="os-eq">∠i = ∠r</td><td>Law of reflection (sound and light)</td><td>degrees</td><td><a href="labs/class9/sound_reflection.html">Sound reflection lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="9" data-subject="chemistry" style="margin-top:14px">
+      <header><span class="os-kicker">Class 9 · Chemistry</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">n = m / M</td><td>Moles from mass (M = molar mass)</td><td>mol</td><td>—</td></tr>
+        <tr><td class="os-eq">Molarity = n / V</td><td>Concentration of solution</td><td>mol/L</td><td><a href="labs/class9/solution_types.html">Solution types lab</a></td></tr>
+        <tr><td class="os-eq">% w/w = (solute / solution) × 100</td><td>Mass percentage concentration</td><td>%</td><td><a href="labs/class9/solution_types.html">Solution types lab</a></td></tr>
+        <tr><td class="os-eq">R_f = spot dist. / solvent dist.</td><td>Retention factor, chromatography</td><td>dimensionless</td><td><a href="labs/class9/mixture_separation.html">Separation lab</a></td></tr>
+        <tr><td class="os-eq">melting ice 0 °C · boiling water 100 °C</td><td>Reference points (1 atm)</td><td>°C</td><td><a href="labs/class9/melting_boiling.html">Melting/boiling lab</a></td></tr>
+        <tr><td class="os-eq">pH &lt; 7 acidic · = 7 neutral · &gt; 7 basic</td><td>pH scale reading</td><td>dimensionless</td><td><a href="labs/class9/acid_base_indicator.html">Indicator lab</a></td></tr>
+        <tr><td class="os-eq">Zn + 2HCl → ZnCl₂ + H₂</td><td>Acid–metal reaction (H₂ pop test)</td><td>—</td><td><a href="labs/class9/acid_metal_carbonate.html">Acid–metal lab</a></td></tr>
+        <tr><td class="os-eq">Na₂CO₃ + 2HCl → 2NaCl + H₂O + CO₂</td><td>Carbonate test (lime water milky)</td><td>—</td><td><a href="labs/class9/acid_metal_carbonate.html">Carbonate lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="9" data-subject="biology" style="margin-top:14px">
+      <header><span class="os-kicker">Class 9 · Biology</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">Magnification = image size / actual size</td><td>Microscope/slide magnification</td><td>× (dimensionless)</td><td><a href="labs/class9/biology/binary_fission_amoeba.html">Amoeba lab</a></td></tr>
+        <tr><td class="os-eq">% germination = (germinated / total) × 100</td><td>Seed germination rate</td><td>%</td><td><a href="labs/class9/biology/seed_germination.html">Germination lab</a></td></tr>
+        <tr><td class="os-eq">water: hypotonic → in · hypertonic → out</td><td>Osmosis direction rule</td><td>—</td><td><a href="labs/class9/biology/osmosis_osmometer.html">Osmosis lab</a></td></tr>
+        <tr><td class="os-eq">plasmolysis ⇄ deplasmolysis</td><td>Protoplasm shrink / recover cycle</td><td>—</td><td><a href="labs/class9/biology/plasmolysis_onion.html">Plasmolysis lab</a></td></tr>
+        <tr><td class="os-eq">1 parent → 2 identical daughters</td><td>Binary fission outcome</td><td>—</td><td><a href="labs/class9/biology/binary_fission_amoeba.html">Fission lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="10" data-subject="physics" style="margin-top:14px">
+      <header><span class="os-kicker">Class 10 · Physics</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">R_s = R₁ + R₂ (+ …)</td><td>Resistors in series</td><td>Ω</td><td><a href="labs/class10/resistance_combo.html">Combo lab</a></td></tr>
+        <tr><td class="os-eq">1/R_p = 1/R₁ + 1/R₂ (+ …)</td><td>Resistors in parallel</td><td>Ω</td><td><a href="labs/class10/resistance_combo.html">Combo lab</a></td></tr>
+        <tr><td class="os-eq">P = VI = I²R = V²/R</td><td>Electric power / heating</td><td>W</td><td><a href="labs/class10/resistance_combo.html">Combo lab</a></td></tr>
+        <tr><td class="os-eq">1/f = 1/v − 1/u (lens) · m = v/u</td><td>Lens formula and magnification</td><td>m / dimensionless</td><td><a href="labs/class10/convex_lens_focal.html">Convex lens lab</a></td></tr>
+        <tr><td class="os-eq">1/v + 1/u = 1/f (mirror) · m = −v/u</td><td>Mirror formula and magnification</td><td>m / dimensionless</td><td><a href="labs/class10/concave_mirror.html">Concave mirror lab</a></td></tr>
+        <tr><td class="os-eq">δ = i + e − A</td><td>Angle of deviation through prism</td><td>degrees</td><td><a href="labs/class10/prism_refraction.html">Prism lab</a></td></tr>
+        <tr><td class="os-eq">field lines: N → S, never cross</td><td>Bar-magnet field rule</td><td>—</td><td><a href="labs/class10/magnetic_field_lines.html">Field lines lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="10" data-subject="chemistry" style="margin-top:14px">
+      <header><span class="os-kicker">Class 10 · Chemistry</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">pH = −log₁₀[H⁺]</td><td>pH of a solution</td><td>dimensionless</td><td><a href="labs/class10/ph_of_samples.html">pH lab</a></td></tr>
+        <tr><td class="os-eq">acid + base → salt + water</td><td>Neutralisation (pH → 7)</td><td>—</td><td><a href="labs/class10/acid_base_properties.html">Acid–base lab</a></td></tr>
+        <tr><td class="os-eq">2H₂O → 2H₂ + O₂ (H₂:O₂ = 2:1)</td><td>Electrolysis of water</td><td>volume ratio</td><td><a href="labs/class10/electrolysis.html">Electrolysis lab</a></td></tr>
+        <tr><td class="os-eq">A + B → AB · AB → A + B</td><td>Combination / decomposition</td><td>—</td><td><a href="labs/class10/reaction_types.html">Reaction types lab</a></td></tr>
+        <tr><td class="os-eq">A + BC → AC + B · AB + CD → AD + CB</td><td>Displacement / double displacement</td><td>—</td><td><a href="labs/class10/reaction_types.html">Reaction types lab</a></td></tr>
+        <tr><td class="os-eq">micelle: tails-in, heads-out</td><td>Soap cleansing model</td><td>—</td><td><a href="labs/class10/soap_micelle.html">Soap lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="11" data-subject="physics" style="margin-top:14px">
+      <header><span class="os-kicker">Class 11 · Physics</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">T = 2π√(L/g) · g = 4π²L/T²</td><td>Simple pendulum</td><td>s · m/s²</td><td><a href="labs/class11/physics/simple_pendulum.html">Pendulum lab</a></td></tr>
+        <tr><td class="os-eq">n = (1/2l)√(T/μ)</td><td>Sonometer vibrating string</td><td>Hz</td><td><a href="labs/class11/physics/sonometer_laws.html">Sonometer lab</a></td></tr>
+        <tr><td class="os-eq">n·l = const · n ∝ √T</td><td>Laws of length and tension</td><td>Hz·m</td><td><a href="labs/class11/physics/sonometer_standing_waves.html">Standing waves lab</a></td></tr>
+        <tr><td class="os-eq">F = kx · k = ΔF/Δx</td><td>Hooke's law / spring constant</td><td>N/m</td><td><a href="labs/class11/physics/spring_constant.html">Spring lab</a></td></tr>
+        <tr><td class="os-eq">v = 2n(l₂ − l₁)</td><td>Sound velocity, resonance tube/column</td><td>m/s</td><td><a href="labs/class11/physics/resonance_tube.html">Resonance lab</a></td></tr>
+        <tr><td class="os-eq">η = 2r²(ρ − σ)g / 9v</td><td>Viscosity, Stokes' method</td><td>Pa·s</td><td><a href="labs/class11/physics/viscosity_terminal.html">Viscosity lab</a></td></tr>
+        <tr><td class="os-eq">S = r·h·d·g / 2</td><td>Surface tension, capillary rise</td><td>N/m</td><td><a href="labs/class11/physics/capillary_rise.html">Capillary lab</a></td></tr>
+        <tr><td class="os-eq">Y = (W·L) / (A·e)</td><td>Young's modulus, Searle's</td><td>Pa</td><td><a href="labs/class11/physics/youngs_modulus.html">Y-modulus lab</a></td></tr>
+        <tr><td class="os-eq">μ = F/N</td><td>Coefficient of (limiting) friction</td><td>dimensionless</td><td><a href="labs/class11/physics/friction.html">Friction lab</a></td></tr>
+        <tr><td class="os-eq">f′ = f·(v ± vₒ)/(v ∓ vₛ)</td><td>Doppler effect</td><td>Hz</td><td><a href="labs/class11/physics/doppler_effect.html">Doppler lab</a></td></tr>
+        <tr><td class="os-eq">n_beat = |n₁ − n₂|</td><td>Beats frequency</td><td>Hz</td><td><a href="labs/class11/physics/beats_frequency.html">Beats lab</a></td></tr>
+        <tr><td class="os-eq">E = α·ΔT</td><td>Seebeck thermo-emf (small ΔT)</td><td>V</td><td><a href="labs/class11/physics/seebeck_effect.html">Seebeck lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="11" data-subject="chemistry" style="margin-top:14px">
+      <header><span class="os-kicker">Class 11 · Chemistry</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">pH jump at V_eq; strong–strong eq. pH ≈ 7</td><td>Acid–base titration curve</td><td>mL / pH</td><td><a href="labs/class11/chemistry/ph_equilibrium.html">Titration pH lab</a></td></tr>
+        <tr><td class="os-eq">ΔH_neut = −q / n (q = mcΔT)</td><td>Enthalpy of neutralisation</td><td>kJ/mol</td><td><a href="labs/class11/chemistry/enthalpy_neutralisation.html">Enthalpy lab</a></td></tr>
+        <tr><td class="os-eq">rate ≈ 1/t (cross-disappear)</td><td>Reaction rate proxy</td><td>s⁻¹</td><td><a href="labs/class11/chemistry/reaction_rates.html">Rate lab</a></td></tr>
+        <tr><td class="os-eq">K = C₁ / C₂</td><td>Partition (distribution) coefficient</td><td>dimensionless</td><td><a href="labs/class11/chemistry/partition_coefficient.html">Partition lab</a></td></tr>
+        <tr><td class="os-eq">strength = Molarity × molar mass</td><td>Standard solution strength</td><td>g/L</td><td><a href="labs/class11/chemistry/standard_solution.html">Standard solution lab</a></td></tr>
+        <tr><td class="os-eq">M₁V₁ = M₂V₂</td><td>Dilution / volumetric equation</td><td>mol/L · mL</td><td><a href="labs/class11/chemistry/standard_solution.html">Standard solution lab</a></td></tr>
+        <tr><td class="os-eq">FeCl₃ violet · Tollens mirror · 2,4-DNP ppt</td><td>Functional-group test triad</td><td>—</td><td><a href="labs/class11/chemistry/functional_groups_wet.html">Wet-test lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="11" data-subject="biology" style="margin-top:14px">
+      <header><span class="os-kicker">Class 11 · Biology</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">% germination = (germinated / total) × 100</td><td>Pollen germination percentage</td><td>%</td><td><a href="labs/class11/biology/pollen_germination.html">Pollen lab</a></td></tr>
+        <tr><td class="os-eq">uptake rate = bubble dist. / time</td><td>Transpiration (potometer) rate</td><td>mm/min</td><td><a href="labs/class11/biology/transpiration_rate.html">Transpiration lab</a></td></tr>
+        <tr><td class="os-eq">6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂</td><td>Photosynthesis (O₂ evolved)</td><td>—</td><td><a href="labs/class11/biology/photosynthesis_oxygen.html">Photosynthesis lab</a></td></tr>
+        <tr><td class="os-eq">C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O</td><td>Aerobic respiration (CO₂ released)</td><td>—</td><td><a href="labs/class11/biology/respiration_co2.html">Respiration lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="12" data-subject="physics" style="margin-top:14px">
+      <header><span class="os-kicker">Class 12 · Physics</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">X = R·(100 − l)/l · ρ = XA/L</td><td>Meter bridge + resistivity</td><td>Ω · Ω·m</td><td><a href="labs/class12/physics/meter_bridge.html">Meter bridge lab</a></td></tr>
+        <tr><td class="os-eq">E₁/E₂ = l₁/l₂</td><td>EMF comparison, potentiometer</td><td>dimensionless</td><td><a href="labs/class12/physics/potentiometer_emf.html">EMF lab</a></td></tr>
+        <tr><td class="os-eq">r = R·(l₀ − l)/l</td><td>Internal resistance of a cell</td><td>Ω</td><td><a href="labs/class12/physics/potentiometer_internal_r.html">Internal-r lab</a></td></tr>
+        <tr><td class="os-eq">1/f = 1/v − 1/u</td><td>Lens formula (Cartesian sign)</td><td>m</td><td><a href="labs/class12/physics/convex_lens_uv.html">Lens u–v lab</a></td></tr>
+        <tr><td class="os-eq">μ = sin((A + δₘ)/2) / sin(A/2)</td><td>Prism refractive index</td><td>dimensionless</td><td><a href="labs/class12/physics/prism_deviation.html">Prism lab</a></td></tr>
+        <tr><td class="os-eq">knee ≈ 0.7 V (Si) · I_rev ≈ 0 till breakdown</td><td>P-N diode characteristic</td><td>V / A</td><td><a href="labs/class12/physics/pn_diode_characteristics.html">Diode lab</a></td></tr>
+        <tr><td class="os-eq">V_out ≈ V_Z (regulation plateau)</td><td>Zener voltage regulation</td><td>V</td><td><a href="labs/class12/physics/zener_rectifier.html">Zener lab</a></td></tr>
+        <tr><td class="os-eq">f_ripple = f_mains (half-wave)</td><td>Half-wave rectifier ripple</td><td>Hz</td><td><a href="labs/class12/physics/halfwave_rectifier.html">Rectifier lab</a></td></tr>
+        <tr><td class="os-eq">hν = φ₀ + eV₀ · E = hc/λ</td><td>Einstein photoelectric equation</td><td>J / eV</td><td><a href="labs/class12/physics/photoelectric_effect.html">Photoelectric lab</a></td></tr>
+        <tr><td class="os-eq">rₙ = 0.53·n² Å · Eₙ = −13.6/n² eV</td><td>Bohr hydrogen orbits/levels</td><td>Å / eV</td><td><a href="labs/class12/physics/bohr_model.html">Bohr lab</a></td></tr>
+        <tr><td class="os-eq">N = N₀e^(−λt) · T½ = 0.693/λ</td><td>Radioactive decay + half-life</td><td>s⁻¹ · s</td><td><a href="labs/class12/physics/radioactive_decay.html">Decay lab</a></td></tr>
+        <tr><td class="os-eq">M ≈ −(v₀/u₀)(1 + D/fₑ)</td><td>Compound microscope power</td><td>× (dimensionless)</td><td><a href="labs/class12/physics/compound_microscope.html">Microscope lab</a></td></tr>
+        <tr><td class="os-eq">θ_min ≈ 1.22λ / D</td><td>Telescope resolving limit</td><td>rad</td><td><a href="labs/class12/physics/resolving_power.html">Resolving-power lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="12" data-subject="chemistry" style="margin-top:14px">
+      <header><span class="os-kicker">Class 12 · Chemistry</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">M₁V₁/n₁ = M₂V₂/n₂ (MnO₄⁻:Fe²⁺ = 1:5)</td><td>Redox titration equivalence</td><td>mol/L · mL</td><td><a href="labs/class12/chemistry/titration_mohr_salt.html">Mohr's salt lab</a></td></tr>
+        <tr><td class="os-eq">2NaOH ≡ 1 oxalic acid</td><td>Acid–base titration stoichiometry</td><td>—</td><td><a href="labs/class12/chemistry/titration_oxalic_acid.html">Oxalic acid lab</a></td></tr>
+        <tr><td class="os-eq">A = ε·c·l</td><td>Beer–Lambert law, colorimetry</td><td>dimensionless</td><td><a href="labs/class12/chemistry/colorimetry.html">Colorimetry lab</a></td></tr>
+        <tr><td class="os-eq">rate ≈ 1/t (thiosulphate–acid)</td><td>Rate proxy, clock timing</td><td>s⁻¹</td><td><a href="labs/class12/chemistry/kinetics.html">Kinetics lab</a></td></tr>
+        <tr><td class="os-eq">rate ≈ 1/t (blue-appearance)</td><td>Iodine clock rate proxy</td><td>s⁻¹</td><td><a href="labs/class12/chemistry/iodine_clock.html">Iodine clock lab</a></td></tr>
+        <tr><td class="os-eq">K_sp = 4s³ (Ca(OH)₂)</td><td>Solubility product</td><td>mol³/L³</td><td><a href="labs/class12/chemistry/solubility_product.html">Solubility lab</a></td></tr>
+        <tr><td class="os-eq">pH = pK_a + log(salt/acid)</td><td>Henderson–Hasselbalch (buffers)</td><td>dimensionless</td><td><a href="labs/class12/chemistry/buffer_solutions.html">Buffer lab</a></td></tr>
+        <tr><td class="os-eq">% yield = (actual / theoretical) × 100</td><td>Preparation yield</td><td>%</td><td><a href="labs/class12/chemistry/preparation_aspirin.html">Aspirin lab</a></td></tr>
+        <tr><td class="os-eq">ester: RCOOH + R′OH ⇌ RCOOR′ + H₂O</td><td>Esterification (conc. H₂SO₄)</td><td>—</td><td><a href="labs/class12/chemistry/esterification.html">Ester lab</a></td></tr>
+        <tr><td class="os-eq">C₂H₅OH → CH₃CHO → CH₃COOH</td><td>Ethanol oxidation stages</td><td>—</td><td><a href="labs/class12/chemistry/ethanol_oxidation.html">Ethanol lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    <section class="os-panel sheet" data-cls="12" data-subject="biology" style="margin-top:14px">
+      <header><span class="os-kicker">Class 12 · Biology</span></header>
+      <div class="os-body"><div class="os-table-wrap"><table class="os-table os-formula-table">
+        <thead><tr><th>Formula</th><th>Meaning</th><th>Unit</th><th>Lab</th></tr></thead><tbody>
+        <tr><td class="os-eq">order: P → M → A → T</td><td>Mitosis stage sequence</td><td>—</td><td><a href="labs/class12/biology/mitosis_onion.html">Mitosis lab</a></td></tr>
+        <tr><td class="os-eq">density = N / (quadrats × area)</td><td>Population density (quadrat)</td><td>individuals/m²</td><td><a href="labs/class12/biology/quadrat_ecology.html">Quadrat lab</a></td></tr>
+        <tr><td class="os-eq">frequency % = (quadrats with sp. / total) × 100</td><td>Species frequency</td><td>%</td><td><a href="labs/class12/biology/quadrat_ecology.html">Quadrat lab</a></td></tr>
+        <tr><td class="os-eq">abundance = N / quadrats of occurrence</td><td>Species abundance</td><td>individuals</td><td><a href="labs/class12/biology/quadrat_ecology.html">Quadrat lab</a></td></tr>
+        <tr><td class="os-eq">same origin → homologous · same function → analogous</td><td>Organ classification rule</td><td>—</td><td><a href="labs/class12/biology/homologous_organs.html">Homology lab</a></td></tr>
+        <tr><td class="os-eq">xerophyte: spines/cuticle · hydrophyte: aerenchyma</td><td>Adaptation markers</td><td>—</td><td><a href="labs/class12/biology/adaptations_plants.html">Adaptations lab</a></td></tr>
+        </tbody></table></div></div>
+    </section>
+
+    </div>
+  </main>
+
+  <footer class="os-footer">
+    <span>OpenSchool NCERT · Formula sheets work fully offline ·</span>
+    <a href="index.html">Curriculum Hub</a> ·
+    <a href="teacher-dashboard.html">Teacher Dashboard</a>
+  </footer>
+</div>
+
+<script src="assets/js/i18n.js"></script>
+<script>
+/* Zero-dep filtering: class + subject pills + text search. */
+(function () {
+  var state = { cls: "all", subject: "all", q: "" };
+  function T(k, fb) {
+    try { if (window.OS_I18N) return window.OS_I18N.t(k); } catch (e) {}
+    return fb;
+  }
+  function apply() {
+    var rows = 0;
+    document.querySelectorAll("#sheets .sheet").forEach(function (sec) {
+      var showSec = (state.cls === "all" || sec.dataset.cls === state.cls) &&
+                    (state.subject === "all" || sec.dataset.subject === state.subject);
+      var visRows = 0;
+      sec.querySelectorAll("tbody tr").forEach(function (tr) {
+        var ok = showSec;
+        if (ok && state.q) ok = tr.textContent.toLowerCase().indexOf(state.q) !== -1;
+        tr.style.display = ok ? "" : "none";
+        if (ok) visRows++;
+      });
+      sec.style.display = (showSec && visRows) ? "" : "none";
+      rows += visRows;
+    });
+    document.getElementById("resultCount").innerHTML = "<b>" + rows + "</b> " + T("formulas.entries", "entries");
+  }
+  function wire(id, key, attr) {
+    document.getElementById(id).addEventListener("click", function (ev) {
+      var btn = ev.target.closest(".os-filter-pill");
+      if (!btn) return;
+      this.querySelectorAll(".os-filter-pill").forEach(function (b) {
+        b.classList.remove("active"); b.setAttribute("aria-pressed", "false");
+      });
+      btn.classList.add("active"); btn.setAttribute("aria-pressed", "true");
+      state[key] = btn.dataset[attr]; apply();
+    });
+  }
+  wire("classFilters", "cls", "class");
+  wire("subjectFilters", "subject", "subject");
+  document.getElementById("search").addEventListener("input", function (e) {
+    state.q = e.target.value.trim().toLowerCase(); apply();
+  });
+  document.getElementById("printBtn").addEventListener("click", function () { window.print(); });
+  try { document.addEventListener("os-lang-change", apply); } catch (e) {}
+  apply();
+})();
+</script>
+</body>
+</html>

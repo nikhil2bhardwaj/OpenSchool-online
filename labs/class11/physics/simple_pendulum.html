@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool — Simple Pendulum (g)</title>
+<link rel="stylesheet" href="../../../assets/css/lab-theme.css" />
+<!-- OS-ONLINE: premium shell — Google Fonts + GSAP CDN + ScrollTrigger + three importmap -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+/* OS-ONLINE-PREMIUM: font system + hero topbar + 3D stage + morph indicator. */
+:root{--os-font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--os-display:"Space Grotesk","Inter",system-ui,sans-serif;--os-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--os-font)}
+.os-brand,.os-kicker,h1,h2,h3,.os-control-title{font-family:var(--os-display)}
+.os-mono,.os-readout b,.os-digital,.os-stat b{font-family:var(--os-mono);font-variant-numeric:tabular-nums}
+.os-topbar.os-bench{background:linear-gradient(120deg,#0d1b2a 0%,#123524 55%,#0d1b2a 100%)}
+.os-3d-wrap{margin-top:0;margin-bottom:10px}
+#apparatus3d.os-3d{position:relative;overflow:hidden;min-height:420px;height:420px;border-radius:12px;background:radial-gradient(120% 100% at 50% 0%,#12263f 0%,#0d1b2a 70%)}
+#apparatus3d.os-3d canvas{width:100%!important;height:420px!important;display:block}
+.os-viewbar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.os-viewbar .os-filter-pill[aria-pressed="true"]{outline:2px solid #4fd6ff}
+.os-3d-capline{font-size:11px;opacity:.75;padding:6px 2px 0}
+.os-file-notice{margin-top:8px}
+#apparatus3d .os-3d-cap{position:absolute;left:10px;bottom:8px;font-size:11px;opacity:.75}
+.os-tabs{position:relative}
+.os-tab-indicator{transition:left .28s cubic-bezier(.2,.7,.3,1),width .28s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.os-tab-indicator{transition:none}}
+</style>
+</head>
+<body>
+<a class="os-skip-link" href="#main-content">Skip to main content</a>
+<div class="os-app">
+  <header class="os-topbar os-bench">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>Simple Pendulum<small>P-03 · CLASS 11 PHYSICS · ACCELERATION DUE TO GRAVITY</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-chip"><span data-i18n="topbar.notebook">Notebook:</span> <b id="dbChip">…</b></span>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi">हिं</button>
+    </span>
+    <a class="os-btn ghost sm" href="../../../index.html" data-i18n="lab.back">← Curriculum Hub</a>
+  </header>
+
+  <main id="main-content" class="os-wrap">
+    <div class="os-lab-grid">
+      <section class="os-panel os-apparatus">
+        <header>
+          <span class="os-kicker" data-i18n="lab.apparatus">Apparatus — 60 FPS RK4</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="oscChip">Oscillations: <b>0</b></span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-stage os-spotlight">
+            <div class="os-viewbar" data-os-viewbar role="group" aria-label="Apparatus view">
+              <button type="button" class="os-filter-pill" data-os-view="3d">3D Apparatus</button>
+              <button type="button" class="os-filter-pill" data-os-view="2d">2D Board</button>
+            </div>
+            <div class="os-3d-wrap os-3d-hero" data-os-3d-wrap>
+              <div id="apparatus3d" data-apparatus="pendulum" aria-label="3D apparatus viewer"></div>
+              <div class="os-3d-capline" data-os-3d-caption>3D apparatus hero — drag to orbit. Switch to 2D Board for the measurement canvas.</div>
+              <div class="os-callout warn os-file-notice" data-os-file-notice hidden>3D needs a local server or GitHub Pages (ES modules + import maps do not run over file://); the 2D board works everywhere.</div>
+            </div>
+            <canvas data-os-2d="1" role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="stage" width="620" height="520"></canvas>
+
+            <div class="os-readout os-instrument">
+              <div class="row"><span>Stopwatch (0.1 s)</span><b id="roTime" data-os-rolling class="os-rolling">0.0</b></div>
+              <div class="row"><span>Angle θ</span><b id="roTheta" data-os-rolling class="os-rolling">0.0°</b></div>
+            </div>
+          </div>
+
+          <div class="os-control-block os-fader">
+            <div class="os-control-title">Digital Stopwatch</div>
+            <div class="os-row">
+              <div class="os-digital" id="stopwatch">0.0 s</div>
+              <div class="os-spacer" style="flex:1"></div>
+              <button class="os-btn success" id="swStart">Start</button>
+              <button class="os-btn warn" id="swLap">Lap</button>
+              <button class="os-btn danger" id="swStop">Stop</button>
+              <button class="os-btn ghost" id="swReset">Reset</button>
+            </div>
+            <div class="os-dim" style="font-size:12px;margin-top:7px">Start when the bob passes the mean position; press <b>Lap</b> after exactly 20 complete oscillations.</div>
+          </div>
+
+          <div class="os-grid-2">
+            <div class="os-control-block os-fader">
+              <div class="os-control-title">Thread length L</div>
+              <div class="os-field"><label>L = <span class="os-mono" id="lVal">80</span> cm</label>
+                <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="lRange" min="40" max="120" step="1" value="80" /><span class="os-ticks" aria-hidden="true"></span></div></div>
+              <div class="os-field"><label>Amplitude θ₀ = <span class="os-mono" id="ampVal">8</span>°</label>
+                <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="ampRange" min="2" max="30" step="1" value="8" /><span class="os-ticks" aria-hidden="true"></span></div></div>
+              <label class="os-toggle"><input type="checkbox" id="dampToggle" /> Air damping ON</label>
+            </div>
+
+            <div class="os-control-block os-fader">
+              <div class="os-control-title">Vernier Caliper — Bob diameter</div>
+              <div class="os-row">
+                <div class="os-field" style="flex:1"><label for="vcMain">Main (cm)</label><input class="os-input" id="vcMain" type="number" step="0.1" value="2.0" /></div>
+                <div class="os-field" style="flex:1"><label for="vcVern">Vernier div</label><input class="os-input" id="vcVern" type="number" step="1" min="0" max="9" value="0" /></div>
+                <div class="os-field" style="flex:1"><label for="vcZero">Zero error (cm)</label><input class="os-input" id="vcZero" type="number" step="0.01" value="0" /></div>
+              </div>
+              <div class="os-dim os-mono" style="font-size:12px;margin-top:6px" id="vcOut">Diameter = 2.00 cm · r = 1.00 cm (LC 0.01 cm)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="os-panel">
+        <header>
+          <span class="os-kicker" data-i18n="lab.observation">Observation &amp; Graph</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="trialCount">0 trials</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-table-wrap os-obs" data-os-ledger>
+            <table class="os-table" id="obsTable">
+              <thead><tr><th>#</th><th>L (cm)</th><th>L_eff (cm)</th><th>t₁ (20 osc)</th><th>t₂ (20 osc)</th><th>T (s)</th><th>T² (s²)</th><th>g (m/s²)</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="os-row">
+            <div class="os-field" style="flex:1"><label for="t1">t₁ for 20 oscillations (s)</label><input class="os-input" id="t1" type="number" step="0.1" /></div>
+            <div class="os-field" style="flex:1"><label for="t2">t₂ for 20 oscillations (s)</label><input class="os-input" id="t2" type="number" step="0.1" /></div>
+            <button class="os-btn primary" id="btnRecord" data-i18n="btn.record">Add Row</button>
+          </div>
+          <div class="os-stage os-spotlight" style="padding:6px"><div class="os-dim" style="font-size:11px;padding:2px 6px">L (cm) vs T² (s²) — slope = 4π²/g × 100 (cm/s²)</div><canvas role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="graph" width="420" height="250"></canvas></div>
+          <div class="os-stat-grid">
+            <div class="os-stat"><span>Mean g</span><b id="statG">—</b></div>
+            <div class="os-stat"><span>g from slope</span><b id="statSlopeG">—</b></div>
+            <div class="os-stat"><span>True g</span><b>9.81</b></div>
+          </div>
+          <div class="os-row">
+            <button class="os-btn success" id="btnSave" data-i18n="btn.save">Save to Notebook</button>
+            <button class="os-btn" id="btnExport" data-i18n="btn.export">Export CBSE Sheet</button>
+            <button class="os-btn" id="btnReport" data-i18n="btn.report">Print Report</button>
+            <button class="os-btn danger" id="btnClear" data-i18n="btn.clear">Clear</button>
+          </div>
+          <div class="os-callout ok" id="saveMsg" style="display:none"></div>
+        </div>
+      </section>
+    </div>
+
+    
+    <!-- OS-ACTIONBAR: sticky mobile quick actions (proxies, no duplicate ids) -->
+    <div class="os-actionbar" data-os-actionbar role="toolbar" aria-label="Quick actions">
+      <button class="os-btn primary" type="button" data-os-proxy="btnRecord">Record Reading</button>
+      <button class="os-btn success" type="button" data-os-proxy="btnSave">Save to Notebook</button>
+      <button class="os-btn" type="button" data-os-proxy="btnReport">Print Report</button>
+    </div>
+
+<section class="os-panel" style="margin-top:18px">
+      <div class="os-tabs os-tabs-anim" role="tablist" aria-label="Lab information tabs" id="tabs" data-os-tablist>
+        <button class="os-tab active" data-tab="theory" role="tab" aria-selected="true" data-i18n="tabs.theory" tabindex="0" aria-controls="panel-theory" id="tab-theory">Theory</button>
+        <button class="os-tab" data-tab="errors" role="tab" aria-selected="false" data-i18n="tabs.errors" tabindex="-1" aria-controls="panel-errors" id="tab-errors">Precautions &amp; Errors</button>
+        <button class="os-tab" data-tab="viva" role="tab" aria-selected="false" data-i18n="tabs.viva" tabindex="-1" aria-controls="panel-viva" id="tab-viva">Viva-Voce Arena</button>
+        <button class="os-tab" data-tab="procedure" role="tab" aria-selected="false" data-i18n="tabs.procedure" aria-controls="panel-procedure" id="tab-procedure" tabindex="-1">Procedure</button>
+        <button class="os-tab" data-tab="quiz" role="tab" aria-selected="false" data-i18n="tabs.quiz" aria-controls="panel-quiz" id="tab-quiz" tabindex="-1">Quiz</button>
+      
+        <span class="os-tab-indicator" id="tabIndicator" aria-hidden="true"></span>
+      </div>
+      <div role="tabpanel" tabindex="0" class="os-tabpanel active" data-panel="theory" data-os-collapsible id="panel-theory" aria-labelledby="tab-theory">
+        <h3>Theory</h3>
+        <button class="os-btn sm ghost" type="button" data-os-tts-btn data-os-tts-label="Theory">🔊 Read aloud</button>
+        <p class="os-muted">For small angular displacement the pendulum obeys simple harmonic motion and</p>
+        <div class="os-eq">T = 2π √(L_eff / g)&nbsp;&nbsp;⟹&nbsp;&nbsp;g = 4π² (L_eff / T²)</div>
+        <p class="os-muted">The simulation integrates the exact nonlinear equation below with a fourth-order Runge–Kutta scheme, so large amplitudes show the real period dilation that the small-angle formula ignores:</p>
+        <div class="os-eq">d²θ/dt² + (g/L)·sin θ + b·(dθ/dt) = 0</div>
+      </div>
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="errors" id="panel-errors" aria-labelledby="tab-errors">
+        <h3>Precautions &amp; Standard Errors</h3>
+        <ul class="os-muted">
+          <li>Keep the amplitude small (below ~10°) so the small-angle approximation holds.</li>
+          <li>Use a spherical bob so L is measured from the point of suspension to the centre of the bob.</li>
+          <li>Count oscillations from the mean position and use the split-cork clamp for a firm, fixed suspension point.</li>
+          <li>Measure the diameter with a vernier caliper and apply the zero-error correction.</li>
+          <li>Time a large number of oscillations (e.g. 20) to reduce the human reaction-time error.</li>
+        </ul>
+        <div class="os-callout warn"><h4>Period dilation</h4><span>Increase the amplitude above 10° and watch T increase, making the computed g fall below 9.81 m/s².</span></div>
+      </div>
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="viva" id="panel-viva" aria-labelledby="tab-viva">
+        <div class="os-row between">
+          <h3 style="margin:0">Viva-Voce Arena</h3>
+          <div class="os-row">
+            <button class="os-filter-pill active" id="modeOffline" data-i18n="viva.offline">Offline Viva</button>
+            <button class="os-filter-pill" id="modeAI" data-i18n="viva.ai">AI Examiner</button>
+          </div>
+        </div>
+        <div id="offlineViva">
+          <div class="os-callout" id="vivaProgress">Offline viva: 0 / 0 answered.</div>
+          <div id="vivaQA"></div>
+          <div class="os-row" style="margin-top:10px"><button class="os-btn primary" id="vivaStart" data-i18n="viva.startOffline">Start Offline Viva</button></div>
+        </div>
+        <div id="aiViva" style="display:none">
+          <div class="os-grid-3">
+            <div class="os-field"><label for="aiProvider">Provider</label><select class="os-select" id="aiProvider"><option value="ollama">Local Ollama</option><option value="openai">OpenAI (key)</option><option value="anthropic">Anthropic (key)</option></select></div>
+            <div class="os-field"><label for="aiEndpoint">Endpoint</label><input aria-label="http://localhost:11434" class="os-input" id="aiEndpoint" placeholder="http://localhost:11434" /></div>
+            <div class="os-field"><label for="aiModel">Model</label><input aria-label="llama3.1" class="os-input" id="aiModel" placeholder="llama3.1" /></div>
+          </div>
+          <div class="os-field" style="margin-top:8px"><label for="aiKey">API key (cloud only — supplied by you, never stored)</label><input class="os-input" id="aiKey" type="password" /></div>
+          <div class="os-row" style="margin-top:10px"><button class="os-btn primary" id="aiStart" data-i18n="viva.startAI">Start AI Viva</button></div>
+          <div id="aiTranscript" class="os-control-block os-fader" style="margin-top:12px;max-height:300px;overflow:auto"></div>
+          <div class="os-row" style="margin-top:8px"><input aria-label="Type your answer…" class="os-input" id="aiReply" placeholder="Type your answer…" data-i18n-ph="viva.answerPh"><button class="os-btn success" id="aiSend" data-i18n="viva.send">Send</button></div>
+        </div>
+      </div>
+
+      <div class="os-tabpanel" data-panel="procedure" role="tabpanel" tabindex="0" aria-label="Procedure" id="panel-procedure" aria-labelledby="tab-procedure">
+        <h3>Procedure</h3>
+        <div data-os-procedure></div>
+      </div>
+      <div class="os-tabpanel" data-panel="quiz" role="tabpanel" tabindex="0" aria-label="Quiz" id="panel-quiz" aria-labelledby="tab-quiz">
+        <h3>Quiz</h3>
+        <button class="os-btn sm ghost" type="button" data-os-bookmark-btn aria-pressed="false">☆ Bookmark</button>
+        <div data-os-quiz></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../../../assets/js/storage.js"></script>
+<script src="../../../assets/js/report.js"></script>
+<script src="../../../assets/js/graph.js"></script>
+<script src="../../../assets/js/quiz-bank-1.js"></script>
+<script src="../../../assets/js/quiz-bank-2.js"></script>
+<script src="../../../assets/js/quiz-bank-3.js"></script>
+<script src="../../../assets/js/quiz-bank-4.js"></script>
+<script src="../../../assets/js/quiz-bank-5.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-1.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-2.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-3.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-4.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-5.js"></script>
+<script src="../../../assets/js/quiz-bank.js"></script>
+<script src="../../../assets/js/quiz.js"></script>
+<script src="../../../assets/js/tts.js"></script>
+<script src="../../../assets/js/bookmarks.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/procedure.js"></script>
+<script src="../../../assets/js/procedure-bank.js"></script>
+<script src="../../../assets/js/procedure-bank-hi.js"></script>
+<script>
+/* OS-STORAGE-GUARD: local-only fallback notice. If storage.js failed to load
+   (e.g. this file was copied out of the project tree standalone), show a
+   .os-callout warning with the path fix. No CDN, no downloads -- local only. */
+(function () {
+  function showGuard() {
+    if (window.LabNotebook || window.LabNotebookDB) return;
+    if (document.querySelector("[data-os-storage-guard]")) return;
+    var d = document.createElement("div");
+    d.className = "os-callout warn";
+    d.setAttribute("data-os-storage-guard", "1");
+    d.innerHTML = "<h4>Notebook storage missing</h4><span>" +
+      "Could not load <b>../../../assets/js/storage.js</b>, so Save / Export are disabled. " +
+      "Keep this file inside the project tree (<b>OnlineDeploy/labs/class11/physics/simple_pendulum.html</b>) " +
+      "so the relative path resolves -- do not open it as a standalone copy and do not " +
+      "fetch anything from a CDN; this lab is fully local.</span>";
+    var host = document.querySelector(".os-wrap") || document.querySelector(".os-app") || document.body;
+    host.insertBefore(d, host.firstChild);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showGuard);
+  else showGuard();
+})();
+</script>
+<script src="../../../assets/js/ai-examiner.js"></script>
+<script src="../../../assets/js/viva-bank-hi.js"></script>
+<script src="../../../assets/js/viva-hi.js"></script>
+<!-- OS-MOTION: vendored GSAP + guarded motion helper (offline, no CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- OS-MOTION: CDN GSAP above, vendored fallback below (offline copy) -->
+<script src="../../../assets/vendor/gsap/gsap.min.js"></script>
+<script src="../../../assets/js/motion.js"></script>
+<script src="../../../assets/js/perf.js"></script>
+<script>window.scheduleDraw=(window.OSPerf&&window.OSPerf.rafThrottle)?window.OSPerf.rafThrottle(function(){try{if(typeof drawScene==="function")drawScene();}catch(e){}try{if(typeof draw==="function")draw();}catch(e){}try{if(typeof updateReadout==="function")updateReadout();}catch(e){}}):function(){try{if(typeof drawScene==="function")drawScene();}catch(e){}try{if(typeof draw==="function")draw();}catch(e){}try{if(typeof updateReadout==="function")updateReadout();}catch(e){}};</script>
+<script>
+/* ==========================================================================
+   Simple pendulum — RK4 nonlinear simulation
+   d²θ/dt² = -(g/L)·sinθ - b·(dθ/dt)
+   ========================================================================== */
+const G_TRUE = 9.81;
+const state = {
+  Lcm: 80, ampDeg: 8, damp: false,
+  theta: 0, omega: 0,
+  running: false, simTime: 0, oscCount: 0, lastTheta: 0
+};
+state.theta = state.ampDeg * Math.PI / 180;
+
+function setAmplitude() {
+  state.theta = state.ampDeg * Math.PI / 180;
+  state.omega = 0;
+  state.simTime = 0; state.oscCount = 0; state.lastTheta = state.theta;
+}
+setAmplitude();
+
+function accel(theta, omega) {
+  const L = state.Lcm / 100;
+  const b = state.damp ? 0.06 : 0.0;
+  return -(G_TRUE / L) * Math.sin(theta) - b * omega;
+}
+function rk4(dt) {
+  const th = state.theta, om = state.omega;
+  const k1t = om, k1o = accel(th, om);
+  const k2t = om + 0.5 * dt * k1o, k2o = accel(th + 0.5 * dt * k1t, om + 0.5 * dt * k1o);
+  const k3t = om + 0.5 * dt * k2o, k3o = accel(th + 0.5 * dt * k2t, om + 0.5 * dt * k2o);
+  const k4t = om + dt * k3o, k4o = accel(th + dt * k3t, om + dt * k3o);
+  state.theta = th + (dt / 6) * (k1t + 2 * k2t + 2 * k3t + k4t);
+  state.omega = om + (dt / 6) * (k1o + 2 * k2o + 2 * k3o + k4o);
+}
+
+/* ---- Canvas -------------------------------------------------------------- */
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+const PIVOT = { x: 310, y: 70 };
+const SCALE = 3.3; // px per cm of thread
+
+function draw() {
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  // wall / support
+  ctx.fillStyle = "#16233d"; ctx.fillRect(70, 20, 480, 26);
+  ctx.strokeStyle = "#2b3d63"; ctx.beginPath(); ctx.moveTo(70, 46); ctx.lineTo(550, 46); ctx.stroke();
+  // clamp
+  ctx.fillStyle = "#5b3a1e"; ctx.fillRect(PIVOT.x - 26, 40, 52, 20);
+  ctx.fillStyle = "#8a6a24"; ctx.fillRect(PIVOT.x - 26, 36, 52, 6);
+  ctx.fillStyle = "#9fb0d0"; ctx.font = "11px Segoe UI"; ctx.textAlign = "center";
+  ctx.fillText("split-cork clamp", PIVOT.x, 30);
+
+  const Lpx = state.Lcm * SCALE;
+  const bx = PIVOT.x + Math.sin(state.theta) * Lpx;
+  const by = PIVOT.y + Math.cos(state.theta) * Lpx;
+
+  // thread with graduations
+  ctx.strokeStyle = "#d9c39a"; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(PIVOT.x, PIVOT.y); ctx.lineTo(bx, by); ctx.stroke();
+  for (let cm = 10; cm <= state.Lcm; cm += 10) {
+    const t = cm * SCALE;
+    const gx = PIVOT.x + Math.sin(state.theta) * t, gy = PIVOT.y + Math.cos(state.theta) * t;
+    ctx.strokeStyle = "rgba(217,195,154,.6)"; ctx.beginPath();
+    ctx.moveTo(gx - 3, gy); ctx.lineTo(gx + 3, gy); ctx.stroke();
+    ctx.fillStyle = "rgba(159,176,208,.7)"; ctx.font = "9px Consolas"; ctx.fillText(cm, gx + 12, gy + 3);
+  }
+
+  // bob
+  const rCm = bobRadiusCm();
+  const rPx = Math.max(5, rCm * SCALE);
+  const grad = ctx.createRadialGradient(bx - rPx * 0.35, by - rPx * 0.35, rPx * 0.2, bx, by, rPx);
+  grad.addColorStop(0, "#ffe9a8"); grad.addColorStop(1, "#b8860b");
+  ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(bx, by, rPx, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#6b4f0a"; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // equilibrium guide
+  ctx.strokeStyle = "rgba(159,176,208,.2)"; ctx.setLineDash([4, 6]);
+  ctx.beginPath(); ctx.moveTo(PIVOT.x, PIVOT.y); ctx.lineTo(PIVOT.x, PIVOT.y + Lpx + 30); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // angle arc
+  ctx.strokeStyle = "rgba(79,214,255,.7)"; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(PIVOT.x, PIVOT.y, 46, Math.PI / 2, Math.PI / 2 - state.theta, state.theta > 0); ctx.stroke();
+
+  document.getElementById("roTheta").textContent = (state.theta * 180 / Math.PI).toFixed(1) + "°";
+}
+
+function bobRadiusCm() {
+  const LC = 0.01;
+  const d = (parseFloat(document.getElementById("vcMain").value) || 0) + (parseFloat(document.getElementById("vcVern").value) || 0) * LC - (parseFloat(document.getElementById("vcZero").value) || 0);
+  return d / 2;
+}
+function vernier() {
+  const LC = 0.01;
+  const d = (parseFloat(document.getElementById("vcMain").value) || 0) + (parseFloat(document.getElementById("vcVern").value) || 0) * LC - (parseFloat(document.getElementById("vcZero").value) || 0);
+  document.getElementById("vcOut").textContent = "Diameter = " + d.toFixed(2) + " cm · r = " + (d / 2).toFixed(2) + " cm (LC 0.01 cm)";
+  return d;
+}
+["vcMain", "vcVern", "vcZero"].forEach(function (id) { document.getElementById(id).addEventListener("input", function () { vernier(); scheduleDraw(); }); });
+
+/* ---- Physics loop -------------------------------------------------------- */
+let lastFrame = null;
+function loop(ts) {
+  if (lastFrame == null) lastFrame = ts;
+  let dtReal = (ts - lastFrame) / 1000;
+  lastFrame = ts;
+  if (dtReal > 0.05) dtReal = 0.05;
+
+  if (state.running) {
+    // integrate in small fixed steps
+    const h = 1 / 240;
+    let remaining = dtReal;
+    while (remaining > 0) {
+      const step = Math.min(h, remaining);
+      const prev = state.theta;
+      rk4(step);
+      // zero-crossing detection (past the mean position going positive -> negative)
+      if (prev > 0 && state.theta <= 0) state.oscCount += 1;
+      state.simTime += step;
+      remaining -= step;
+    }
+  }
+  if (state.running) {
+    document.getElementById("stopwatch").textContent = state.simTime.toFixed(1) + " s";
+    document.getElementById("roTime").textContent = state.simTime.toFixed(1);
+    document.getElementById("oscChip").innerHTML = "Oscillations: <b>" + state.oscCount + "</b>";
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+
+/* ---- Stopwatch ----------------------------------------------------------- */
+document.getElementById("swStart").addEventListener("click", function () {
+  state.running = true; state.simTime = 0; state.oscCount = 0;
+});
+document.getElementById("swStop").addEventListener("click", function () { state.running = false; });
+document.getElementById("swReset").addEventListener("click", function () {
+  state.running = false; state.simTime = 0; state.oscCount = 0;
+  document.getElementById("stopwatch").textContent = "0.0 s";
+  setAmplitude(); draw();
+});
+document.getElementById("swLap").addEventListener("click", function () {
+  const half = (state.simTime / 2).toFixed(1);
+  const box = document.getElementById("t1");
+  if (!box.value) { box.value = state.simTime.toFixed(1); }
+  else { document.getElementById("t2").value = state.simTime.toFixed(1); }
+});
+
+/* ---- Controls ------------------------------------------------------------ */
+document.getElementById("lRange").addEventListener("input", function (e) {
+  state.Lcm = parseFloat(e.target.value);
+  document.getElementById("lVal").textContent = state.Lcm;
+  setAmplitude(); scheduleDraw();
+});
+document.getElementById("ampRange").addEventListener("input", function (e) {
+  state.ampDeg = parseFloat(e.target.value);
+  document.getElementById("ampVal").textContent = state.ampDeg;
+  setAmplitude(); scheduleDraw();
+});
+document.getElementById("dampToggle").addEventListener("change", function (e) { state.damp = e.target.checked; });
+
+/* ---- Table & graph ------------------------------------------------------- */
+const trials = [];
+function renderTable() {
+  const tbody = document.querySelector("#obsTable tbody"); tbody.innerHTML = "";
+  trials.forEach(function (t, i) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + (i + 1) + "</td>" +
+      '<td class="num">' + t.L.toFixed(1) + "</td>" + '<td class="num">' + t.Leff.toFixed(2) + "</td>" +
+      '<td class="num">' + t.t1.toFixed(1) + "</td>" + '<td class="num">' + t.t2.toFixed(1) + "</td>" +
+      '<td class="num">' + t.T.toFixed(3) + "</td>" + '<td class="num">' + (t.T * t.T).toFixed(3) + "</td>" +
+      '<td class="num">' + t.g.toFixed(2) + "</td>" + '<td><button class="os-btn danger sm" data-row="' + i + '">×</button></td>';
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll("button[data-row]").forEach(function (b) {
+    b.addEventListener("click", function () { trials.splice(parseInt(b.dataset.row, 10), 1); renderTable(); drawGraph(); });
+  });
+  const gs = trials.map(function (t) { return t.g; });
+  document.getElementById("statG").textContent = gs.length ? (gs.reduce(function (a, b) { return a + b; }, 0) / gs.length).toFixed(2) + " m/s²" : "—";
+  const sg = slopeG();
+  document.getElementById("statSlopeG").textContent = isFinite(sg) ? sg.toFixed(2) + " m/s²" : "—";
+  document.getElementById("trialCount").textContent = trials.length + " " + ((window.OS_I18N&&window.OS_I18N.t)?window.OS_I18N.t("trials.unit"):"trials");
+}
+function slopeG() {
+  if (trials.length < 2) return NaN;
+  const xs = trials.map(function (t) { return t.T * t.T; });
+  const ys = trials.map(function (t) { return t.Leff; }); // cm
+  const n = xs.length;
+  const mx = xs.reduce(function (a, b) { return a + b; }, 0) / n;
+  const my = ys.reduce(function (a, b) { return a + b; }, 0) / n;
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) { num += (xs[i] - mx) * (ys[i] - my); den += (xs[i] - mx) * (xs[i] - mx); }
+  if (!den) return NaN;
+  const slope = num / den; // cm/s²
+  return 4 * Math.PI * Math.PI / (slope / 100);
+}
+document.getElementById("btnRecord").addEventListener("click", function () {
+  const t1 = parseFloat(document.getElementById("t1").value);
+  const t2 = parseFloat(document.getElementById("t2").value);
+  if (!t1 || !t2) { flash("Enter both t₁ and t₂ (time for 20 oscillations).", false); return; }
+  const T = (t1 + t2) / 40;
+  const r = bobRadiusCm();
+  const Leff = state.Lcm + r; // cm — thread length to centre of bob
+  const g = 4 * Math.PI * Math.PI * (Leff / 100) / (T * T);
+  trials.push({ L: state.Lcm, Leff: Leff, t1: t1, t2: t2, T: T, g: g });
+  renderTable(); drawGraph();
+});
+document.getElementById("btnClear").addEventListener("click", function () { trials.length = 0; renderTable(); drawGraph(); });
+
+const graph = document.getElementById("graph");
+const gx = graph.getContext("2d");
+function drawGraph() {
+  const w = graph.width, h = graph.height, ox = 46, oy = h - 34;
+  gx.clearRect(0, 0, w, h);
+  // axes
+  gx.strokeStyle = "rgba(159,176,208,.25)";
+  for (let i = 0; i <= 5; i++) {
+    const X = ox + (i / 5) * (w - ox - 16), Y = oy - (i / 5) * (oy - 16);
+    gx.beginPath(); gx.moveTo(X, 16); gx.lineTo(X, oy); gx.stroke();
+    gx.beginPath(); gx.moveTo(ox, Y); gx.lineTo(w - 16, Y); gx.stroke();
+  }
+  gx.strokeStyle = "#8fa9d6"; gx.lineWidth = 1.5;
+  gx.beginPath(); gx.moveTo(ox, 16); gx.lineTo(ox, oy); gx.lineTo(w - 16, oy); gx.stroke();
+  gx.fillStyle = "#9fb0d0"; gx.font = "10px Segoe UI"; gx.textAlign = "center";
+  gx.fillText("T² (s²)", (ox + w - 16) / 2, h - 8);
+  gx.save(); gx.translate(13, (16 + oy) / 2); gx.rotate(-Math.PI / 2); gx.fillText("L_eff (cm)", 0, 0); gx.restore();
+
+  const xs = trials.map(function (t) { return t.T * t.T; });
+  const ys = trials.map(function (t) { return t.Leff; });
+  const xmax = Math.max(1, Math.max.apply(null, xs.concat([1])) * 1.15);
+  const ymax = Math.max(10, Math.max.apply(null, ys.concat([10])) * 1.15);
+  trials.forEach(function (t) {
+    const X = ox + (t.T * t.T / xmax) * (w - ox - 16);
+    const Y = oy - (t.Leff / ymax) * (oy - 16);
+    gx.fillStyle = "#4fd6ff"; gx.beginPath(); gx.arc(X, Y, 4, 0, Math.PI * 2); gx.fill();
+  });
+  if (trials.length >= 2) {
+    const sg = slopeG();
+    if (isFinite(sg)) {
+      const slopeCm = 4 * Math.PI * Math.PI * 100 / sg; // L_eff (cm) per T² (s²)
+      const xEnd = xmax;
+      const yEnd = slopeCm * xEnd;
+      gx.strokeStyle = "rgba(79,214,255,.65)"; gx.lineWidth = 1.6; gx.beginPath();
+      gx.moveTo(ox, oy);
+      gx.lineTo(ox + (xEnd / xmax) * (w - ox - 16), oy - (yEnd / ymax) * (oy - 16));
+      gx.stroke();
+    }
+  }
+}
+
+function flash(msg, ok) {
+  const el = document.getElementById("saveMsg"); el.style.display = "block";
+  el.className = "os-callout " + (ok === false ? "danger" : "ok"); el.textContent = msg;
+  setTimeout(function () { el.style.display = "none"; }, 4000);
+}
+document.getElementById("btnSave").addEventListener("click", async function () {
+  if (!trials.length) return flash("Record at least one trial first.", false);
+  await window.LabNotebook.open();
+  await window.LabNotebook.saveTrial("P-C11-01_SIMPLE_PENDULUM", {
+    class_level: 11, subject: "physics", title: "Acceleration due to Gravity — Simple Pendulum",
+    readings: trials.map(function (t) { return { "L (cm)": t.L.toFixed(1), "L_eff (cm)": t.Leff.toFixed(2), "t1 (s)": t.t1.toFixed(1), "t2 (s)": t.t2.toFixed(1), "T (s)": t.T.toFixed(3), "T² (s²)": (t.T * t.T).toFixed(3), "g (m/s²)": t.g.toFixed(2) }; }),
+    results: { "Mean g": document.getElementById("statG").textContent, "g from slope": document.getElementById("statSlopeG").textContent }
+  });
+  flash("Trial saved to the IndexedDB notebook.", true);
+});
+document.getElementById("btnExport").addEventListener("click", async function () {
+  await window.LabNotebook.open();
+  const html = await window.LabNotebook.exportToCBSEFormat("P-C11-01_SIMPLE_PENDULUM");
+  const w = window.open("", "_blank"); if (w) { w.document.write(html); w.document.close(); } else flash("Allow pop-ups to export.", false);
+});
+
+/* ---- Tabs & viva --------------------------------------------------------- */
+document.getElementById("tabs").addEventListener("click", function (ev) {
+  const tab = ev.target.closest(".os-tab"); if (!tab) return;
+  document.querySelectorAll(".os-tab").forEach(function (t) { t.classList.remove("active"); });
+  document.querySelectorAll(".os-tabpanel").forEach(function (p) { p.classList.remove("active"); });
+  tab.classList.add("active");
+  document.querySelector('.os-tabpanel[data-panel="' + tab.dataset.tab + '"]').classList.add("active");
+});
+
+const VIVA_BANK = [
+  { question: "Why is the small-angle approximation necessary in this experiment?",
+    answer: "Only for small angles is sin θ approximately equal to θ, which reduces the restoring force to be proportional to displacement and makes the motion simple harmonic with a constant period independent of amplitude." },
+  { question: "Why is a spherical bob used instead of a bob of another shape?",
+    answer: "A spherical bob has its centre of mass at its geometric centre, so the effective length can be taken accurately as the thread length plus the radius, minimising uncertainty in L." },
+  { question: "What is the effect of air damping on the oscillation?",
+    answer: "Air damping gradually reduces the amplitude and the motion is no longer strictly simple harmonic; the period is essentially unchanged for small damping but the amplitude decays exponentially." },
+  { question: "Why do we time 20 oscillations instead of a single oscillation?",
+    answer: "Timing many oscillations makes the human reaction-time error, which is fixed per start/stop, a much smaller fraction of the total measured time, improving accuracy." },
+  { question: "How does the time period depend on the mass of the bob?",
+    answer: "The time period is independent of the mass of the bob; it depends only on the effective length and the acceleration due to gravity, T = 2π√(L_eff/g)." }
+];
+const examiner = new window.AIExaminer({
+  experimentId: "P-C11-01_SIMPLE_PENDULUM",
+  experimentTitle: "Acceleration due to Gravity — Simple Pendulum",
+  subject: "physics", classLevel: 11, vivaBank: VIVA_BANK,
+  getObservations: function () { return trials.map(function (t) { return { L_eff: t.Leff.toFixed(2), T: t.T.toFixed(3), g: t.g.toFixed(2) }; }); },
+  onToken: function (_c, full) { appendAI("examiner", full, true); },
+  onMessage: function (text) { appendAI("examiner", text, false); },
+  onError: function (e) { appendAI("system", "Error: " + (e.message || e), false); }
+});
+function appendAI(role, text, replaceLast) {
+  const host = document.getElementById("aiTranscript");
+  if (replaceLast) { let last = host.querySelector('[data-stream="1"]'); if (!last) { last = document.createElement("div"); last.dataset.stream = "1"; last.className = "os-callout"; host.appendChild(last); } last.textContent = text; }
+  else { const d = document.createElement("div"); d.className = "os-callout " + (role === "student" ? "ok" : "warn"); d.textContent = (role === "student" ? "You: " : role === "examiner" ? "Examiner: " : "") + text; host.appendChild(d); }
+  host.scrollTop = host.scrollHeight;
+}
+function renderOffline() {
+  const q = examiner.offlineQuestion(); const host = document.getElementById("vivaQA"); host.innerHTML = "";
+  document.getElementById("vivaProgress").textContent = "Offline viva: " + examiner.offline.index + " / " + VIVA_BANK.length + " answered — score " + examiner.offline.score + "/" + examiner.offline.total + ".";
+  if (!q) {
+    host.innerHTML = '<div class="os-callout ok"><h4>Viva complete</h4><span>Final score ' + examiner.offline.score + "/" + examiner.offline.total + ".</span></div>";
+    examiner.offline.answers.forEach(function (a) {
+      const d = document.createElement("div"); d.className = "os-viva-item open";
+      d.innerHTML = '<div class="os-viva-q"><span class="qmark">Q</span><span>' + a.question + ' <span class="os-chip">' + a.mark + '/2</span></span></div><div class="os-viva-a"><b>Your answer:</b> ' + (a.answer || "<em>blank</em>") + "<br><b>Model answer:</b> " + a.model + "</div>";
+      host.appendChild(d);
+    });
+    return;
+  }
+  const wrap = document.createElement("div"); wrap.className = "os-callout";
+  wrap.innerHTML = "<h4>Question " + (q.index + 1) + "</h4><span>" + q.question + "</span>";
+  const input = document.createElement("textarea"); input.className = "os-input"; input.rows = 3; input.placeholder = "Type your answer…";
+  const btn = document.createElement("button"); btn.className = "os-btn primary"; btn.textContent = "Submit Answer"; btn.style.marginTop = "8px";
+  btn.addEventListener("click", function () { examiner.offlineSubmit(input.value); renderOffline(); });
+  host.appendChild(wrap); host.appendChild(input); host.appendChild(btn);
+}
+document.getElementById("vivaStart").addEventListener("click", function () { examiner.offlineStart(); renderOffline(); });
+document.getElementById("modeOffline").addEventListener("click", function () { this.classList.add("active"); document.getElementById("modeAI").classList.remove("active"); document.getElementById("offlineViva").style.display = "block"; document.getElementById("aiViva").style.display = "none"; });
+document.getElementById("modeAI").addEventListener("click", function () { this.classList.add("active"); document.getElementById("modeOffline").classList.remove("active"); document.getElementById("offlineViva").style.display = "none"; document.getElementById("aiViva").style.display = "block"; });
+document.getElementById("aiStart").addEventListener("click", function () {
+  examiner.configure({ provider: document.getElementById("aiProvider").value, model: document.getElementById("aiModel").value.trim(), endpoint: document.getElementById("aiEndpoint").value.trim(), apiKey: document.getElementById("aiKey").value.trim() });
+  document.getElementById("aiTranscript").innerHTML = ""; examiner.aiStart();
+});
+document.getElementById("aiSend").addEventListener("click", function () { const box = document.getElementById("aiReply"); if (!box.value.trim()) return; appendAI("student", box.value, false); const t = box.value; box.value = ""; examiner.aiSend(t); });
+
+/* ---- Boot ---------------------------------------------------------------- */
+(async function () {
+  vernier(); renderTable(); drawGraph(); draw();
+  requestAnimationFrame(loop);
+  try { await window.LabNotebook.open(); document.getElementById("dbChip").textContent = window.LabNotebook.isFallback() ? "memory" : "IndexedDB"; }
+  catch (e) { document.getElementById("dbChip").textContent = "unavailable"; }
+})();
+</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{var el=document.querySelector("[data-os-quiz]");if(el&&window.OSQuiz&&!el.getAttribute("data-os-quiz-done")){var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:"";window.OSQuiz.renderInto(el,id);}}catch(e){}});</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{if(window.OSProcedure&&window.OSProcedure.initFromBank)window.OSProcedure.initFromBank();}catch(e){}});</script>
+<script>/* OS-REPORT-WIRING: generic printable-report hook (idempotent). */
+window.addEventListener("DOMContentLoaded",function(){
+  var b=document.getElementById("btnReport");
+  if(!b||b.getAttribute("data-os-report-done"))return;
+  b.setAttribute("data-os-report-done","1");
+  b.addEventListener("click",function(){
+    try{
+      if(!window.OSReport){alert("Report helper (assets/js/report.js) failed to load.");return;}
+      var T=(typeof trials!=="undefined"&&Array.isArray(trials))?trials:[];
+      if(!T.length){alert("Record at least one reading first.");return;}
+      var cfg=(typeof CONFIG!=="undefined"&&CONFIG)?CONFIG:{};
+      var th=document.querySelector('[data-panel="theory"]');
+      var mEl=document.getElementById("statMean"),eEl=document.getElementById("statErr"),
+          nEl=document.getElementById("statN"),gEl=document.getElementById("statG");
+      window.OSReport.printLabReport({
+        experimentId:cfg.experimentId||document.title,
+        title:cfg.experimentTitle||document.title,
+        readings:T,
+        stats:{
+          mean:mEl?mEl.textContent:(gEl?gEl.textContent:""),
+          stderr:eEl?eEl.textContent:"",
+          n:nEl?nEl.textContent:T.length
+        },
+        canvasEl:document.getElementById("stage"),
+        theory:th?th.innerText.slice(0,600):""
+      });
+    }catch(err){alert("Report failed: "+(err&&err.message||err));}
+  });
+});</script>
+<script>/* OS-I18N-CHROME: re-render dynamic chrome on language toggle (guarded, idempotent). */
+(function(){function rr(){try{if(typeof renderHead==="function"&&document.getElementById("obsHead"))renderHead();}catch(e){}try{if(typeof renderTable==="function"&&document.getElementById("obsTable"))renderTable();}catch(e){}try{if(typeof recompute==="function")recompute();}catch(e){}}if(window.__osI18nChromeWired)return;window.__osI18nChromeWired=true;document.addEventListener("os-lang-change",rr);})();</script>
+
+<!-- OS-FLUID-SHELL hooks: toast stack + alert routing + proxy/fader/indicator targets.
+     CSS lives in lab-theme.css; motion.js sibling drives animation. Idempotent. -->
+<div class="os-toasts os-toast-stack" id="osToasts" role="status" aria-live="polite" aria-atomic="false"></div>
+<script>/* OS-TOAST: toast system replacing window.alert (guarded, idempotent). */
+(function(){
+  if(window.OSToast&&window.OSToast.__osFluid)return;
+  function host(){
+    var h=document.getElementById("osToasts");
+    if(h)return h;
+    h=document.createElement("div");
+    h.className="os-toasts os-toast-stack";h.id="osToasts";
+    h.setAttribute("role","status");h.setAttribute("aria-live","polite");h.setAttribute("aria-atomic","false");
+    document.body.appendChild(h);return h;
+  }
+  function show(msg,type){
+    try{
+      var h=host();
+      var t=document.createElement("div");
+      var kind=(type==="ok"||type==="success")?"ok":(type==="danger"||type==="error")?"danger":(type==="warn"?"warn":"");
+      t.className=("os-toast "+kind).trim();
+      var dot=document.createElement("span");dot.className="os-toast-dot";dot.setAttribute("aria-hidden","true");
+      var m=document.createElement("span");m.className="os-toast-msg";m.textContent=String(msg==null?"":msg);
+      var x=document.createElement("button");x.className="os-toast-close";x.type="button";x.textContent="×";x.setAttribute("aria-label","Dismiss");
+      x.addEventListener("click",function(){dismiss(t);});
+      t.appendChild(dot);t.appendChild(m);t.appendChild(x);
+      h.appendChild(t);
+      while(h.children.length>4)h.removeChild(h.firstChild);
+      setTimeout(function(){dismiss(t);},4200);
+      return t;
+    }catch(e){try{window.__osNativeAlert(String(msg));}catch(_){}return null;}
+  }
+  function dismiss(t){
+    if(!t||!t.parentNode||t.classList.contains("is-leaving"))return;
+    try{
+      t.classList.add("is-leaving");
+      setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},200);
+    }catch(e){if(t.parentNode)t.parentNode.removeChild(t);}
+  }
+  window.OSToast={show:show,dismiss:dismiss,__osFluid:true};
+  if(!window.__osNativeAlert){
+    try{window.__osNativeAlert=window.alert;}catch(e){}
+    try{window.alert=function(m){return show(m,"warn");};}catch(e){}
+  }
+  /* Sticky action-bar proxies: [data-os-proxy] clicks forward to #id buttons. */
+  document.addEventListener("click",function(ev){
+    var p=ev.target&&ev.target.closest?ev.target.closest("[data-os-proxy]"):null;
+    if(!p)return;
+    var target=document.getElementById(p.getAttribute("data-os-proxy"));
+    if(target&&target!==p&&typeof target.click==="function"){ev.preventDefault();target.click();}
+  });
+})();</script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="../../../assets/js/apparatus3d.js"></script>
+<script>/* OS-VIEW-TOGGLE: 2D/3D hero toggle (per-lab persist) + file:// 3D notice. Idempotent. */
+(function(){
+  if(window.__osViewToggle)return;window.__osViewToggle=true;
+  function labKey(){
+    try{
+      var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:location.pathname;
+      return "os-view:"+id;
+    }catch(e){return "os-view:lab";}
+  }
+  function apply(mode){
+    var show3D=(mode!=="2d");
+    var wrap=document.querySelector("[data-os-3d-wrap]");
+    if(wrap)wrap.style.display=show3D?"":"none";
+    var cvs=document.querySelectorAll("canvas[data-os-2d]");
+    for(var i=0;i<cvs.length;i++){cvs[i].style.display=show3D?"none":"";}
+    var pills=document.querySelectorAll("[data-os-view]");
+    for(var j=0;j<pills.length;j++){
+      var on=pills[j].getAttribute("data-os-view")===(show3D?"3d":"2d");
+      pills[j].classList.toggle("active",on);
+      pills[j].setAttribute("aria-pressed",on?"true":"false");
+    }
+  }
+  document.addEventListener("click",function(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest("[data-os-view]"):null;
+    if(!b)return;
+    var m=b.getAttribute("data-os-view");
+    try{localStorage.setItem(labKey(),m);}catch(e){}
+    apply(m);
+  });
+  function init(){
+    var m=null;
+    try{m=localStorage.getItem(labKey());}catch(e){}
+    apply(m==="2d"?"2d":"3d");
+    try{
+      if(location.protocol==="file:"){
+        var ns=document.querySelectorAll("[data-os-file-notice]");
+        for(var k=0;k<ns.length;k++){ns[k].hidden=false;}
+      }
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+<script>/* OS-ONLINE-SHELL: tab morph indicator + ScrollTrigger reveals + premium flag. Idempotent. */
+(function(){
+  if(window.__osOnlineShell)return;window.__osOnlineShell=true;
+  window.OSOnline={premium:true};
+  /* Tab morph indicator: glide #tabIndicator under the active tab. */
+  function moveIndicator(tabsEl){
+    try{
+      var ind=tabsEl.querySelector(".os-tab-indicator")||document.getElementById("tabIndicator");
+      var tab=tabsEl.querySelector(".os-tab.active");
+      if(!ind||!tab)return;
+      var tr=tabsEl.getBoundingClientRect(),r=tab.getBoundingClientRect();
+      ind.style.left=(r.left-tr.left)+"px";
+      ind.style.width=r.width+"px";
+      tabsEl.setAttribute("data-os-indicator-ready","1");
+    }catch(e){}
+  }
+  function wireTabs(){
+    document.querySelectorAll(".os-tabs").forEach(function(tabsEl){
+      moveIndicator(tabsEl);
+      ["click","keydown"].forEach(function(ev){
+        tabsEl.addEventListener(ev,function(){setTimeout(function(){moveIndicator(tabsEl);},0);});
+      });
+    });
+    window.addEventListener("resize",function(){
+      document.querySelectorAll(".os-tabs").forEach(moveIndicator);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireTabs);
+  else wireTabs();
+  /* ScrollTrigger reveals: one-shot panel entrances (motion.js guards reduced motion). */
+  function reveals(){
+    try{
+      if(!(window.gsap&&window.ScrollTrigger))return;
+      window.gsap.registerPlugin(window.ScrollTrigger);
+      window.gsap.utils.toArray(".os-panel").forEach(function(p){
+        window.gsap.fromTo(p,{y:14,opacity:0},{y:0,opacity:1,duration:.45,ease:"power2.out",
+          scrollTrigger:{trigger:p,start:"top 92%",once:true},clearProps:"transform,opacity"});
+      });
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",reveals);
+  else reveals();
+})();</script>
+</body>
+</html>

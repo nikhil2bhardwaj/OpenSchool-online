@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Velocity of Sound — Resonance Tube — OpenSchool Virtual Lab</title>
+<link rel="stylesheet" href="../../../assets/css/lab-theme.css" />
+<!-- OS-ONLINE: premium shell — Google Fonts + GSAP CDN + ScrollTrigger + three importmap -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+/* OS-ONLINE-PREMIUM: font system + hero topbar + 3D stage + morph indicator. */
+:root{--os-font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--os-display:"Space Grotesk","Inter",system-ui,sans-serif;--os-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--os-font)}
+.os-brand,.os-kicker,h1,h2,h3,.os-control-title{font-family:var(--os-display)}
+.os-mono,.os-readout b,.os-digital,.os-stat b{font-family:var(--os-mono);font-variant-numeric:tabular-nums}
+.os-topbar.os-bench{background:linear-gradient(120deg,#0d1b2a 0%,#123524 55%,#0d1b2a 100%)}
+.os-3d-wrap{margin-top:0;margin-bottom:10px}
+#apparatus3d.os-3d{position:relative;overflow:hidden;min-height:420px;height:420px;border-radius:12px;background:radial-gradient(120% 100% at 50% 0%,#12263f 0%,#0d1b2a 70%)}
+#apparatus3d.os-3d canvas{width:100%!important;height:420px!important;display:block}
+.os-viewbar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.os-viewbar .os-filter-pill[aria-pressed="true"]{outline:2px solid #4fd6ff}
+.os-3d-capline{font-size:11px;opacity:.75;padding:6px 2px 0}
+.os-file-notice{margin-top:8px}
+#apparatus3d .os-3d-cap{position:absolute;left:10px;bottom:8px;font-size:11px;opacity:.75}
+.os-tabs{position:relative}
+.os-tab-indicator{transition:left .28s cubic-bezier(.2,.7,.3,1),width .28s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.os-tab-indicator{transition:none}}
+</style>
+</head>
+<body>
+<a class="os-skip-link" href="#main-content">Skip to main content</a>
+<div class="os-app">
+  <header class="os-topbar os-bench">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>Velocity of Sound — Resonance Tube<small>CLASS 11 PHYSICS · P-C11-04</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-chip"><span data-i18n="topbar.notebook">Notebook:</span> <b id="dbChip">…</b></span>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi">हिं</button>
+    </span>
+    <a class="os-btn ghost sm" href="../../../index.html" data-i18n="lab.back">← Curriculum Hub</a>
+  </header>
+
+  <main id="main-content" class="os-wrap">
+    <div class="os-lab-grid">
+      <section class="os-panel os-apparatus">
+        <header>
+          <span class="os-kicker" data-i18n="lab.apparatus">Apparatus &amp; Simulation</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="liveChip" data-i18n="lab.engineReady">Engine ready</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-stage os-spotlight">
+            <div class="os-viewbar" data-os-viewbar role="group" aria-label="Apparatus view">
+              <button type="button" class="os-filter-pill" data-os-view="3d">3D Apparatus</button>
+              <button type="button" class="os-filter-pill" data-os-view="2d">2D Board</button>
+            </div>
+            <div class="os-3d-wrap os-3d-hero" data-os-3d-wrap>
+              <div id="apparatus3d" data-apparatus="pendulum" aria-label="3D apparatus viewer"></div>
+              <div class="os-3d-capline" data-os-3d-caption>3D apparatus hero — drag to orbit. Switch to 2D Board for the measurement canvas.</div>
+              <div class="os-callout warn os-file-notice" data-os-file-notice hidden>3D needs a local server or GitHub Pages (ES modules + import maps do not run over file://); the 2D board works everywhere.</div>
+            </div>
+            <canvas data-os-2d="1" role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="apparatus" width="760" height="250"></canvas>
+            <canvas data-os-2d="1" role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="stage" width="760" height="380"></canvas>
+
+            <div class="os-readout os-instrument" id="readout"></div>
+          </div>
+
+          <div class="os-callout"><h4>Aim</h4><span>Determine the velocity of sound in air using a resonance tube.</span></div>
+
+          <div class="os-grid-2" id="controls"></div>
+
+          <div class="os-row">
+            <button class="os-btn primary" id="btnRecord" data-i18n="btn.record">Record Reading</button>
+            <button class="os-btn" id="btnReset" data-i18n="btn.reset">Reset Apparatus</button>
+            <label class="os-toggle"><input type="checkbox" id="faultToggle" /> Fault: end-correction neglected</label>
+          </div>
+          <div class="os-callout" id="statusBox"><h4>Procedure</h4><span>Vary the independent variable and press <b>Record Reading</b> to populate the observation table.</span></div>
+          <div class="os-dim os-mono" style="font-size:12px">Apparatus: Resonance tube · Tuning forks · Metre scale</div>
+        </div>
+      </section>
+
+      <section class="os-panel">
+        <header>
+          <span class="os-kicker" data-i18n="lab.observation">Observation Table</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="trialCount">0 trials</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-table-wrap os-obs" data-os-ledger>
+            <table class="os-table" id="obsTable"><thead><tr id="obsHead"></tr></thead><tbody></tbody></table>
+          </div>
+          <div class="os-stat-grid">
+            <div class="os-stat"><span>Mean First resonant length l₁</span><b id="statMean">—</b></div>
+            <div class="os-stat"><span data-i18n="stats.stderr">Std. Error</span><b id="statErr">—</b></div>
+            <div class="os-stat"><span>Result</span><b id="statResult">—</b></div>
+          </div>
+          <div class="os-row">
+            <button class="os-btn success" id="btnSave" data-i18n="btn.save">Save to Notebook</button>
+            <button class="os-btn" id="btnExport" data-i18n="btn.export">Export CBSE Sheet</button>
+            <button class="os-btn" id="btnReport" data-i18n="btn.report">Print Report</button>
+            <button class="os-btn danger" id="btnClear" data-i18n="btn.clear">Clear</button>
+          </div>
+          <div class="os-callout ok" id="saveMsg" style="display:none"></div>
+        </div>
+      </section>
+    </div>
+
+    
+    <!-- OS-ACTIONBAR: sticky mobile quick actions (proxies, no duplicate ids) -->
+    <div class="os-actionbar" data-os-actionbar role="toolbar" aria-label="Quick actions">
+      <button class="os-btn primary" type="button" data-os-proxy="btnRecord">Record Reading</button>
+      <button class="os-btn success" type="button" data-os-proxy="btnSave">Save to Notebook</button>
+      <button class="os-btn" type="button" data-os-proxy="btnReport">Print Report</button>
+    </div>
+
+<section class="os-panel" style="margin-top:18px">
+      <div class="os-tabs os-tabs-anim" role="tablist" aria-label="Lab information tabs" id="tabs" data-os-tablist>
+        <button class="os-tab active" data-tab="theory" role="tab" aria-selected="true" data-i18n="tabs.theory" tabindex="0" aria-controls="panel-theory" id="tab-theory">Theory &amp; Principle</button>
+        <button class="os-tab" data-tab="errors" role="tab" aria-selected="false" data-i18n="tabs.errors" tabindex="-1" aria-controls="panel-errors" id="tab-errors">Precautions &amp; Errors</button>
+        <button class="os-tab" data-tab="viva" role="tab" aria-selected="false" data-i18n="tabs.viva" tabindex="-1" aria-controls="panel-viva" id="tab-viva">Viva-Voce Arena</button>
+        <button class="os-tab" data-tab="procedure" role="tab" aria-selected="false" data-i18n="tabs.procedure" aria-controls="panel-procedure" id="tab-procedure" tabindex="-1">Procedure</button>
+        <button class="os-tab" data-tab="quiz" role="tab" aria-selected="false" data-i18n="tabs.quiz" aria-controls="panel-quiz" id="tab-quiz" tabindex="-1">Quiz</button>
+      
+        <span class="os-tab-indicator" id="tabIndicator" aria-hidden="true"></span>
+      </div>
+      <div role="tabpanel" tabindex="0" class="os-tabpanel active" data-panel="theory" data-os-collapsible id="panel-theory" aria-labelledby="tab-theory">
+        <h3>Theory</h3>
+        <button class="os-btn sm ghost" type="button" data-os-tts-btn data-os-tts-label="Theory">🔊 Read aloud</button>
+        <p class="os-muted">Determine the velocity of sound in air using a resonance tube.</p>
+        <div class="os-eq">v = f  \lambda = 2f(l_2-l_1)</div>
+        <p class='os-muted'>At the first resonance the air column length l₁ ≈ λ/4. The speed of sound is v = f·λ = 4f·l₁ (to first order), and using two resonances removes the end correction: v = 2f(l₂ − l₁).</p>
+      </div>
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="errors" id="panel-errors" aria-labelledby="tab-errors">
+        <h3>Precautions &amp; Standard Errors</h3>
+        <ul class="os-muted"><li>Read all scales with the eye perpendicular to the scale to avoid parallax error.</li><li>Check the apparatus for zero error before starting and apply a correction if present.</li><li>Take at least five readings spread across the range and use their mean.</li><li>Keep the apparatus clean, dry and free from contamination between observations.</li><li>Note the least count of every instrument and record readings to the correct number of decimals.</li></ul>
+        <div class="os-callout warn"><h4>Troubleshooting</h4><ul><li><b>F_PARALLAX:</b> Reading fluctuates with eye position — <i>Line of sight not perpendicular to the scale</i>. Remedy: Keep the eye level with the meniscus/pointer and repeat the reading.</li><li><b>F_DAMPING:</b> Amplitude decays rapidly — <i>Air resistance / friction at the support</i>. Remedy: Use a small bob and minimise air currents.</li></ul></div>
+      </div>
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="viva" id="panel-viva" aria-labelledby="tab-viva">
+        <div class="os-row between">
+          <h3 style="margin:0">Viva-Voce Arena</h3>
+          <div class="os-row">
+            <button class="os-filter-pill active" id="modeOffline" data-i18n="viva.offline">Offline Viva</button>
+            <button class="os-filter-pill" id="modeAI" data-i18n="viva.ai">AI Examiner</button>
+          </div>
+        </div>
+        <div id="offlineViva">
+          <div class="os-callout" id="vivaProgress">Offline viva: 0 / 0 answered.</div>
+          <div id="vivaQA"></div>
+          <div class="os-row" style="margin-top:10px"><button class="os-btn primary" id="vivaStart" data-i18n="viva.startOffline">Start Offline Viva</button></div>
+        </div>
+        <div id="aiViva" style="display:none">
+          <div class="os-grid-3">
+            <div class="os-field"><label for="aiProvider">Provider</label><select class="os-select" id="aiProvider"><option value="ollama">Local Ollama</option><option value="openai">OpenAI (key)</option><option value="anthropic">Anthropic (key)</option></select></div>
+            <div class="os-field"><label for="aiEndpoint">Endpoint</label><input aria-label="http://localhost:11434" class="os-input" id="aiEndpoint" placeholder="http://localhost:11434" /></div>
+            <div class="os-field"><label for="aiModel">Model</label><input aria-label="llama3.1" class="os-input" id="aiModel" placeholder="llama3.1" /></div>
+          </div>
+          <div class="os-field" style="margin-top:8px"><label for="aiKey">API key (cloud only — supplied by you, never stored)</label><input class="os-input" id="aiKey" type="password" /></div>
+          <div class="os-row" style="margin-top:10px"><button class="os-btn primary" id="aiStart" data-i18n="viva.startAI">Start AI Viva</button></div>
+          <div id="aiTranscript" class="os-control-block os-fader" style="margin-top:12px;max-height:300px;overflow:auto"></div>
+          <div class="os-row" style="margin-top:8px"><input aria-label="Type your answer…" class="os-input" id="aiReply" placeholder="Type your answer…" data-i18n-ph="viva.answerPh"><button class="os-btn success" id="aiSend" data-i18n="viva.send">Send</button></div>
+        </div>
+      </div>
+
+      <div class="os-tabpanel" data-panel="procedure" role="tabpanel" tabindex="0" aria-label="Procedure" id="panel-procedure" aria-labelledby="tab-procedure">
+        <h3>Procedure</h3>
+        <div data-os-procedure></div>
+      </div>
+      <div class="os-tabpanel" data-panel="quiz" role="tabpanel" tabindex="0" aria-label="Quiz" id="panel-quiz" aria-labelledby="tab-quiz">
+        <h3>Quiz</h3>
+        <button class="os-btn sm ghost" type="button" data-os-bookmark-btn aria-pressed="false">☆ Bookmark</button>
+        <div data-os-quiz></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../../../assets/js/storage.js"></script>
+<script src="../../../assets/js/report.js"></script>
+<script src="../../../assets/js/graph.js"></script>
+<script src="../../../assets/js/quiz-bank-1.js"></script>
+<script src="../../../assets/js/quiz-bank-2.js"></script>
+<script src="../../../assets/js/quiz-bank-3.js"></script>
+<script src="../../../assets/js/quiz-bank-4.js"></script>
+<script src="../../../assets/js/quiz-bank-5.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-1.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-2.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-3.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-4.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-5.js"></script>
+<script src="../../../assets/js/quiz-bank.js"></script>
+<script src="../../../assets/js/quiz.js"></script>
+<script src="../../../assets/js/tts.js"></script>
+<script src="../../../assets/js/bookmarks.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/procedure.js"></script>
+<script src="../../../assets/js/procedure-bank.js"></script>
+<script src="../../../assets/js/procedure-bank-hi.js"></script>
+<script>
+/* OS-STORAGE-GUARD: local-only fallback notice. If storage.js failed to load
+   (e.g. this file was copied out of the project tree standalone), show a
+   .os-callout warning with the path fix. No CDN, no downloads -- local only. */
+(function () {
+  function showGuard() {
+    if (window.LabNotebook || window.LabNotebookDB) return;
+    if (document.querySelector("[data-os-storage-guard]")) return;
+    var d = document.createElement("div");
+    d.className = "os-callout warn";
+    d.setAttribute("data-os-storage-guard", "1");
+    d.innerHTML = "<h4>Notebook storage missing</h4><span>" +
+      "Could not load <b>../../../assets/js/storage.js</b>, so Save / Export are disabled. " +
+      "Keep this file inside the project tree (<b>OnlineDeploy/labs/class11/physics/resonance_tube.html</b>) " +
+      "so the relative path resolves -- do not open it as a standalone copy and do not " +
+      "fetch anything from a CDN; this lab is fully local.</span>";
+    var host = document.querySelector(".os-wrap") || document.querySelector(".os-app") || document.body;
+    host.insertBefore(d, host.firstChild);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showGuard);
+  else showGuard();
+})();
+</script>
+<script src="../../../assets/js/ai-examiner.js"></script>
+<script src="../../../assets/js/viva-bank-hi.js"></script>
+<script src="../../../assets/js/viva-hi.js"></script>
+<!-- OS-MOTION: vendored GSAP + guarded motion helper (offline, no CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- OS-MOTION: CDN GSAP above, vendored fallback below (offline copy) -->
+<script src="../../../assets/vendor/gsap/gsap.min.js"></script>
+<script src="../../../assets/js/motion.js"></script>
+<script src="../../../assets/js/perf.js"></script>
+<script>window.scheduleDraw=(window.OSPerf&&window.OSPerf.rafThrottle)?window.OSPerf.rafThrottle(function(){try{if(typeof drawScene==="function")drawScene();}catch(e){}try{if(typeof draw==="function")draw();}catch(e){}try{if(typeof updateReadout==="function")updateReadout();}catch(e){}}):function(){try{if(typeof drawScene==="function")drawScene();}catch(e){}try{if(typeof draw==="function")draw();}catch(e){}try{if(typeof updateReadout==="function")updateReadout();}catch(e){}};</script>
+<script>
+/* ==========================================================================
+   Velocity of Sound — Resonance Tube — deterministic simulation engine (OpenSchool)
+   All numbers are computed in JavaScript from the governing equation.
+   ========================================================================== */
+const CONFIG = { experimentId: "P-C11-04", experimentTitle: "Velocity of Sound — Resonance Tube", subject: "physics", classLevel: 11 };
+const SPEC = {"controls":[{"id":"f","label":"Frequency of tuning fork","min":300,"max":600,"step":5,"value":400,"unit":"Hz","dp":0}],"xControl":"f","xKey":"f","yKey":"l1","xLabel":"Frequency f","xUnit":"Hz","yLabel":"First resonant length l₁","yUnit":"cm","dp":2,"yExpr":"(340/(4*s.f))*100","columns":[{"key":"f","label":"f (Hz)","expr":"s.f","dp":0},{"key":"l1","label":"l₁ (cm)","expr":"(340/(4*s.f))*100","dp":2},{"key":"v","label":"v (m/s)","expr":"4*s.f*(340/(4*s.f))","dp":0}],"readouts":[{"label":"First resonant length","expr":"(340/(4*s.f))*100","dp":2},{"label":"Speed of sound","expr":"4*s.f*(340/(4*s.f))","dp":0}],"resultExpr":"meanOf(rows,'v')","resultDp":0,"faultExpr":"(340/(4*s.f))*100*1.02","faultMsg":"Ignoring the end correction shifts each resonant length, so the computed speed of sound is slightly too high.","scene":{"name":"oscillator","mode":"resonance","label":"Resonance tube"}};
+
+const S = {};
+SPEC.controls.forEach(function (c) { S[c.id] = c.value; });
+let faultOn = false;
+let bubbleT = 0;
+
+function yFunc(expr, st) { return new Function("s", "return (" + expr + ")").call(null, st); }
+function clone(o) { const r = {}; for (const k in o) r[k] = o[k]; return r; }
+function isNum(v) { return typeof v === "number" && isFinite(v); }
+function fmt(v, dp) {
+  if (isNum(v)) return v.toFixed(dp == null ? (SPEC.dp == null ? 3 : SPEC.dp) : dp);
+  if (typeof v === "number") return "—";
+  return String(v);
+}
+function activeY(st) {
+  if (faultOn && SPEC.faultExpr) return yFunc(SPEC.faultExpr, st);
+  return yFunc(SPEC.yExpr, st);
+}
+function meanOf(rows, key) {
+  const v = rows.map(function (r) { return parseFloat(r[key]); }).filter(isFinite);
+  return v.length ? v.reduce(function (a, b) { return a + b; }, 0) / v.length : NaN;
+}
+
+/* ---- Controls ------------------------------------------------------------ */
+function buildControls() {
+  const host = document.getElementById("controls");
+  SPEC.controls.forEach(function (c, idx) {
+    const blk = document.createElement("div");
+    blk.className = "os-control-block";
+    blk.innerHTML =
+      '<div class="os-control-title">' + c.label + "</div>" +
+      '<div class="os-field"><label>' + c.label + ' = <span class="os-mono" id="cv_' + c.id + '">' + fmt(c.value, c.dp) + "</span> " + (c.unit || "") + "</label>" +
+      '<div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="cr_' + c.id + '" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '" value="' + c.value + '" /><span class="os-ticks" aria-hidden="true"></span></div></div>';
+    host.appendChild(blk);
+    const range = blk.querySelector("#cr_" + c.id);
+    range.addEventListener("input", function (e) {
+      S[c.id] = parseFloat(e.target.value);
+      document.getElementById("cv_" + c.id).textContent = fmt(S[c.id], c.dp);
+      scheduleDraw();
+    });
+  });
+}
+
+/* ---- Readout ------------------------------------------------------------- */
+function updateReadout() {
+  const y = activeY(S);
+  const host = document.getElementById("readout");
+  host.innerHTML = "";
+  (SPEC.readouts || []).forEach(function (r) {
+    const d = document.createElement("div");
+    d.className = "row";
+    d.innerHTML = "<span>" + r.label + "</span><b>" + fmt(yFunc(r.expr, S), r.dp) + "</b>";
+    host.appendChild(d);
+  });
+}
+
+/* ---- Canvas -------------------------------------------------------------- */
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+
+/* ---- Apparatus scene library (per-experiment) ---------------------------- */
+const appCanvas = document.getElementById("apparatus");
+const actx = appCanvas.getContext("2d");
+function apBg(c, W, H) {
+  const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#0d1b2a"); g.addColorStop(1, "#0d1b2a");
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  c.strokeStyle = "rgba(79,214,255,.10)"; c.lineWidth = 1;
+  for (let x = 0; x <= W; x += 40) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y <= H; y += 40) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+}
+function apPanel(c, x, y, w, h, title) {
+  c.fillStyle = "#13203a"; c.strokeStyle = "#41598a"; c.lineWidth = 1.5;
+  c.beginPath(); c.rect(x, y, w, h); c.fill(); c.stroke();
+  if (title) apText(c, title, x + w / 2, y - 8, "#9fb0d0", "12px Segoe UI", "center");
+}
+function apText(c, t, x, y, col, font, align) { c.fillStyle = col || "#e8eefc"; c.font = font || "12px Segoe UI"; c.textAlign = align || "left"; c.fillText(t, x, y); }
+function apTube(c, x, y, w, h, col) {
+  c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.beginPath();
+  c.moveTo(x, y); c.lineTo(x, y + h - 14); c.quadraticCurveTo(x, y + h, x + w / 2, y + h);
+  c.quadraticCurveTo(x + w, y + h, x + w, y + h - 14); c.lineTo(x + w, y); c.stroke();
+  if (col) { c.fillStyle = col; c.beginPath(); c.moveTo(x + 3, y + h * 0.4); c.lineTo(x + 3, y + h - 14); c.quadraticCurveTo(x + 3, y + h - 3, x + w / 2, y + h - 3); c.quadraticCurveTo(x + w - 3, y + h - 3, x + w - 3, y + h - 14); c.lineTo(x + w - 3, y + h * 0.4); c.closePath(); c.fill(); }
+}
+function apMeter(c, x, y, label, frac) {
+  c.fillStyle = "#f4f1e3"; c.strokeStyle = "#cfc7a8"; c.lineWidth = 2;
+  c.beginPath(); c.arc(x, y, 24, 0, Math.PI * 2); c.fill(); c.stroke();
+  const f = Math.max(-1, Math.min(1, frac)); const a = (-90 + f * 70) * Math.PI / 180;
+  c.strokeStyle = "#c0392b"; c.lineWidth = 2; c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(a) * 18, y + Math.sin(a) * 18); c.stroke();
+  apText(c, label, x, y + 4, "#1a1a1a", "bold 12px Segoe UI", "center");
+}
+function apFlame(c, x, y, below) {
+  const dir = below ? 1 : -1;
+  c.fillStyle = "rgba(255,170,60,.85)"; c.beginPath();
+  c.moveTo(x, y); c.quadraticCurveTo(x - 10, y - dir * 24, x, y - dir * 40); c.quadraticCurveTo(x + 10, y - dir * 24, x, y); c.fill();
+  c.fillStyle = "rgba(120,200,255,.8)"; c.beginPath();
+  c.moveTo(x, y); c.quadraticCurveTo(x - 5, y - dir * 14, x, y - dir * 24); c.quadraticCurveTo(x + 5, y - dir * 14, x, y); c.fill();
+}
+
+const SCENES = {
+  generic: function (c, W, H) { apBg(c, W, H); apText(c, "Apparatus", W / 2, H / 2, "#41598a", "16px Segoe UI", "center"); },
+
+  balance_cylinder: function (c, W, H, S, y) {
+    apBg(c, W, H);
+    apPanel(c, 70, 34, 160, 180, "Spring balance");
+    c.strokeStyle = "#9fb0d0"; c.lineWidth = 2;
+    for (let i = 0; i < 7; i++) { c.beginPath(); c.moveTo(120, 58 + i * 8); c.lineTo(180, 62 + i * 8); c.stroke(); }
+    c.strokeStyle = "#f4f1e3"; c.strokeRect(120, 58, 60, 118);
+    const f = Math.max(0, Math.min(1, y / 3.0)); const py = 58 + f * 118;
+    c.strokeStyle = "#ffd777"; c.lineWidth = 3; c.beginPath(); c.moveTo(120, py); c.lineTo(184, py); c.stroke();
+    apText(c, "W = " + y.toFixed(2) + " N", 150, 236, "#e8eefc", "13px Segoe UI", "center");
+    apPanel(c, 430, 34, 240, 180, "Measuring cylinder");
+    const cx = 505, cw = 90, top = 60, bot = 196;
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.strokeRect(cx, top, cw, bot - top);
+    const lvl = bot - 24 - Math.max(0, Math.min(1, S.V / 100)) * 110;
+    c.fillStyle = "rgba(60,150,220,.5)"; c.fillRect(cx + 3, lvl, cw - 6, bot - lvl);
+    for (let i = 0; i <= 5; i++) { const yy = top + i * 26; c.strokeStyle = "#9fb0d0"; c.beginPath(); c.moveTo(cx + cw - 14, yy); c.lineTo(cx + cw, yy); c.stroke(); }
+    const bh = Math.max(8, Math.min(1, S.V / 100) * 70);
+    c.fillStyle = "#c9b6ff"; c.fillRect(cx + 30, bot - bh, 30, bh);
+    apText(c, "V = " + S.V + " mL", cx + cw / 2, 236, "#9fb0d0", "12px Segoe UI", "center");
+  },
+
+  circuit: function (c, W, H, S, y, sc) {
+    apBg(c, W, H);
+    apPanel(c, 40, 90, 90, 76, "Cell");
+    apText(c, "2 V", 85, 132, "#7fd5ff", "16px Consolas", "center");
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 2; c.strokeRect(130, 104, 480, 112);
+    const dx = 320, dy = 100;
+    if (sc.device === "diode" || sc.device === "zener") {
+      c.fillStyle = "#0d1b2a"; c.strokeStyle = "#c9b6ff"; c.lineWidth = 2; c.beginPath(); c.arc(dx + 40, dy, 18, 0, Math.PI * 2); c.fill(); c.stroke();
+      c.fillStyle = "#c9b6ff"; c.beginPath(); c.moveTo(dx + 28, dy - 12); c.lineTo(dx + 28, dy + 12); c.lineTo(dx + 46, dy); c.closePath(); c.fill();
+      c.strokeStyle = "#c9b6ff"; c.beginPath(); c.moveTo(dx + 46, dy - 12); c.lineTo(dx + 46, dy + 12); c.stroke();
+      if (sc.device === "zener") { c.beginPath(); c.moveTo(dx + 52, dy - 12); c.lineTo(dx + 42, dy - 12); c.stroke(); }
+      apText(c, sc.device === "zener" ? "Zener diode" : "P-N junction diode", dx + 40, dy + 34, "#c9b6ff", "12px Segoe UI", "center");
+    } else if (sc.device === "combo") {
+      [[dx, "R₁ = " + S.R1.toFixed(1) + " Ω"], [dx + 90, "R₂ = " + S.R2.toFixed(1) + " Ω"]].forEach(function (r) {
+        c.fillStyle = "#1a2947"; c.strokeStyle = "#7fd5ff"; c.lineWidth = 2; c.fillRect(r[0], dy - 14, 70, 28); c.strokeRect(r[0], dy - 14, 70, 28);
+        apText(c, r[1], r[0] + 35, dy + 32, "#7fd5ff", "11px Segoe UI", "center");
+      });
+    } else {
+      c.fillStyle = "#1a2947"; c.strokeStyle = "#7fd5ff"; c.lineWidth = 2; c.fillRect(dx, dy - 14, 100, 28); c.strokeRect(dx, dy - 14, 100, 28);
+      apText(c, "R = " + (S.R != null ? S.R.toFixed(2) : "5.00") + " Ω", dx + 50, dy + 32, "#7fd5ff", "12px Segoe UI", "center");
+    }
+    apMeter(c, 230, 170, "A", y);
+    apMeter(c, 475, 170, "V", (S.V != null ? S.V / 6 : 0.5));
+    apText(c, sc.label || "Circuit", W - 14, H - 12, "#f4f1e3", "11px Segoe UI", "right");
+  },
+
+  optics: function (c, W, H, S, y, sc) {
+    apBg(c, W, H);
+    const ay = 140;
+    c.strokeStyle = "#41598a"; c.lineWidth = 1.5; c.beginPath(); c.moveTo(40, ay); c.lineTo(W - 40, ay); c.stroke();
+    apText(c, "principal axis", W - 44, ay - 8, "#f4f1e3", "11px Segoe UI", "right");
+    const cx = W / 2;
+    if (sc.element === "slab") {
+      c.fillStyle = "rgba(120,180,230,.22)"; c.strokeStyle = "#8fd0ff"; c.lineWidth = 2; c.fillRect(cx - 42, ay - 62, 84, 124); c.strokeRect(cx - 42, ay - 62, 84, 124);
+      apText(c, "glass slab", cx, ay + 84, "#8fd0ff", "12px Segoe UI", "center");
+    } else if (sc.element === "prism") {
+      c.fillStyle = "rgba(150,200,255,.22)"; c.strokeStyle = "#8fd0ff"; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(cx - 50, ay + 50); c.lineTo(cx + 50, ay + 50); c.lineTo(cx, ay - 50); c.closePath(); c.fill(); c.stroke();
+      apText(c, "prism  A = 60°", cx, ay + 84, "#8fd0ff", "12px Segoe UI", "center");
+    } else if (sc.element === "lens") {
+      c.strokeStyle = "#8fd0ff"; c.lineWidth = 2.5; c.beginPath(); c.ellipse(cx, ay, 14, 62, 0, 0, Math.PI * 2); c.stroke();
+      apText(c, "convex lens", cx, ay + 84, "#8fd0ff", "12px Segoe UI", "center");
+    } else {
+      c.strokeStyle = "#8fd0ff"; c.lineWidth = 2.5;
+      if (sc.element === "concave_mirror") { c.beginPath(); c.arc(cx + 190, ay, 190, Math.PI * 0.7, Math.PI * 1.3); c.stroke(); }
+      else { c.beginPath(); c.arc(cx - 190, ay, 190, -Math.PI * 0.3, Math.PI * 0.3); c.stroke(); }
+      apText(c, sc.element === "convex_mirror" ? "convex mirror" : "concave mirror", cx, ay + 84, "#8fd0ff", "12px Segoe UI", "center");
+    }
+    c.strokeStyle = "#ff8a8a"; c.lineWidth = 2.5; c.beginPath(); c.moveTo(120, ay); c.lineTo(120, ay - 42); c.stroke();
+    c.fillStyle = "#ff8a8a"; c.beginPath(); c.moveTo(120, ay - 42); c.lineTo(114, ay - 30); c.lineTo(126, ay - 30); c.closePath(); c.fill();
+    apText(c, "object  u = " + (S.u != null ? S.u : "—") + " cm", 120, ay + 20, "#ff8a8a", "11px Segoe UI", "center");
+    c.strokeStyle = "#4fd6ff"; c.lineWidth = 1.5;
+    c.beginPath(); c.moveTo(120, ay - 42); c.lineTo(cx, ay); c.lineTo(W - 60, ay + 34); c.stroke();
+    c.beginPath(); c.moveTo(120, ay - 42); c.lineTo(W - 60, ay + 34); c.stroke();
+    apText(c, sc.label || "Optics", W - 14, H - 12, "#f4f1e3", "11px Segoe UI", "right");
+  },
+
+  magnet: function (c, W, H, S) {
+    apBg(c, W, H);
+    c.fillStyle = "#c0392b"; c.fillRect(W / 2 - 130, 150, 130, 40);
+    c.fillStyle = "#2f6fb0"; c.fillRect(W / 2, 150, 130, 40);
+    apText(c, "N", W / 2 - 65, 176, "#fff", "bold 18px Segoe UI", "center");
+    apText(c, "S", W / 2 + 65, 176, "#fff", "bold 18px Segoe UI", "center");
+    c.strokeStyle = "#7fd5ff"; c.lineWidth = 1.5;
+    for (let k = 1; k <= 4; k++) {
+      const r = 40 + k * 30;
+      c.beginPath(); c.ellipse(W / 2, 170, r, r * 0.62, 0, Math.PI * 0.15, Math.PI * 0.85); c.stroke();
+      c.beginPath(); c.ellipse(W / 2, 170, r, r * 0.62, 0, Math.PI * 1.15, Math.PI * 1.85); c.stroke();
+    }
+    const rr = 30 + Math.min(1, (20 - S.r) / 18) * 120;
+    c.strokeStyle = "#ffd777"; c.beginPath(); c.arc(W / 2, 170, rr, 0, Math.PI * 2); c.stroke();
+    apText(c, "compass at r = " + S.r + " cm", W / 2, H - 14, "#9fb0d0", "12px Segoe UI", "center");
+  },
+
+  sound_tubes: function (c, W, H, S) {
+    apBg(c, W, H);
+    c.fillStyle = "#9fb0d0"; c.fillRect(W / 2 - 8, 40, 16, 170);
+    const ang = S.i * Math.PI / 180;
+    const L = 170;
+    c.strokeStyle = "#7fd5ff"; c.lineWidth = 8; c.lineCap = "round";
+    c.beginPath(); c.moveTo(W / 2, 205); c.lineTo(W / 2 - Math.sin(ang) * L, 205 - Math.cos(ang) * L); c.stroke();
+    c.strokeStyle = "#4fd6ff";
+    c.beginPath(); c.moveTo(W / 2, 205); c.lineTo(W / 2 + Math.sin(ang) * L, 205 - Math.cos(ang) * L); c.stroke();
+    c.lineCap = "butt";
+    apText(c, "incident  i = " + S.i + "°", 30, 40, "#7fd5ff", "12px Segoe UI", "left");
+    apText(c, "reflected  r = " + S.i + "°", W - 30, 40, "#4fd6ff", "12px Segoe UI", "right");
+    apText(c, "reflecting surface", W / 2, H - 12, "#9fb0d0", "12px Segoe UI", "center");
+  },
+
+  chromatography: function (c, W, H, S) {
+    apBg(c, W, H);
+    apPanel(c, 250, 40, 260, 180, "Chromatography tank");
+    const cx = 340, cw = 80, top = 70, bot = 200;
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 2; c.strokeRect(cx, top, cw, bot - top);
+    const front = bot - 20 - Math.min(1, S.sf / 10) * 130;
+    c.strokeStyle = "#7fd5ff"; c.lineWidth = 2; c.beginPath(); c.moveTo(cx, front); c.lineTo(cx + cw, front); c.stroke();
+    apText(c, "solvent front", cx + cw + 8, front + 4, "#7fd5ff", "11px Segoe UI", "left");
+    const spot = front + 0.65 * (bot - 20 - front);
+    c.fillStyle = "#ffd777"; c.beginPath(); c.arc(cx + cw / 2, spot, 8, 0, Math.PI * 2); c.fill();
+    apText(c, "R_f = 0.65", cx + cw / 2, top - 8, "#ffd777", "12px Segoe UI", "center");
+  },
+
+  beaker_heat: function (c, W, H, S, y, sc) {
+    apBg(c, W, H);
+    const bx = W / 2 - 70, by = 90, bw = 140, bh = 110;
+    c.fillStyle = "rgba(90,170,220,.35)"; c.fillRect(bx, by + 30, bw, bh - 30);
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.beginPath(); c.moveTo(bx, by); c.lineTo(bx, by + bh); c.lineTo(bx + bw, by + bh); c.lineTo(bx + bw, by); c.stroke();
+    apFlame(c, W / 2, by + bh - 2, true);
+    if (sc.mode === "melt" || sc.mode === "rate") {
+      for (let i = 0; i < 6; i++) { const yy = by + bh - 10 - ((bubbleT * 10 + i * 30) % 60); c.strokeStyle = "rgba(200,235,255,.6)"; c.beginPath(); c.arc(bx + 20 + i * 20, yy, 3, 0, Math.PI * 2); c.stroke(); }
+    }
+    if (sc.mode === "dilution") { c.fillStyle = "rgba(120,200,255,.5)"; c.beginPath(); c.moveTo(bx + bw, 60); c.lineTo(bx + bw - 10, 90); c.lineTo(bx + bw + 10, 90); c.closePath(); c.fill(); }
+    const temp = sc.mode === "rate" ? (S.T - 273) : y;
+    const disp = sc.mode === "rate" ? ("T = " + S.T + " K") : sc.mode === "dilution" ? ("pH = " + (isFinite(y) ? y.toFixed(2) : "—")) : sc.mode === "prep" ? ("Yield = " + (isFinite(y) ? y.toFixed(1) : "—") + " %") : ("T = " + (isFinite(temp) ? temp.toFixed(1) : "—") + " °C");
+    apText(c, disp, W / 2, 70, "#ffd777", "13px Segoe UI", "center");
+    apText(c, sc.label || "", W - 14, H - 12, "#f4f1e3", "11px Segoe UI", "right");
+  },
+
+  electrolysis: function (c, W, H, S) {
+    apBg(c, W, H);
+    apPanel(c, 250, 40, 260, 180, "Electrolysis cell");
+    const bx = 270, by = 80, bw = 220, bh = 130;
+    c.fillStyle = "rgba(70,150,210,.4)"; c.fillRect(bx, by, bw, bh);
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.strokeRect(bx, by, bw, bh);
+    [bx + 40, bx + bw - 40].forEach(function (ex, i) {
+      c.strokeStyle = i === 0 ? "#c9b6ff" : "#7fd5ff"; c.lineWidth = 4;
+      c.beginPath(); c.moveTo(ex, by + 10); c.lineTo(ex, by + bh - 10); c.stroke();
+      for (let k = 0; k < 4; k++) { c.strokeStyle = "rgba(200,235,255,.7)"; c.beginPath(); c.arc(ex, by + 30 + k * 22, 3, 0, Math.PI * 2); c.stroke(); }
+    });
+    apText(c, "H₂", bx + 40, by - 10, "#c9b6ff", "bold 13px Segoe UI", "center");
+    apText(c, "O₂", bx + bw - 40, by - 10, "#7fd5ff", "bold 13px Segoe UI", "center");
+    apText(c, "H₂ : O₂ = 2 : 1", W / 2, H - 14, "#9fb0d0", "13px Segoe UI", "center");
+  },
+
+  oscillator: function (c, W, H, S, y, sc) {
+    apBg(c, W, H);
+    if (sc.mode === "spring") {
+      c.strokeStyle = "#9fb0d0"; c.lineWidth = 3; c.beginPath(); c.moveTo(360, 30); c.lineTo(360, 60); c.stroke();
+      c.strokeStyle = "#7fd5ff"; c.lineWidth = 2;
+      for (let i = 0; i < 10; i++) { c.beginPath(); c.moveTo(335, 60 + i * 9); c.lineTo(385, 64 + i * 9); c.stroke(); }
+      const ext = Math.min(90, Math.max(0, S.m / 500 * 90));
+      c.fillStyle = "#ffd777"; c.fillRect(330, 150 + ext, 60, 40);
+      apText(c, "m = " + S.m + " g", 360, 210 + ext, "#ffd777", "12px Segoe UI", "center");
+    } else if (sc.mode === "resonance") {
+      apPanel(c, 300, 40, 160, 190, "Resonance tube");
+      const cx = 340, cw = 80, top = 60, bot = 220;
+      c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.strokeRect(cx, top, cw, bot - top);
+      const lvl = bot - Math.min(1, (340 / (4 * S.f)) * 100 / 90) * 150;
+      c.fillStyle = "rgba(70,150,210,.45)"; c.fillRect(cx + 2, lvl, cw - 4, bot - lvl);
+      c.strokeStyle = "#7fd5ff"; c.lineWidth = 3; c.beginPath(); c.moveTo(cx + cw / 2, 20); c.lineTo(cx + cw / 2, lvl); c.stroke();
+      apText(c, "f = " + S.f + " Hz", cx + cw / 2, 30, "#7fd5ff", "12px Segoe UI", "center");
+    } else {
+      c.strokeStyle = "#9fb0d0"; c.lineWidth = 2; c.beginPath(); c.moveTo(80, 190); c.lineTo(680, 190); c.stroke();
+      c.strokeStyle = "#c9b6ff"; c.lineWidth = 2; c.beginPath(); c.moveTo(120, 150); c.lineTo(640, 150); c.stroke();
+      const bx = 120 + Math.min(1, S.l / 80) * 400;
+      c.fillStyle = "#8a6a24"; c.fillRect(bx, 138, 8, 52);
+      apText(c, "l = " + S.l + " cm", bx + 4, 130, "#c9b6ff", "12px Segoe UI", "center");
+      apText(c, "sonometer wire", W / 2, 70, "#9fb0d0", "12px Segoe UI", "center");
+    }
+    apText(c, sc.label || "Oscillator", W - 14, H - 12, "#f4f1e3", "11px Segoe UI", "right");
+  },
+
+  stokes: function (c, W, H, S, y) {
+    apBg(c, W, H);
+    apPanel(c, 300, 30, 160, 200, "Stokes' apparatus");
+    const cx = 340, cw = 80, top = 55, bot = 215;
+    c.fillStyle = "rgba(190,210,140,.35)"; c.fillRect(cx + 2, top + 20, cw - 4, bot - top - 20);
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.strokeRect(cx, top, cw, bot - top);
+    const pos = 80 + Math.min(1, y / 0.06) * 100;
+    c.fillStyle = "#c9b6ff"; c.beginPath(); c.arc(cx + cw / 2, pos, 7, 0, Math.PI * 2); c.fill();
+    apText(c, "v = " + (isFinite(y) ? y.toFixed(3) : "—") + " cm/s", cx + cw / 2, H - 14, "#9fb0d0", "12px Segoe UI", "center");
+  },
+
+  capillary: function (c, W, H, S, y) {
+    apBg(c, W, H);
+    const bx = 300, by = 130, bw = 180, bh = 90;
+    c.fillStyle = "rgba(70,150,210,.4)"; c.fillRect(bx, by + 20, bw, bh - 20);
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.beginPath(); c.moveTo(bx, by + 20); c.lineTo(bx, by + bh); c.lineTo(bx + bw, by + bh); c.lineTo(bx + bw, by + 20); c.stroke();
+    const cx = bx + 80;
+    c.strokeStyle = "#cfd8e8"; c.lineWidth = 6; c.beginPath(); c.moveTo(cx, 30); c.lineTo(cx, by + 60); c.stroke();
+    const rise = Math.min(90, (y / 150) * 90);
+    c.fillStyle = "#7fd5ff"; c.fillRect(cx - 3, by + 20 - rise, 6, rise + 40);
+    apText(c, "h = " + (isFinite(y) ? y.toFixed(2) : "—") + " cm", cx + 20, 40, "#7fd5ff", "12px Segoe UI", "left");
+    apText(c, "capillary tube", W / 2, H - 14, "#9fb0d0", "12px Segoe UI", "center");
+  },
+
+  youngs: function (c, W, H, S, y) {
+    apBg(c, W, H);
+    c.strokeStyle = "#9fb0d0"; c.lineWidth = 2; c.beginPath(); c.moveTo(150, 30); c.lineTo(150, 60); c.stroke();
+    c.strokeStyle = "#cfd8e8"; c.lineWidth = 2; c.beginPath(); c.moveTo(360, 40); c.lineTo(360, 170); c.stroke();
+    const ext = Math.min(60, (y / 1.2) * 60);
+    c.strokeStyle = "#ffd777"; c.lineWidth = 3; c.beginPath(); c.moveTo(340, 170 + ext); c.lineTo(380, 170 + ext); c.stroke();
+    c.fillStyle = "#ffd777"; c.fillRect(345, 170 + ext, 30, 24);
+    apText(c, "load F = " + S.F + " N", 360, 220 + ext, "#ffd777", "12px Segoe UI", "center");
+    apText(c, "ΔL = " + (isFinite(y) ? y.toFixed(3) : "—") + " mm", 150, 90, "#7fd5ff", "12px Segoe UI", "left");
+  },
+
+  friction: function (c, W, H, S, y) {
+    apBg(c, W, H);
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.beginPath(); c.moveTo(120, 180); c.lineTo(640, 180); c.stroke();
+    for (let x = 120; x < 640; x += 18) { c.beginPath(); c.moveTo(x, 180); c.lineTo(x + 9, 192); c.stroke(); }
+    const bw = 40 + S.N * 3, bx = 300 - bw / 2;
+    c.fillStyle = "#c9b6ff"; c.fillRect(bx, 180 - bw, bw, bw);
+    c.strokeStyle = "#ffd777"; c.lineWidth = 2; c.beginPath(); c.moveTo(bx, 180 - bw / 2); c.lineTo(bx - 110, 180 - bw / 2); c.stroke();
+    apText(c, "N = " + S.N.toFixed(1) + " N", 300, 200, "#c9b6ff", "12px Segoe UI", "center");
+    apText(c, "F = " + y.toFixed(2) + " N", bx - 60, 180 - bw / 2 - 10, "#ffd777", "12px Segoe UI", "center");
+  },
+
+  burette: function (c, W, H, S, y, sc) {
+    apBg(c, W, H);
+    const bx = 150, top = 24, bot = 150;
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.strokeRect(bx, top, 26, bot - top);
+    const fill = bot - Math.min(1, (S.Vb != null ? S.Vb : S.V1) / 40) * (bot - top - 10);
+    c.fillStyle = sc.titrant && sc.titrant.indexOf("KMnO") >= 0 ? "rgba(150,60,160,.75)" : "rgba(120,200,255,.55)";
+    c.fillRect(bx + 3, fill, 20, bot - fill);
+    c.strokeStyle = "#cfd8e8"; c.lineWidth = 2; c.beginPath(); c.moveTo(bx + 13, bot); c.lineTo(bx + 13, bot + 26); c.stroke();
+    apText(c, sc.titrant || "titrant", bx - 10, top + 10, "#9fb0d0", "12px Segoe UI", "left");
+    c.fillStyle = "rgba(120,200,255,.4)"; c.beginPath(); c.moveTo(bx - 40, 210); c.lineTo(bx + 66, 210); c.lineTo(bx + 50, 160); c.lineTo(bx - 24, 160); c.closePath(); c.fill();
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 2; c.stroke();
+    apText(c, "conical flask", bx + 13, 226, "#9fb0d0", "12px Segoe UI", "center");
+    if (sc.ph) { apPanel(c, 470, 60, 170, 120, "pH meter"); apText(c, "pH = " + (isFinite(y) ? y.toFixed(2) : "—"), 555, 128, "#4fd6ff", "22px Segoe UI", "center"); }
+    else { apPanel(c, 470, 70, 170, 100, "Burette reading"); apText(c, "V = " + (S.Vb != null ? S.Vb.toFixed(1) : (S.V1 != null ? S.V1.toFixed(1) : "—")) + " mL", 555, 128, "#4fd6ff", "18px Segoe UI", "center"); }
+  },
+
+  calorimeter: function (c, W, H, S, y) {
+    apBg(c, W, H);
+    apPanel(c, 290, 60, 180, 150, "Calorimeter");
+    const bx = 310, by = 90, bw = 140, bh = 100;
+    c.fillStyle = "rgba(70,150,210,.4)"; c.fillRect(bx, by, bw, bh);
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 3; c.strokeRect(bx, by, bw, bh);
+    c.strokeStyle = "#cfd8e8"; c.lineWidth = 3; c.beginPath(); c.moveTo(bx + bw / 2, by - 34); c.lineTo(bx + bw / 2, by + bh - 20); c.stroke();
+    c.fillStyle = "#c0392b"; c.beginPath(); c.arc(bx + bw / 2, by + bh - 20, 6, 0, Math.PI * 2); c.fill();
+    apText(c, "T = " + (isFinite(y) ? y.toFixed(2) : "—") + " °C", bx + bw / 2, 50, "#ffd777", "14px Segoe UI", "center");
+    apText(c, "ΔH = −57.3 kJ/mol", W / 2, H - 14, "#9fb0d0", "13px Segoe UI", "center");
+  },
+
+  separating_funnel: function (c, W, H, S, y) {
+    apBg(c, W, H);
+    const cx = W / 2 - 100;
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 60, 60); c.lineTo(cx + 60, 60); c.lineTo(cx + 10, 150); c.lineTo(cx + 10, 200); c.lineTo(cx - 10, 200); c.lineTo(cx - 10, 150); c.closePath(); c.stroke();
+    c.fillStyle = "rgba(120,200,255,.45)"; c.fillRect(cx - 20, 110, 30, 60);
+    c.fillStyle = "rgba(255,190,90,.6)"; c.fillRect(cx - 20, 80, 30, 30);
+    apText(c, "organic layer", cx + 70, 95, "#ffd777", "12px Segoe UI", "left");
+    apText(c, "aqueous layer", cx + 70, 145, "#7fd5ff", "12px Segoe UI", "left");
+    apText(c, "K_D = [S]_org / [S]_aq = 4.0", W / 2 + 60, H - 20, "#4fd6ff", "13px Segoe UI", "center");
+  },
+
+  potentiometer: function (c, W, H, S, y, sc) {
+    apBg(c, W, H);
+    c.strokeStyle = "#d9c39a"; c.lineWidth = 4; c.beginPath(); c.moveTo(80, 180); c.lineTo(680, 180); c.stroke();
+    const px = 80 + Math.min(1, (S.l1 != null ? S.l1 : 50) / 100) * 600;
+    c.fillStyle = "#d4a24a"; c.beginPath(); c.moveTo(px, 180); c.lineTo(px - 10, 140); c.lineTo(px + 10, 140); c.closePath(); c.fill();
+    apText(c, "jockey", px, 130, "#ffd777", "12px Segoe UI", "center");
+    apMeter(c, 220, 78, "G", (y / 1.5 - 0.7));
+    apPanel(c, 480, 40, 150, 70, sc.label || "Cell");
+    apText(c, "potentiometer wire", W / 2, 214, "#9fb0d0", "12px Segoe UI", "center");
+  },
+
+  colorimeter: function (c, W, H, S) {
+    apBg(c, W, H);
+    apPanel(c, 240, 70, 280, 120, "Colorimeter");
+    const cx = 300;
+    c.fillStyle = "#ffd777"; c.beginPath(); c.arc(cx, 130, 12, 0, Math.PI * 2); c.fill();
+    apText(c, "source", cx, 100, "#ffd777", "11px Segoe UI", "center");
+    const depth = Math.min(1, S.c / 10);
+    c.fillStyle = "rgba(200,60,120," + (0.2 + depth * 0.7) + ")"; c.fillRect(cx + 40, 105, 40, 50);
+    c.strokeStyle = "#8fa9d6"; c.lineWidth = 2; c.strokeRect(cx + 40, 105, 40, 50);
+    apText(c, "cuvette", cx + 60, 175, "#9fb0d0", "11px Segoe UI", "center");
+    c.fillStyle = "#4fd6ff"; c.beginPath(); c.arc(cx + 150, 130, 12, 0, Math.PI * 2); c.fill();
+    apText(c, "detector", cx + 150, 100, "#4fd6ff", "11px Segoe UI", "center");
+    c.strokeStyle = "#7fd5ff"; c.lineWidth = 2; c.beginPath(); c.moveTo(cx + 12, 130); c.lineTo(cx + 40, 130); c.stroke();
+    c.beginPath(); c.moveTo(cx + 80, 130); c.lineTo(cx + 138, 130); c.stroke();
+    apText(c, "A = " + (0.15 * S.c).toFixed(3), W / 2, 210, "#4fd6ff", "14px Segoe UI", "center");
+  }
+};
+
+function drawScene() {
+  bubbleT += 0.016;
+  const W = appCanvas.width, H = appCanvas.height;
+  const sc = SPEC.scene || { name: "generic" };
+  const fn = SCENES[sc.name] || SCENES.generic;
+  fn(actx, W, H, S, activeY(S), sc, faultOn);
+}
+
+function draw() {
+  const w = canvas.width, h = canvas.height;
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, "#0d1b2a"); grad.addColorStop(1, "#0d1b2a");
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "rgba(79,214,255,.10)"; ctx.lineWidth = 1;
+  for (let gx = 0; gx <= w; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
+  for (let gy = 0; gy <= h; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
+
+  const xc = SPEC.controls.filter(function (c) { return c.id === SPEC.xControl; })[0];
+  const ox = 70, oy = h - 46, aw = w - 130, ah = h - 92;
+  const xmin = xc.min, xmax = xc.max;
+
+  const pts = [];
+  for (let i = 0; i <= 160; i++) {
+    const st = clone(S); st[xc.id] = xmin + (i / 160) * (xmax - xmin);
+    pts.push({ x: st[xc.id], y: activeY(st) });
+  }
+  let ymin = Infinity, ymax = -Infinity;
+  pts.forEach(function (p) { if (isNum(p.y)) { ymin = Math.min(ymin, p.y); ymax = Math.max(ymax, p.y); } });
+  ymin = Math.min(ymin, 0); ymax = Math.max(ymax, 0);
+  if (SPEC.yDomain) { ymin = SPEC.yDomain[0]; ymax = SPEC.yDomain[1]; }
+  if (ymax - ymin < 1e-9) { ymax += 1; ymin -= 1; }
+  const pad = (ymax - ymin) * 0.1; ymax += pad; ymin -= pad;
+
+  function px(x) { return ox + ((x - xmin) / (xmax - xmin)) * aw; }
+  function py(y) { return oy - ((y - ymin) / (ymax - ymin)) * ah; }
+
+  // axes
+  ctx.strokeStyle = "#f4f1e3"; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(ox, oy - ah); ctx.lineTo(ox, oy); ctx.lineTo(ox + aw, oy); ctx.stroke();
+  // zero line
+  if (ymin < 0 && ymax > 0) { ctx.strokeStyle = "rgba(79,214,255,.35)"; ctx.beginPath(); ctx.moveTo(ox, py(0)); ctx.lineTo(ox + aw, py(0)); ctx.stroke(); }
+  // curve
+  ctx.strokeStyle = "#4fd6ff"; ctx.lineWidth = 2.4; ctx.beginPath();
+  let started = false;
+  pts.forEach(function (p) {
+    if (!isNum(p.y)) { started = false; return; }
+    const X = px(p.x), Y = py(p.y);
+    if (!started) { ctx.moveTo(X, Y); started = true; } else ctx.lineTo(X, Y);
+  });
+  ctx.stroke();
+  // marker
+  const cyv = activeY(S);
+  if (isNum(cyv)) {
+    const mx = px(S[xc.id]), my = py(cyv);
+    ctx.fillStyle = "rgba(79,214,255,.25)"; ctx.beginPath(); ctx.arc(mx, my, 14, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#4fd6ff"; ctx.beginPath(); ctx.arc(mx, my, 6, 0, Math.PI * 2); ctx.fill();
+  }
+  // labels
+  ctx.fillStyle = "#9fb0d0"; ctx.font = "13px Segoe UI, sans-serif"; ctx.textAlign = "center";
+  ctx.fillText(SPEC.xLabel + (SPEC.xUnit ? " (" + SPEC.xUnit + ")" : ""), ox + aw / 2, h - 12);
+  ctx.save(); ctx.translate(18, oy - ah / 2); ctx.rotate(-Math.PI / 2);
+  ctx.fillText(SPEC.yLabel + (SPEC.yUnit ? " (" + SPEC.yUnit + ")" : ""), 0, 0); ctx.restore();
+  ctx.textAlign = "left"; ctx.fillStyle = "#7f93b8"; ctx.font = "11px Consolas, monospace";
+  ctx.fillText(ymax.toFixed(2), ox + 4, oy - ah + 12);
+  ctx.fillText(ymin.toFixed(2), ox + 4, oy - 4);
+  ctx.textAlign = "right"; ctx.fillText(xmin, ox, oy + 16);
+  ctx.textAlign = "left"; ctx.fillText(xmax, ox + aw, oy + 16);
+
+  const chip = document.getElementById("liveChip");
+  chip.innerHTML = SPEC.yLabel + ": <b>" + fmt(cyv) + (SPEC.yUnit ? " " + SPEC.yUnit : "") + "</b>";
+}
+
+/* ---- Observation table --------------------------------------------------- */
+const trials = [];
+function renderHead() {
+  const tr = document.getElementById("obsHead");
+  tr.innerHTML = "<th>"+((window.OS_I18N&&window.OS_I18N.t)?window.OS_I18N.t("th.num"):"#")+"</th>";
+  SPEC.columns.forEach(function (c) { tr.innerHTML += "<th>" + c.label + "</th>"; });
+  tr.innerHTML += "<th></th>";
+}
+function renderTable() {
+  const tbody = document.querySelector("#obsTable tbody");
+  tbody.innerHTML = "";
+  trials.forEach(function (t, i) {
+    let html = "<td>" + (i + 1) + "</td>";
+    SPEC.columns.forEach(function (c) { html += '<td class="num">' + fmt(t[c.key], c.dp) + "</td>"; });
+    html += '<td><button class="os-btn danger sm" data-row="' + i + '">×</button></td>';
+    const tr = document.createElement("tr"); tr.innerHTML = html; tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll("button[data-row]").forEach(function (b) {
+    b.addEventListener("click", function () { trials.splice(parseInt(b.dataset.row, 10), 1); renderTable(); });
+  });
+  recompute();
+}
+function recompute() {
+  const n = trials.length;
+  const vals = trials.map(function (t) { return t[SPEC.yKey]; }).filter(function (v) { return typeof v === "number"; });
+  const mean = vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : NaN;
+  let stderr = NaN;
+  if (vals.length > 1) {
+    const variance = vals.reduce(function (a, b) { return a + (b - mean) * (b - mean); }, 0) / (vals.length - 1);
+    stderr = Math.sqrt(variance) / Math.sqrt(vals.length);
+  }
+  document.getElementById("statMean").textContent = isNum(mean) ? mean.toFixed(SPEC.dp == null ? 3 : SPEC.dp) : "—";
+  document.getElementById("statErr").textContent = isNum(stderr) ? stderr.toFixed(4) : "—";
+  let res = "—";
+  try { if (SPEC.resultExpr && n) res = fmt(new Function("rows", "meanOf", "return (" + SPEC.resultExpr + ")")(trials, meanOf), SPEC.resultDp); } catch (e) { res = "—"; }
+  document.getElementById("statResult").textContent = res;
+  document.getElementById("trialCount").textContent = n + " " + ((window.OS_I18N&&window.OS_I18N.t)?window.OS_I18N.t("trials.unit"):"trials");
+}
+
+/* ---- Interaction --------------------------------------------------------- */
+document.getElementById("btnRecord").addEventListener("click", function () {
+  const y = activeY(S);
+  const row = { __y: y };
+  SPEC.columns.forEach(function (c) { row[c.key] = yFunc(c.expr, S); });
+  row[SPEC.yKey] = isNum(row[SPEC.yKey]) ? row[SPEC.yKey] : y;
+  trials.push(row); renderTable();
+});
+document.getElementById("btnReset").addEventListener("click", function () {
+  SPEC.controls.forEach(function (c) { S[c.id] = c.value; const r = document.getElementById("cr_" + c.id); if (r) r.value = c.value; const l = document.getElementById("cv_" + c.id); if (l) l.textContent = fmt(c.value, c.dp); });
+  document.getElementById("faultToggle").checked = false; faultOn = false; setStatus(false);
+  drawScene(); draw(); updateReadout();
+});
+document.getElementById("faultToggle").addEventListener("change", function (e) { faultOn = e.target.checked; setStatus(faultOn); drawScene(); draw(); updateReadout(); });
+document.getElementById("btnClear").addEventListener("click", function () { trials.length = 0; renderTable(); });
+function setStatus(on) {
+  const box = document.getElementById("statusBox");
+  if (on) { box.className = "os-callout danger"; box.innerHTML = "<h4>Fault / error condition</h4><span>" + (SPEC.faultMsg || "A systematic error now affects every reading.") + "</span>"; }
+  else { box.className = "os-callout"; box.innerHTML = "<h4>Procedure</h4><span>Apparatus operating normally. Record several readings across the range, then compute the result.</span>"; }
+}
+
+function flash(msg, ok) { const el = document.getElementById("saveMsg"); el.style.display = "block"; el.className = "os-callout " + (ok === false ? "danger" : "ok"); el.textContent = msg; setTimeout(function () { el.style.display = "none"; }, 4000); }
+document.getElementById("btnSave").addEventListener("click", async function () {
+  if (!trials.length) return flash("Record at least one reading first.", false);
+  await window.LabNotebook.open();
+  const readings = trials.map(function (t) { const o = {}; SPEC.columns.forEach(function (c) { o[c.label] = t[c.key]; }); return o; });
+  await window.LabNotebook.saveTrial(CONFIG.experimentId + "_" + CONFIG.experimentTitle.toUpperCase().replace(/[^A-Z0-9]+/g, "_").slice(0, 24), {
+    class_level: CONFIG.classLevel, subject: CONFIG.subject, title: CONFIG.experimentTitle,
+    readings: readings, results: { "Result": document.getElementById("statResult").textContent, ["Mean " + SPEC.yLabel]: document.getElementById("statMean").textContent }
+  });
+  flash("Trial saved to the IndexedDB notebook.", true);
+});
+document.getElementById("btnExport").addEventListener("click", async function () {
+  await window.LabNotebook.open();
+  const key = CONFIG.experimentId + "_" + CONFIG.experimentTitle.toUpperCase().replace(/[^A-Z0-9]+/g, "_").slice(0, 24);
+  const html = await window.LabNotebook.exportToCBSEFormat(key);
+  const w = window.open("", "_blank"); if (w) { w.document.write(html); w.document.close(); } else flash("Allow pop-ups to export.", false);
+});
+
+/* ---- Tabs ---------------------------------------------------------------- */
+document.getElementById("tabs").addEventListener("click", function (ev) {
+  const tab = ev.target.closest(".os-tab"); if (!tab) return;
+  document.querySelectorAll(".os-tab").forEach(function (t) { t.classList.remove("active"); });
+  document.querySelectorAll(".os-tabpanel").forEach(function (p) { p.classList.remove("active"); });
+  tab.classList.add("active");
+  document.querySelector('.os-tabpanel[data-panel="' + tab.dataset.tab + '"]').classList.add("active");
+});
+
+/* ---- Viva ---------------------------------------------------------------- */
+const VIVA_BANK = [{"question":"Why is the first resonance length more than λ/4?","answer":"Because of the end correction at the open end of the tube."},{"question":"Define least count.","answer":"It is the smallest measurement an instrument can read, equal to one main-scale division divided by the number of vernier/head-scale divisions."},{"question":"State one important precaution for this experiment.","answer":"Ensure the apparatus is free from zero/index error and all readings are taken without parallax."}];
+const examiner = new window.AIExaminer({
+  experimentId: CONFIG.experimentId, experimentTitle: CONFIG.experimentTitle,
+  subject: CONFIG.subject, classLevel: CONFIG.classLevel, vivaBank: VIVA_BANK,
+  getObservations: function () { return trials.map(function (t) { return { x: t[SPEC.xKey], y: t[SPEC.yKey] }; }); },
+  onToken: function (_c, full) { appendAI("examiner", full, true); },
+  onMessage: function (text) { appendAI("examiner", text, false); },
+  onError: function (e) { appendAI("system", "Error: " + (e.message || e), false); }
+});
+function appendAI(role, text, replaceLast) {
+  const host = document.getElementById("aiTranscript");
+  if (replaceLast) {
+    let last = host.querySelector('[data-stream="1"]');
+    if (!last) { last = document.createElement("div"); last.dataset.stream = "1"; last.className = "os-callout"; host.appendChild(last); }
+    last.textContent = text;
+  } else {
+    const d = document.createElement("div"); d.className = "os-callout " + (role === "student" ? "ok" : "warn");
+    d.textContent = (role === "student" ? "You: " : role === "examiner" ? "Examiner: " : "") + text; host.appendChild(d);
+  }
+  host.scrollTop = host.scrollHeight;
+}
+function renderOffline() {
+  const q = examiner.offlineQuestion();
+  const host = document.getElementById("vivaQA"); host.innerHTML = "";
+  document.getElementById("vivaProgress").textContent = "Offline viva: " + examiner.offline.index + " / " + VIVA_BANK.length + " answered — score " + examiner.offline.score + "/" + examiner.offline.total + ".";
+  if (!q) {
+    host.innerHTML = '<div class="os-callout ok"><h4>Viva complete</h4><span>Final score ' + examiner.offline.score + "/" + examiner.offline.total + ".</span></div>";
+    examiner.offline.answers.forEach(function (a) {
+      const d = document.createElement("div"); d.className = "os-viva-item open";
+      d.innerHTML = '<div class="os-viva-q"><span class="qmark">Q</span><span>' + a.question + ' <span class="os-chip">' + a.mark + '/2</span></span></div><div class="os-viva-a"><b>Your answer:</b> ' + (a.answer || "<em>blank</em>") + "<br><b>Model answer:</b> " + a.model + "</div>";
+      host.appendChild(d);
+    });
+    return;
+  }
+  const wrap = document.createElement("div"); wrap.className = "os-callout";
+  wrap.innerHTML = "<h4>Question " + (q.index + 1) + "</h4><span>" + q.question + "</span>";
+  const input = document.createElement("textarea"); input.className = "os-input"; input.rows = 3; input.placeholder = "Type your answer…";
+  const btn = document.createElement("button"); btn.className = "os-btn primary"; btn.textContent = "Submit Answer"; btn.style.marginTop = "8px";
+  btn.addEventListener("click", function () { examiner.offlineSubmit(input.value); renderOffline(); });
+  host.appendChild(wrap); host.appendChild(input); host.appendChild(btn);
+}
+document.getElementById("vivaStart").addEventListener("click", function () { examiner.offlineStart(); renderOffline(); });
+document.getElementById("modeOffline").addEventListener("click", function () { this.classList.add("active"); document.getElementById("modeAI").classList.remove("active"); document.getElementById("offlineViva").style.display = "block"; document.getElementById("aiViva").style.display = "none"; });
+document.getElementById("modeAI").addEventListener("click", function () { this.classList.add("active"); document.getElementById("modeOffline").classList.remove("active"); document.getElementById("offlineViva").style.display = "none"; document.getElementById("aiViva").style.display = "block"; });
+document.getElementById("aiStart").addEventListener("click", function () {
+  examiner.configure({ provider: document.getElementById("aiProvider").value, model: document.getElementById("aiModel").value.trim(), endpoint: document.getElementById("aiEndpoint").value.trim(), apiKey: document.getElementById("aiKey").value.trim() });
+  document.getElementById("aiTranscript").innerHTML = ""; examiner.aiStart();
+});
+document.getElementById("aiSend").addEventListener("click", function () {
+  const box = document.getElementById("aiReply"); if (!box.value.trim()) return;
+  appendAI("student", box.value, false); const t = box.value; box.value = ""; examiner.aiSend(t);
+});
+
+/* ---- Boot ---------------------------------------------------------------- */
+(async function () {
+  buildControls(); renderHead(); renderTable(); drawScene(); draw(); updateReadout();
+  try { await window.LabNotebook.open(); document.getElementById("dbChip").textContent = window.LabNotebook.isFallback() ? "memory" : "IndexedDB"; }
+  catch (e) { document.getElementById("dbChip").textContent = "unavailable"; }
+})();
+</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{var el=document.querySelector("[data-os-quiz]");if(el&&window.OSQuiz&&!el.getAttribute("data-os-quiz-done")){var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:"";window.OSQuiz.renderInto(el,id);}}catch(e){}});</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{if(window.OSProcedure&&window.OSProcedure.initFromBank)window.OSProcedure.initFromBank();}catch(e){}});</script>
+<script>/* OS-REPORT-WIRING: generic printable-report hook (idempotent). */
+window.addEventListener("DOMContentLoaded",function(){
+  var b=document.getElementById("btnReport");
+  if(!b||b.getAttribute("data-os-report-done"))return;
+  b.setAttribute("data-os-report-done","1");
+  b.addEventListener("click",function(){
+    try{
+      if(!window.OSReport){alert("Report helper (assets/js/report.js) failed to load.");return;}
+      var T=(typeof trials!=="undefined"&&Array.isArray(trials))?trials:[];
+      if(!T.length){alert("Record at least one reading first.");return;}
+      var cfg=(typeof CONFIG!=="undefined"&&CONFIG)?CONFIG:{};
+      var th=document.querySelector('[data-panel="theory"]');
+      var mEl=document.getElementById("statMean"),eEl=document.getElementById("statErr"),
+          nEl=document.getElementById("statN"),gEl=document.getElementById("statG");
+      window.OSReport.printLabReport({
+        experimentId:cfg.experimentId||document.title,
+        title:cfg.experimentTitle||document.title,
+        readings:T,
+        stats:{
+          mean:mEl?mEl.textContent:(gEl?gEl.textContent:""),
+          stderr:eEl?eEl.textContent:"",
+          n:nEl?nEl.textContent:T.length
+        },
+        canvasEl:document.getElementById("stage"),
+        theory:th?th.innerText.slice(0,600):""
+      });
+    }catch(err){alert("Report failed: "+(err&&err.message||err));}
+  });
+});</script>
+<script>/* OS-I18N-CHROME: re-render dynamic chrome on language toggle (guarded, idempotent). */
+(function(){function rr(){try{if(typeof renderHead==="function"&&document.getElementById("obsHead"))renderHead();}catch(e){}try{if(typeof renderTable==="function"&&document.getElementById("obsTable"))renderTable();}catch(e){}try{if(typeof recompute==="function")recompute();}catch(e){}}if(window.__osI18nChromeWired)return;window.__osI18nChromeWired=true;document.addEventListener("os-lang-change",rr);})();</script>
+
+<!-- OS-FLUID-SHELL hooks: toast stack + alert routing + proxy/fader/indicator targets.
+     CSS lives in lab-theme.css; motion.js sibling drives animation. Idempotent. -->
+<div class="os-toasts os-toast-stack" id="osToasts" role="status" aria-live="polite" aria-atomic="false"></div>
+<script>/* OS-TOAST: toast system replacing window.alert (guarded, idempotent). */
+(function(){
+  if(window.OSToast&&window.OSToast.__osFluid)return;
+  function host(){
+    var h=document.getElementById("osToasts");
+    if(h)return h;
+    h=document.createElement("div");
+    h.className="os-toasts os-toast-stack";h.id="osToasts";
+    h.setAttribute("role","status");h.setAttribute("aria-live","polite");h.setAttribute("aria-atomic","false");
+    document.body.appendChild(h);return h;
+  }
+  function show(msg,type){
+    try{
+      var h=host();
+      var t=document.createElement("div");
+      var kind=(type==="ok"||type==="success")?"ok":(type==="danger"||type==="error")?"danger":(type==="warn"?"warn":"");
+      t.className=("os-toast "+kind).trim();
+      var dot=document.createElement("span");dot.className="os-toast-dot";dot.setAttribute("aria-hidden","true");
+      var m=document.createElement("span");m.className="os-toast-msg";m.textContent=String(msg==null?"":msg);
+      var x=document.createElement("button");x.className="os-toast-close";x.type="button";x.textContent="×";x.setAttribute("aria-label","Dismiss");
+      x.addEventListener("click",function(){dismiss(t);});
+      t.appendChild(dot);t.appendChild(m);t.appendChild(x);
+      h.appendChild(t);
+      while(h.children.length>4)h.removeChild(h.firstChild);
+      setTimeout(function(){dismiss(t);},4200);
+      return t;
+    }catch(e){try{window.__osNativeAlert(String(msg));}catch(_){}return null;}
+  }
+  function dismiss(t){
+    if(!t||!t.parentNode||t.classList.contains("is-leaving"))return;
+    try{
+      t.classList.add("is-leaving");
+      setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},200);
+    }catch(e){if(t.parentNode)t.parentNode.removeChild(t);}
+  }
+  window.OSToast={show:show,dismiss:dismiss,__osFluid:true};
+  if(!window.__osNativeAlert){
+    try{window.__osNativeAlert=window.alert;}catch(e){}
+    try{window.alert=function(m){return show(m,"warn");};}catch(e){}
+  }
+  /* Sticky action-bar proxies: [data-os-proxy] clicks forward to #id buttons. */
+  document.addEventListener("click",function(ev){
+    var p=ev.target&&ev.target.closest?ev.target.closest("[data-os-proxy]"):null;
+    if(!p)return;
+    var target=document.getElementById(p.getAttribute("data-os-proxy"));
+    if(target&&target!==p&&typeof target.click==="function"){ev.preventDefault();target.click();}
+  });
+})();</script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="../../../assets/js/apparatus3d.js"></script>
+<script>/* OS-VIEW-TOGGLE: 2D/3D hero toggle (per-lab persist) + file:// 3D notice. Idempotent. */
+(function(){
+  if(window.__osViewToggle)return;window.__osViewToggle=true;
+  function labKey(){
+    try{
+      var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:location.pathname;
+      return "os-view:"+id;
+    }catch(e){return "os-view:lab";}
+  }
+  function apply(mode){
+    var show3D=(mode!=="2d");
+    var wrap=document.querySelector("[data-os-3d-wrap]");
+    if(wrap)wrap.style.display=show3D?"":"none";
+    var cvs=document.querySelectorAll("canvas[data-os-2d]");
+    for(var i=0;i<cvs.length;i++){cvs[i].style.display=show3D?"none":"";}
+    var pills=document.querySelectorAll("[data-os-view]");
+    for(var j=0;j<pills.length;j++){
+      var on=pills[j].getAttribute("data-os-view")===(show3D?"3d":"2d");
+      pills[j].classList.toggle("active",on);
+      pills[j].setAttribute("aria-pressed",on?"true":"false");
+    }
+  }
+  document.addEventListener("click",function(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest("[data-os-view]"):null;
+    if(!b)return;
+    var m=b.getAttribute("data-os-view");
+    try{localStorage.setItem(labKey(),m);}catch(e){}
+    apply(m);
+  });
+  function init(){
+    var m=null;
+    try{m=localStorage.getItem(labKey());}catch(e){}
+    apply(m==="2d"?"2d":"3d");
+    try{
+      if(location.protocol==="file:"){
+        var ns=document.querySelectorAll("[data-os-file-notice]");
+        for(var k=0;k<ns.length;k++){ns[k].hidden=false;}
+      }
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+<script>/* OS-ONLINE-SHELL: tab morph indicator + ScrollTrigger reveals + premium flag. Idempotent. */
+(function(){
+  if(window.__osOnlineShell)return;window.__osOnlineShell=true;
+  window.OSOnline={premium:true};
+  /* Tab morph indicator: glide #tabIndicator under the active tab. */
+  function moveIndicator(tabsEl){
+    try{
+      var ind=tabsEl.querySelector(".os-tab-indicator")||document.getElementById("tabIndicator");
+      var tab=tabsEl.querySelector(".os-tab.active");
+      if(!ind||!tab)return;
+      var tr=tabsEl.getBoundingClientRect(),r=tab.getBoundingClientRect();
+      ind.style.left=(r.left-tr.left)+"px";
+      ind.style.width=r.width+"px";
+      tabsEl.setAttribute("data-os-indicator-ready","1");
+    }catch(e){}
+  }
+  function wireTabs(){
+    document.querySelectorAll(".os-tabs").forEach(function(tabsEl){
+      moveIndicator(tabsEl);
+      ["click","keydown"].forEach(function(ev){
+        tabsEl.addEventListener(ev,function(){setTimeout(function(){moveIndicator(tabsEl);},0);});
+      });
+    });
+    window.addEventListener("resize",function(){
+      document.querySelectorAll(".os-tabs").forEach(moveIndicator);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireTabs);
+  else wireTabs();
+  /* ScrollTrigger reveals: one-shot panel entrances (motion.js guards reduced motion). */
+  function reveals(){
+    try{
+      if(!(window.gsap&&window.ScrollTrigger))return;
+      window.gsap.registerPlugin(window.ScrollTrigger);
+      window.gsap.utils.toArray(".os-panel").forEach(function(p){
+        window.gsap.fromTo(p,{y:14,opacity:0},{y:0,opacity:1,duration:.45,ease:"power2.out",
+          scrollTrigger:{trigger:p,start:"top 92%",once:true},clearProps:"transform,opacity"});
+      });
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",reveals);
+  else reveals();
+})();</script>
+</body>
+</html>

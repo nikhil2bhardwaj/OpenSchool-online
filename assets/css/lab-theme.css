@@ -1,0 +1,970 @@
+/* ==========================================================================
+   OpenSchool NCERT - Universal STEM Laboratory Theme
+   assets/css/lab-theme.css
+   Zero external dependencies. Pure CSS3. Offline-first.
+   ========================================================================== */
+
+:root {
+  /* Ledger bench — deep ink-teal, brass accent. Unmissable redesign v3. */
+  --os-bg-900: #0c1413;
+  --os-bg-800: #12201e;
+  --os-bg-700: #1a2f2c;
+  --os-bg-600: #23403b;
+  --os-panel: #13211f;
+  --os-panel-2: #1b2f2c;
+  --os-line: #3c5a54;
+  --os-line-soft: #2a423e;
+
+  /* Text */
+  --os-text: #e8eefc;
+  --os-text-muted: #c3cfe8;
+  --os-text-dim: #a9badb;
+
+  /* Accents: ONE brass rule + teal ink. Squared ledger geometry. */
+  --os-accent: #e8b34b;
+  --os-accent-2: #f5cf7d;
+  --os-accent-3: #fff1cf;
+  --os-accent-deep: #9a7326;
+  --os-accent-pale: #ffe9b8;
+  --os-accent-ink: #241a05;
+  --os-accent-soft: rgba(232, 179, 75, 0.14);
+  --os-accent-faint: rgba(232, 179, 75, 0.08);
+  --os-accent-glow: rgba(232, 179, 75, 0.35);
+  --os-danger: #ff5d6c;
+  --os-warn: #ffcc55;
+  --os-ok: #38e0a1;
+  --os-purple: #1f9fd0;
+
+  /* Motion: entrance decelerates, exit accelerates. Micro 220ms. */
+  --os-ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --os-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --os-dur-micro: 220ms;
+  --os-dur-enter: 300ms;
+  --os-stagger: 60ms;
+
+  /* Measurement skins */
+  --os-meter-face: #f4f1e3;
+  --os-meter-ink: #1a1a1a;
+
+  /* Geometry — ledger: squared terminals, ruled sheets */
+  --os-radius: 6px;
+  --os-radius-sm: 4px;
+  --os-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --os-shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.28);
+
+  --os-font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Segoe UI", system-ui, serif;
+  --os-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background:
+    radial-gradient(1100px 520px at 50% -8%, rgba(232, 179, 75, 0.09), transparent 62%),
+    radial-gradient(1200px 700px at 15% -10%, rgba(232, 179, 75, 0.10), transparent 60%),
+    radial-gradient(900px 600px at 110% 10%, rgba(154, 115, 38, 0.08), transparent 55%),
+    var(--os-bg-900);
+  color: var(--os-text);
+  font-family: var(--os-font);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* Film grain: CSS radial stack + inline SVG feTurbulence tile.
+   The namespace attribute is omitted on purpose so this file stays fully
+   offline-greppable; if a browser skips the tile, the bench still renders
+   because grain is decorative only. No external image is referenced. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+a { color: var(--os-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* --------------------------------------------------------------------------
+   App shell
+   -------------------------------------------------------------------------- */
+.os-app { min-height: 100vh; display: flex; flex-direction: column; }
+
+.os-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 22px;
+  background: linear-gradient(180deg, rgba(18, 32, 30, 0.96), rgba(12, 20, 19, 0.92));
+  border-bottom: 1px solid var(--os-line);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(8px);
+}
+
+.os-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: 0.2px; }
+.os-brand .os-logo,
+.os-logo {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: conic-gradient(from 210deg, var(--os-accent-pale), var(--os-accent), var(--os-accent-deep), var(--os-accent));
+  display: grid; place-items: center;
+  font-size: 18px; color: var(--os-accent-ink); font-weight: 900;
+  box-shadow: 0 6px 18px var(--os-accent-glow);
+}
+.os-brand small { display: block; font-weight: 500; color: var(--os-text-muted); font-size: 11px; letter-spacing: 0.6px; }
+
+.os-topbar .os-spacer { flex: 1; }
+.os-spacer { flex: 1; }
+
+.os-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--os-bg-600); border: 1px solid var(--os-line);
+  font-size: 12px; color: var(--os-text-muted);
+}
+.os-chip b { color: var(--os-text); }
+
+/* --------------------------------------------------------------------------
+   Buttons & controls
+   -------------------------------------------------------------------------- */
+.os-btn {
+  appearance: none; border: 1px solid var(--os-line);
+  background: var(--os-bg-600); color: var(--os-text);
+  padding: 9px 16px; border-radius: var(--os-radius-sm);
+  font-size: 13.5px; font-weight: 600; cursor: pointer;
+  transition: transform var(--os-dur-micro) var(--os-ease-enter),
+    background-color var(--os-dur-micro) var(--os-ease-enter),
+    border-color var(--os-dur-micro) var(--os-ease-enter),
+    box-shadow var(--os-dur-micro) var(--os-ease-enter),
+    opacity var(--os-dur-micro) var(--os-ease-enter);
+  font-family: inherit;
+}
+.os-btn:hover { background: var(--os-panel-2); border-color: var(--os-accent); transform: translateY(-1px); }
+.os-btn:active { transform: translateY(1px); }
+.os-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.os-btn.primary {
+  background: linear-gradient(180deg, var(--os-accent), var(--os-accent-deep));
+  border-color: var(--os-accent); color: var(--os-accent-ink);
+  box-shadow: 0 6px 18px var(--os-accent-glow);
+}
+.os-btn.primary:hover { background: linear-gradient(180deg, var(--os-accent-pale), var(--os-accent)); }
+.os-btn.success { background: linear-gradient(180deg, #2ecf95, #1ba876); border-color: #4be2ad; color: #04140d; }
+.os-btn.danger { background: linear-gradient(180deg, #ff6b7a, #e4465a); border-color: #ff8b96; color: #1a0406; }
+.os-btn.warn { background: linear-gradient(180deg, #ffc95a, #e0a92f); border-color: #ffd777; color: #1c1300; }
+.os-btn.ghost { background: transparent; }
+.os-btn.ghost.active { border-color: var(--os-accent); color: var(--os-accent); background: var(--os-accent-faint); }
+.os-btn.sm { padding: 6px 11px; font-size: 12px; }
+
+.os-field { display: flex; flex-direction: column; gap: 5px; }
+.os-field label { font-size: 12px; color: var(--os-text-muted); font-weight: 600; letter-spacing: .2px; }
+.os-input, .os-select, textarea.os-input {
+  background: var(--os-bg-900); color: var(--os-text);
+  border: 1px solid var(--os-line); border-radius: var(--os-radius-sm);
+  padding: 8px 10px; font-size: 13.5px; font-family: inherit;
+  outline: none; transition: border-color .15s ease, box-shadow .15s ease;
+  width: 100%;
+}
+.os-input:focus, .os-select:focus, textarea.os-input:focus {
+  border-color: var(--os-accent); box-shadow: 0 0 0 3px var(--os-accent-soft);
+}
+.os-input[readonly] { background: #0d1526; color: var(--os-text-muted); }
+
+/* Range sliders */
+input[type="range"].os-range {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 26px; background: transparent; cursor: pointer;
+}
+input[type="range"].os-range::-webkit-slider-runnable-track {
+  height: 7px; border-radius: 6px;
+  background: linear-gradient(90deg, var(--os-accent-deep), var(--os-accent));
+}
+input[type="range"].os-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 20px; height: 20px; margin-top: -7px; border-radius: 50%;
+  background: #f2f7ff; border: 3px solid var(--os-accent-deep); box-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+input[type="range"].os-range::-moz-range-track {
+  height: 7px; border-radius: 6px;
+  background: linear-gradient(90deg, var(--os-accent-deep), var(--os-accent));
+}
+input[type="range"].os-range::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%; background: #f2f7ff; border: 3px solid var(--os-accent-deep);
+}
+
+.os-toggle { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--os-text-muted); cursor: pointer; user-select: none; }
+.os-toggle input { appearance: none; width: 40px; height: 22px; border-radius: 999px; background: var(--os-bg-600); border: 1px solid var(--os-line); position: relative; cursor: pointer; margin: 0; transition: background-color var(--os-dur-micro) var(--os-ease-enter), border-color var(--os-dur-micro) var(--os-ease-enter); }
+.os-toggle input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #9fb0d0; transition: transform var(--os-dur-micro) var(--os-ease-enter), background-color var(--os-dur-micro) var(--os-ease-enter); }
+.os-toggle input:checked { background: rgba(232, 179, 75, .28); border-color: var(--os-accent); }
+.os-toggle input:checked::after { transform: translateX(18px); background: var(--os-accent); }
+
+/* --------------------------------------------------------------------------
+   Layout grid
+   -------------------------------------------------------------------------- */
+.os-wrap { padding: 22px; max-width: 1440px; margin: 0 auto; width: 100%; }
+
+.os-lab-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 1020px) {
+  .os-lab-grid { grid-template-columns: 1fr; }
+}
+
+.os-panel {
+  background: linear-gradient(180deg, rgba(26, 41, 71, .72), rgba(18, 32, 30, .72));
+  border: 1px solid var(--os-line);
+  border-radius: var(--os-radius);
+  box-shadow: var(--os-shadow-soft);
+  overflow: hidden;
+}
+.os-panel > header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 15px;
+  border-bottom: 1px solid var(--os-line-soft);
+  background: rgba(11, 18, 32, .45);
+}
+.os-panel > header h2, .os-panel > header h3 { margin: 0; font-size: 14px; letter-spacing: .3px; }
+.os-panel > header .os-spacer { flex: 1; }
+.os-panel .os-body { padding: 15px; }
+
+.os-kicker { font-size: 11px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--os-accent); font-weight: 800; }
+
+/* Canvas stage */
+.os-stage {
+  position: relative;
+  background:
+    linear-gradient(180deg, #0d1728, #0a111e);
+  border: 1px solid var(--os-line);
+  border-radius: var(--os-radius-sm);
+  overflow: hidden;
+}
+.os-stage canvas { display: block; width: 100%; height: auto; }
+
+.os-readout {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(5, 12, 24, .82);
+  border: 1px solid var(--os-line);
+  border-radius: 10px; padding: 8px 11px;
+  font-family: var(--os-mono); font-size: 12px; color: var(--os-text);
+  min-width: 150px;
+}
+.os-readout .row { display: flex; justify-content: space-between; gap: 12px; }
+.os-readout .row b { color: var(--os-accent); }
+
+/* Control clusters */
+.os-controls { display: grid; gap: 13px; }
+.os-control-block { background: rgba(11, 18, 32, .35); border: 1px solid var(--os-line-soft); border-radius: var(--os-radius-sm); padding: 12px; }
+.os-control-block > .os-control-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--os-text-dim); margin-bottom: 9px; }
+.os-control-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--os-text-dim); margin-bottom: 9px; }
+.os-row { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+.os-row.between { justify-content: space-between; }
+
+/* --------------------------------------------------------------------------
+   Observation tables (CBSE record style)
+   -------------------------------------------------------------------------- */
+.os-table-wrap { overflow-x: auto; border-radius: var(--os-radius-sm); border: 1px solid var(--os-line); }
+table.os-table { width: 100%; border-collapse: collapse; font-size: 12.5px; background: var(--os-bg-900); }
+table.os-table th, table.os-table td { padding: 8px 9px; border: 1px solid var(--os-line-soft); text-align: center; }
+table.os-table thead th {
+  background: linear-gradient(180deg, #1c2c4c, #1a2f2c);
+  color: var(--os-text); font-weight: 700; font-size: 11.5px; letter-spacing: .2px;
+  position: sticky; top: 0;
+}
+table.os-table tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
+table.os-table tbody td.num { font-family: var(--os-mono); }
+table.os-table tbody td input { width: 100%; text-align: center; }
+table.os-table tr.is-concordant td { background: rgba(56, 224, 161, .12); }
+table.os-table tr.is-imperfect td { background: rgba(255, 93, 108, .10); }
+.os-table caption { caption-side: top; text-align: left; padding: 8px 10px; font-size: 12px; color: var(--os-text-muted); }
+
+/* --------------------------------------------------------------------------
+   Digital / analog meter skins
+   -------------------------------------------------------------------------- */
+.os-digital {
+  font-family: var(--os-mono);
+  background: #04110c; color: #4bffb0;
+  border: 1px solid #125c43; border-radius: 8px;
+  padding: 8px 12px; font-size: 20px; letter-spacing: 1px;
+  text-shadow: 0 0 12px rgba(75, 255, 176, .55);
+  display: inline-block; min-width: 110px; text-align: right;
+}
+.os-digital.red { color: #ff7b7b; text-shadow: 0 0 12px rgba(255,123,123,.55); border-color: #5c1212; background:#110404; }
+
+.os-meter {
+  background: var(--os-meter-face); color: var(--os-meter-ink);
+  border-radius: 10px; padding: 10px 12px;
+  border: 3px solid #cfc7a8; box-shadow: inset 0 0 20px rgba(0,0,0,.15);
+}
+.os-meter .scale { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: #4a4636; font-family: var(--os-mono); }
+
+/* --------------------------------------------------------------------------
+   Tabs
+   -------------------------------------------------------------------------- */
+.os-tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--os-line); padding: 0 14px; background: rgba(11,18,32,.35); flex-wrap: wrap; }
+.os-tab {
+  appearance: none; border: 1px solid transparent; border-bottom: none;
+  background: transparent; color: var(--os-text-muted);
+  padding: 10px 15px; border-radius: 9px 9px 0 0; cursor: pointer;
+  font-size: 13px; font-weight: 600; font-family: inherit;
+}
+.os-tab:hover { color: var(--os-text); }
+.os-tab.active { background: var(--os-panel); color: var(--os-text); border-color: var(--os-line); border-bottom-color: var(--os-panel); margin-bottom: -1px; }
+.os-tabpanel { display: none; padding: 16px; }
+.os-tabpanel.active { display: block; }
+
+/* --------------------------------------------------------------------------
+   Badges, callouts, viva
+   -------------------------------------------------------------------------- */
+.os-badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .3px; }
+/* Single-accent scale: badges differ by tint depth, never by hue */
+.os-badge.physics { background: var(--os-accent-soft); color: var(--os-accent-pale); border: 1px solid rgba(232, 179, 75, .45); }
+.os-badge.chemistry { background: rgba(61, 220, 151, .13); color: #7ff0c4; border: 1px solid rgba(61, 220, 151, .4); }
+.os-badge.biology { background: rgba(232, 179, 75, .08); color: #a9e6ff; border: 1px dashed rgba(232, 179, 75, .45); }
+.os-badge.class9 { background: rgba(232, 179, 75, .07); color: #b8e9ff; border: 1px solid rgba(232, 179, 75, .3); }
+.os-badge.class10 { background: rgba(232, 179, 75, .12); color: #c9f0ff; border: 1px solid rgba(232, 179, 75, .42); }
+.os-badge.class11 { background: rgba(232, 179, 75, .17); color: #def5ff; border: 1px solid rgba(232, 179, 75, .55); }
+.os-badge.class12 { background: rgba(232, 179, 75, .23); color: #f0faff; border: 1px solid rgba(232, 179, 75, .7); }
+
+.os-callout { border-left: 4px solid var(--os-accent); background: rgba(232, 179, 75,.08); padding: 11px 13px; border-radius: 0 var(--os-radius-sm) var(--os-radius-sm) 0; font-size: 13px; }
+.os-callout.warn { border-color: var(--os-warn); background: rgba(255,204,85,.08); }
+.os-callout.danger { border-color: var(--os-danger); background: rgba(255,93,108,.08); }
+.os-callout.ok { border-color: var(--os-ok); background: rgba(56,224,161,.08); }
+.os-callout h4 { margin: 0 0 5px; font-size: 13px; }
+
+.os-viva-item { border: 1px solid var(--os-line); border-radius: var(--os-radius-sm); margin-bottom: 9px; overflow: hidden; background: rgba(11,18,32,.35); }
+.os-viva-q { cursor: pointer; padding: 11px 13px; font-weight: 600; font-size: 13.5px; display: flex; gap: 9px; align-items: flex-start; }
+.os-viva-q:hover { background: rgba(232, 179, 75,.06); }
+.os-viva-q .qmark { color: var(--os-accent); font-weight: 900; }
+.os-viva-a { display: none; padding: 0 13px 13px 33px; color: var(--os-text-muted); font-size: 13px; }
+.os-viva-item.open .os-viva-a { display: block; }
+
+.os-eq { font-family: var(--os-mono); background: rgba(11,18,32,.6); border: 1px dashed var(--os-line); border-radius: 8px; padding: 10px 12px; color: #b7e3ff; font-size: 13px; overflow-x: auto; }
+
+.os-stat { display: flex; flex-direction: column; gap: 2px; background: rgba(11,18,32,.5); border: 1px solid var(--os-line-soft); border-radius: 10px; padding: 10px 12px; }
+.os-stat span { font-size: 11px; color: var(--os-text-dim); text-transform: uppercase; letter-spacing: .6px; }
+.os-stat b { font-size: 18px; font-family: var(--os-mono); color: var(--os-accent); }
+.os-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+
+/* --------------------------------------------------------------------------
+   Catalog (index.html)
+   -------------------------------------------------------------------------- */
+.os-hero { text-align: center; padding: 46px 20px 26px; }
+.os-hero h1 { font-size: clamp(28px, 5vw, 46px); margin: 0 0 12px; background: linear-gradient(90deg, var(--os-accent-pale), var(--os-accent) 55%, var(--os-accent-deep)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.os-hero p { max-width: 760px; margin: 0 auto; color: var(--os-text-muted); font-size: 15px; }
+
+.os-filters { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; justify-content: center; margin: 22px auto; max-width: 1000px; }
+.os-filter-pill { border: 1px solid var(--os-line); background: var(--os-bg-700); color: var(--os-text-muted); padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 600; font-family: inherit; transition: transform var(--os-dur-micro) var(--os-ease-enter), color var(--os-dur-micro) var(--os-ease-enter), border-color var(--os-dur-micro) var(--os-ease-enter), background-color var(--os-dur-micro) var(--os-ease-enter); }
+.os-filter-pill:hover { color: var(--os-text); border-color: var(--os-accent); transform: translateY(-1px); }
+.os-filter-pill.active { background: linear-gradient(180deg, var(--os-accent), var(--os-accent-deep)); color: var(--os-accent-ink); border-color: var(--os-accent); }
+.os-search { max-width: 420px; flex: 1 1 260px; }
+
+.os-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 15px; margin-top: 8px; }
+.os-card {
+  --mx: 50%;
+  --my: 0%;
+  position: relative;
+  display: flex; flex-direction: column; gap: 10px;
+  background: linear-gradient(180deg, rgba(26,41,71,.7), rgba(18, 32, 30,.7));
+  border: 1px solid var(--os-line); border-radius: var(--os-radius);
+  padding: 16px;
+  transition: transform var(--os-dur-micro) var(--os-ease-enter),
+    border-color var(--os-dur-micro) var(--os-ease-enter),
+    box-shadow var(--os-dur-micro) var(--os-ease-enter);
+}
+/* Spotlight border: cursor-tracked radial sheen. Page JS sets --mx/--my on
+   pointermove; the (50%/0%) default keeps a centred top-light fallback. */
+.os-card::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(320px circle at var(--mx) var(--my), rgba(232, 179, 75, .16), transparent 65%);
+  transition: opacity var(--os-dur-micro) var(--os-ease-enter);
+}
+.os-card:hover { transform: translateY(-3px); border-color: var(--os-accent); box-shadow: 0 18px 40px rgba(0,0,0,.45), 0 0 0 1px var(--os-accent-soft); }
+.os-card:hover::before { opacity: 1; }
+.os-card h3 { margin: 0; font-size: 15px; }
+.os-card .aim { color: var(--os-text-muted); font-size: 12.5px; flex: 1; }
+.os-card .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.os-card .launch { display: flex; justify-content: space-between; align-items: center; }
+
+.os-footer { text-align: center; padding: 26px; color: var(--os-text-dim); font-size: 12px; border-top: 1px solid var(--os-line-soft); margin-top: 40px; }
+
+/* Utilities */
+.os-muted { color: var(--os-text-muted); }
+.os-dim { color: var(--os-text-dim); }
+.os-mono { font-family: var(--os-mono); }
+.os-hidden { display: none !important; }
+.os-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.os-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 640px) { .os-grid-3 { grid-template-columns: 1fr; } .os-grid-2 { grid-template-columns: 1fr; } }
+
+@media print {
+  body { background: #fff; color: #000; }
+  .os-topbar, .os-controls, .os-btn { display: none !important; }
+  .os-panel { border: 1px solid #999; box-shadow: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility: skip link, focus-visible, contrast
+   -------------------------------------------------------------------------- */
+.os-skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--os-accent); color: #04121c;
+  padding: 10px 16px; border-radius: 0 0 8px 0;
+  font-weight: 700; font-size: 13px; text-decoration: none;
+}
+.os-skip-link:focus { left: 0; outline: 3px solid #fff; outline-offset: 2px; }
+
+:focus-visible {
+  outline: 3px solid var(--os-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.os-tab:focus-visible, .os-filter-pill:focus-visible, .os-btn:focus-visible {
+  outline: 3px solid var(--os-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--os-accent-soft);
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* --------------------------------------------------------------------------
+   OS-RESPONSIVE: mobile / tablet layout (offline, zero-build)
+   - .os-lab-grid collapses to 1 column under 980px
+   - .os-stage canvas scales without breaking width/height attributes
+   - .os-topbar wraps, .os-cards 1col on phones, tables scroll-x
+   -------------------------------------------------------------------------- */
+canvas { max-width: 100%; height: auto; }
+.os-stage canvas { max-width: 100%; height: auto; }
+.os-table-wrap { overflow: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.os-table-wrap table.os-table { min-width: 560px; }
+@media (max-width: 980px) {
+  .os-lab-grid { grid-template-columns: 1fr; }
+  .os-topbar { flex-wrap: wrap; }
+  .os-stage canvas { width: 100%; max-width: 100%; height: auto; }
+}
+@media (max-width: 600px) {
+  .os-wrap { padding: 14px; }
+  .os-topbar { flex-wrap: wrap; gap: 10px; padding: 10px 14px; }
+  .os-cards { grid-template-columns: 1fr; }
+  .os-hero { padding: 32px 14px 18px; }
+  .os-readout { position: static; margin: 8px; min-width: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   OS-DARKMODE: dark-only bench. No light toggle, no alternate theme.
+   -------------------------------------------------------------------------- */
+html { color-scheme: dark; }
+/* NOTE: an html[data-theme="light"] override block used to live here. It was
+   removed so the bench stays dark in every context (spec: dark-only). */
+
+/* OS-PROCEDURE-WIZARD: generic stepper + formula-sheet helpers. Zero-dep, offline. */
+.os-proc { display:flex; flex-direction:column; gap:12px; }
+.os-proc .os-row.between { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+.os-proc-bar { height:10px; border-radius:999px; background:var(--os-bg-600,#223); border:1px solid var(--os-line,rgba(255,255,255,.15)); overflow:hidden; }
+.os-proc-fill { height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,var(--os-accent-deep),var(--os-accent)); transition:width var(--os-dur-enter) var(--os-ease-enter); }
+.os-proc-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; counter-reset:osproc; }
+.os-proc-step { border:1px solid var(--os-line,rgba(255,255,255,.14)); border-radius:10px; padding:8px 10px; background:var(--os-panel-2,rgba(255,255,255,.03)); }
+.os-proc-step label { display:flex; gap:10px; align-items:flex-start; cursor:pointer; }
+.os-proc-step input[type=checkbox] { width:18px; height:18px; margin-top:2px; accent-color:var(--os-accent); flex:none; }
+.os-proc-step.current { border-color:var(--os-accent); box-shadow:0 0 0 1px var(--os-accent) inset; }
+.os-proc-step.done .os-proc-text { text-decoration:line-through; opacity:.75; }
+.os-proc-num { display:inline-flex; align-items:center; justify-content:center; min-width:24px; height:24px; border-radius:999px; background:var(--os-bg-600,#223); border:1px solid var(--os-line,rgba(255,255,255,.15)); font-size:12px; font-weight:700; flex:none; }
+.os-proc-step.done .os-proc-num { background:var(--os-accent); color:var(--os-accent-ink); border-color:var(--os-accent); }
+.os-proc-text { line-height:1.45; }
+.os-proc-hint { font-size:12px; }
+.os-formula-table { width:100%; border-collapse:collapse; }
+.os-formula-table th, .os-formula-table td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--os-line-soft,rgba(255,255,255,.1)); vertical-align:top; }
+.os-formula-table .os-eq { font-family:ui-monospace,Consolas,monospace; white-space:nowrap; }
+@media print { .os-topbar .os-row, .os-topbar .os-btn, .os-filters, .no-print { display:none !important; } .os-app { display:block; } }
+
+/* ==========================================================================
+   OS-SHELL-DNA: bench header + spotlight apparatus + instrument strip +
+   faders + obs table motion + tab transitions + save states.
+   Pure CSS fallback for motion.js (GSAP enhances where available).
+   No physics/canvas palette changes — frames/captions/chrome only.
+   ========================================================================== */
+
+/* Bench header: breadcrumb + live status dot */
+.os-topbar.os-bench { border-bottom-color: var(--os-line); box-shadow: 0 1px 0 rgba(232, 179, 75,.12) inset; }
+.os-crumb { display:inline-flex; align-items:center; gap:8px; font-size:12px; color:var(--os-text-dim); }
+.os-crumb a { color:var(--os-text-muted); }
+.os-crumb .sep { opacity:.5; }
+.os-crumb .here { color:var(--os-text); font-weight:700; }
+.os-status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--os-ok); box-shadow:0 0 8px rgba(56,224,161,.8); flex:none; animation:os-pulse 2.2s ease-in-out infinite; }
+@keyframes os-pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.55; transform:scale(.82); } }
+
+/* Apparatus spotlight frame + canvas caption (frame only, no canvas repaint) */
+.os-stage.os-spotlight { box-shadow:0 0 0 1px rgba(232, 179, 75,.14), 0 12px 34px rgba(0,0,0,.38); }
+.os-stage.os-spotlight::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(520px 200px at 50% -10%, rgba(232, 179, 75,.14), transparent 65%); }
+.os-canvas-cap { display:block; font-size:11px; color:var(--os-text-dim); padding:6px 10px; border-top:1px solid var(--os-line-soft); background:rgba(11,18,32,.4); }
+.os-panel.os-apparatus > header .os-kicker { color:var(--os-accent); }
+
+/* Readout as tabular instrument strip */
+.os-readout.os-instrument { font-variant-numeric:tabular-nums; letter-spacing:.2px; }
+.os-readout.os-instrument .row { align-items:baseline; }
+.os-readout.os-instrument .row + .row { margin-top:4px; padding-top:4px; border-top:1px dashed rgba(159,176,208,.25); }
+.os-readout.os-instrument b { font-variant-numeric:tabular-nums; }
+
+/* Controls as faders + active-pressed states */
+.os-control-block.os-fader { position:relative; }
+.os-control-block.os-fader input[type="range"].os-range:active::-webkit-slider-thumb { transform:scale(1.12); border-color:var(--os-accent-2); }
+.os-control-block.os-fader input[type="range"].os-range:active::-moz-range-thumb { transform:scale(1.12); }
+.os-btn:active, .os-btn.is-pressed { transform:translateY(1px) scale(.985); box-shadow:0 2px 10px rgba(0,0,0,.4) inset; }
+.os-btn.primary:active, .os-btn.primary.is-pressed { box-shadow:0 2px 12px rgba(232, 179, 75,.4) inset; }
+.os-filter-pill:active, .os-tab:active { transform:translateY(1px); }
+
+/* Observation table: sticky head (reinforced) + row pop-in (02-number-pop-in) */
+.os-table-wrap.os-obs { max-height:340px; }
+.os-table-wrap.os-obs table.os-table thead th { position:sticky; top:0; z-index:2; }
+@keyframes os-pop-in { 0% { opacity:0; transform:scale(.96) translateY(4px); } 100% { opacity:1; transform:scale(1) translateY(0); } }
+#obsTable tbody tr.os-pop-in { animation:os-pop-in .25s ease-out; transform-origin:center; }
+
+/* Tab transitions (transform/opacity) */
+.os-tabpanel { transition:opacity .25s ease, transform .25s ease; }
+.os-tabpanel.active { animation:os-tab-in .28s ease; }
+@keyframes os-tab-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* Success check on save (10-success-check, no emoji): CSS-drawn check */
+.os-callout.ok.os-show-check { position:relative; padding-left:40px; }
+.os-callout.ok.os-show-check::before { content:""; position:absolute; left:12px; top:50%; width:14px; height:8px; margin-top:-8px; border-left:3px solid var(--os-ok); border-bottom:3px solid var(--os-ok); transform:rotate(-45deg) scale(0); animation:os-draw-check .35s ease-out forwards; border-radius:1px; }
+@keyframes os-draw-check { to { transform:rotate(-45deg) scale(1); } }
+
+/* Error shake on empty-save (12-error-state-shake) */
+@keyframes os-shake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-7px); } 40% { transform:translateX(7px); } 60% { transform:translateX(-5px); } 80% { transform:translateX(5px); } }
+.os-shake { animation:os-shake .38s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .os-status-dot, #obsTable tbody tr.os-pop-in, .os-tabpanel.active, .os-callout.ok.os-show-check::before, .os-shake { animation:none !important; }
+}
+
+/* ==========================================================================
+   OS-BENCH-DNA-2: staggered entry, card resize, number pop, success check,
+   skeleton shimmer, empty/error states, quiz/TTS/bookmark hooks.
+   Vanilla CSS only. Movement is transform + opacity; entrances use
+   var(--os-ease-enter) (decelerate), exits var(--os-ease-exit).
+   ========================================================================== */
+
+/* Staggered card entry: hub/lab JS adds .os-enter with style="--i:N",
+   then flips to .os-enter-done on paint or intersection. */
+.os-enter { opacity: 0; transform: translateY(14px) scale(0.985); }
+.os-enter-done {
+  opacity: 1; transform: none;
+  transition: opacity var(--os-dur-enter) var(--os-ease-enter),
+    transform var(--os-dur-enter) var(--os-ease-enter);
+  transition-delay: calc(var(--i, 0) * var(--os-stagger));
+}
+
+/* Pattern 01 - card resize: smooth expand/collapse without layout jumps.
+   Markup: <div class="os-expandable"><div class="os-expandable-inner">…</div></div>
+   Toggle .open on .os-expandable. */
+.os-expandable {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: scaleY(0.96);
+  transform-origin: top center;
+  transition: grid-template-rows var(--os-dur-enter) var(--os-ease-enter),
+    opacity var(--os-dur-micro) var(--os-ease-enter),
+    transform var(--os-dur-enter) var(--os-ease-enter);
+}
+.os-expandable > .os-expandable-inner { overflow: hidden; min-height: 0; }
+.os-expandable.open { grid-template-rows: 1fr; opacity: 1; transform: none; }
+.os-expandable.closing { opacity: 0; transform: scaleY(0.96); transition-timing-function: var(--os-ease-exit); }
+
+/* Pattern 02 - number pop-in: readout / stat value flash on update.
+   JS re-triggers by removing .os-pop, forcing reflow, re-adding it. */
+@keyframes os-pop {
+  0% { opacity: 0; transform: scale(0.6) translateY(6px); }
+  60% { opacity: 1; transform: scale(1.08) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.os-pop { animation: os-pop var(--os-dur-enter) var(--os-ease-enter); }
+.os-readout .row b.os-pop, .os-stat b.os-pop, .os-chip b.os-pop { display: inline-block; }
+
+/* Pattern 10 - success check: stroked circle + tick draw on save/verify.
+   Markup: <span class="os-check" role="img" aria-label="Saved">
+     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" />
+     <path d="M8 12.5l2.7 2.7L16 9.5" /></svg></span> */
+@keyframes os-check-in {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes os-draw { to { stroke-dashoffset: 0; } }
+.os-check {
+  display: inline-grid; place-items: center;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(61, 220, 151, 0.14);
+  border: 1px solid rgba(61, 220, 151, 0.55);
+  animation: os-check-in var(--os-dur-micro) var(--os-ease-enter);
+  vertical-align: -7px;
+}
+.os-check.sm { width: 20px; height: 20px; vertical-align: -5px; }
+.os-check svg { width: 70%; height: 70%; fill: none; }
+.os-check svg circle {
+  stroke: var(--os-ok); stroke-width: 1.6;
+  stroke-dasharray: 63; stroke-dashoffset: 63;
+  animation: os-draw var(--os-dur-enter) var(--os-ease-enter) forwards;
+}
+.os-check svg path {
+  stroke: var(--os-ok); stroke-width: 2.2;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 20; stroke-dashoffset: 20;
+  animation: os-draw var(--os-dur-micro) var(--os-ease-enter) forwards;
+  animation-delay: 120ms;
+}
+
+/* Skeleton shimmer for loading states.
+   Markup: <div class="os-skeleton" style="height:14px;width:70%"></div>
+   The sweep bar moves via transform only; the base pulses via opacity. */
+@keyframes os-shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+@keyframes os-skeleton-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+.os-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--os-bg-600);
+  min-height: 12px;
+  animation: os-skeleton-pulse 1.6s var(--os-ease-enter) infinite;
+}
+.os-skeleton::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(232, 179, 75, 0.18) 50%, transparent 80%);
+  transform: translateX(-100%);
+  animation: os-shimmer 1.4s var(--os-ease-enter) infinite;
+}
+.os-skeleton.text { min-height: 12px; }
+.os-skeleton.block { min-height: 64px; }
+.os-skeleton.card { min-height: 120px; border-radius: var(--os-radius-sm); }
+
+/* Empty state: dashed bench outline, centred. */
+.os-empty {
+  border: 1.5px dashed var(--os-line);
+  border-radius: var(--os-radius-sm);
+  background: rgba(10, 16, 29, 0.35);
+  padding: 22px 16px;
+  text-align: center;
+  color: var(--os-text-muted);
+  font-size: 13px;
+}
+.os-empty b { display: block; color: var(--os-text); font-size: 13.5px; margin-bottom: 4px; }
+
+/* Error state: standalone block with marker, distinct from inline callouts. */
+.os-error {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1px solid rgba(255, 100, 114, 0.5);
+  border-left: 4px solid var(--os-danger);
+  background: rgba(255, 100, 114, 0.09);
+  border-radius: var(--os-radius-sm);
+  padding: 11px 13px;
+  font-size: 13px;
+  color: var(--os-text);
+}
+.os-error::before {
+  content: "!";
+  flex: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--os-danger); color: #1c0407;
+  font-weight: 900; font-size: 12px; line-height: 1;
+  margin-top: 1px;
+}
+
+/* Quiz / TTS / bookmark / procedure hooks generated by lab JS. */
+.os-quiz-done { opacity: 0.75; }
+[data-os-procedure] { display: flex; flex-direction: column; gap: 8px; }
+[data-os-quiz] { display: flex; flex-direction: column; gap: 10px; }
+[data-os-tts-btn].active, [data-os-bookmark-btn][aria-pressed="true"] {
+  border-color: var(--os-accent); color: var(--os-accent); background: var(--os-accent-faint);
+}
+[data-os-card-star].active { border-color: var(--os-accent); color: var(--os-accent); }
+[data-os-storage-guard] { margin-bottom: 12px; }
+
+/* Print: hide grain + chrome, keep record tables intact. */
+@media print {
+  body::after { display: none; }
+  .os-filters, .no-print { display: none !important; }
+  .os-card, .os-callout, .os-error, .os-empty, .os-exam-sec { break-inside: avoid; box-shadow: none; }
+  .os-stage canvas { max-width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-enter { opacity: 1; transform: none; }
+  .os-expandable { opacity: 1; transform: none; }
+  .os-skeleton::after, .os-card::before { display: none; }
+  .os-pop, .os-check, .os-check svg circle, .os-check svg path { animation: none !important; }
+}
+
+/* ==========================================================================
+   OS-FLUID-MOTION: ultimate fluid system tokens + utilities for motion.js.
+   Zero CDN. GSAP (vendored) enhances; this CSS is the guaranteed fallback.
+   Motion-spec tables (durations / easings / 1/3-rule) live here AND in
+   assets/js/motion.js so CSS-only pages stay in sync.
+   Durations: micro 120-220ms | enter 250-450ms | exit 150-250ms |
+              stagger 35-70ms | counter ~900ms | toast in 280ms/out 180ms.
+   Easings:   entrances decelerate (--os-ease-enter), exits accelerate
+              (--os-ease-exit), press springs (--os-ease-press). No linear.
+   1/3-rule:  JS caps stagger cascades at ~0.5s; CSS delays use the same
+              --os-stagger step and --i index so both paths match.
+   transform/opacity ONLY. No layout/paint properties are animated.
+   ========================================================================== */
+:root {
+  --os-dur-exit: 180ms;
+  --os-dur-press: 120ms;
+  --os-dur-counter: 900ms;
+  --os-dur-toast-in: 280ms;
+  --os-dur-toast-out: 180ms;
+  --os-ease-press: cubic-bezier(0.34, 1.56, 0.64, 1); /* spring-ish, exits fast */
+  --os-cascade-max: 500ms; /* 1/3 of the 1.5s page-enter budget */
+}
+
+/* Scroll-reveal primitive (JS: OSMotion.reveal). Hidden pre-reveal, shown
+   on .is-in (IO) or .os-enter-done (instant fallback). */
+.os-reveal { opacity: 0; transform: translateY(14px); }
+.os-reveal.is-in, .os-reveal.os-enter-done {
+  opacity: 1; transform: none;
+  transition: opacity var(--os-dur-enter) var(--os-ease-enter),
+    transform var(--os-dur-enter) var(--os-ease-enter);
+  transition-delay: calc(var(--i, 0) * var(--os-stagger));
+}
+
+/* Animated counters: tabular figures so digits never reflow (JS: counters). */
+.os-counter, [data-os-count] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Press physics fallback (JS: press/release animates scale .97 via gsap). */
+.os-btn.is-pressed, .os-tab.is-pressed, .os-filter-pill.is-pressed {
+  transform: translateY(1px) scale(0.97);
+  transition: transform var(--os-dur-press) var(--os-ease-exit);
+}
+
+/* Toasts (JS: OSMotion.toast). Stack is fixed bottom-centre, above grain. */
+.os-toast-stack {
+  position: fixed; left: 50%; bottom: 22px; z-index: 1300;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+  pointer-events: none; max-width: min(420px, 92vw);
+}
+.os-toast {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--os-panel-2); color: var(--os-text);
+  border: 1px solid var(--os-line); border-radius: 10px;
+  padding: 10px 14px; font-size: 13px; font-weight: 600;
+  box-shadow: var(--os-shadow-soft);
+  animation: os-toast-in var(--os-dur-toast-in) var(--os-ease-enter);
+}
+.os-toast-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--os-accent); flex: none; }
+.os-toast-ok .os-toast-dot, .os-toast-success .os-toast-dot { background: var(--os-ok); box-shadow: 0 0 8px rgba(56, 224, 161, .8); }
+.os-toast-error .os-toast-dot, .os-toast-danger .os-toast-dot { background: var(--os-danger); box-shadow: 0 0 8px rgba(255, 93, 108, .8); }
+.os-toast-ok, .os-toast-success { border-color: rgba(56, 224, 161, .5); }
+.os-toast-error, .os-toast-danger { border-color: rgba(255, 93, 108, .5); }
+.os-toast-msg { line-height: 1.4; }
+@keyframes os-toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Kill-switch: everything visible, nothing animated. */
+  .os-reveal { opacity: 1; transform: none; }
+  .os-reveal.is-in, .os-reveal.os-enter-done { transition: none; }
+  .os-btn.is-pressed, .os-tab.is-pressed, .os-filter-pill.is-pressed { transform: none; transition: none; }
+  .os-toast { animation: none; }
+}
+
+/* ==========================================================================
+   OS-FLUID-SHELL: ultimate fluid shell pass (CSS-only hooks for motion.js).
+   Zero CDN. All motion is transform/opacity. GSAP enhances; CSS is fallback.
+   Hooks motion.js targets (do not rename):
+     tabs:      .os-tabs[data-os-tablist] > .os-tab-indicator (#tabIndicator)
+                vars --os-tab-left / --os-tab-width, [data-os-indicator-ready]
+     readout:   .os-readout .row b[data-os-rolling] / .os-rolling + .os-roll-in
+     faders:    .os-range-wrap[data-os-fader] > .os-range-bubble[data-os-bubble]
+                + .os-ticks, var --os-fill (0-100%)
+     ledger:    .os-table-wrap.os-obs[data-os-ledger], tr.os-cascade (--i)
+     actionbar: .os-actionbar[data-os-actionbar] + [data-os-proxy]
+     theory:    details.os-disclosure[data-os-disclosure], [data-os-collapsible]
+     toasts:   .os-toasts#osToasts (.os-toast-stack alias), .os-toast(.ok/.warn/.danger)
+     tabs a11y: .os-tabs[data-os-tablist], .os-tab[aria-selected]
+   ========================================================================== */
+
+/* ---- Morphing tab indicator: sliding brass rule following active tab ---- */
+.os-tabs { position: relative; }
+.os-tabs[data-os-tablist] { scroll-margin-top: 70px; }
+.os-tab-indicator {
+  position: absolute; bottom: -1px; left: 0; top: auto;
+  height: 3px; width: 0;
+  left: var(--os-tab-left, 0); width: var(--os-tab-width, 0);
+  background: linear-gradient(90deg, var(--os-accent-deep), var(--os-accent), var(--os-accent-pale));
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 0 12px var(--os-accent-glow);
+  opacity: 0; pointer-events: none;
+  transition: left var(--os-dur-enter) var(--os-ease-enter),
+    width var(--os-dur-enter) var(--os-ease-enter),
+    opacity var(--os-dur-micro) var(--os-ease-enter);
+}
+.os-tabs[data-os-indicator-ready] .os-tab-indicator { opacity: 1; }
+.os-tabs[data-os-tablist]:focus-within { box-shadow: 0 1px 0 var(--os-accent-soft); }
+.os-tab { position: relative; z-index: 1; }
+.os-tab[aria-selected="true"] { color: var(--os-accent-pale); }
+.os-tab:focus-visible { outline: 3px solid var(--os-accent); outline-offset: -3px; box-shadow: 0 0 0 5px var(--os-accent-soft); }
+
+/* ---- Instrument readout with rolling digits ---- */
+.os-readout.os-instrument .row b,
+.os-readout .row b[data-os-rolling],
+.os-readout .row b.os-rolling {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  min-width: 3.5ch; text-align: right;
+}
+@keyframes os-roll-in {
+  from { opacity: 0; transform: translateY(55%); filter: blur(1px); }
+  to { opacity: 1; transform: translateY(0); filter: none; }
+}
+.os-readout .row b.os-roll-in { animation: os-roll-in var(--os-dur-micro) var(--os-ease-enter); }
+
+/* ---- Fader controls with tick marks + value bubbles ---- */
+.os-range-wrap { position: relative; padding-top: 24px; }
+.os-range-wrap > input[type="range"].os-range { width: 100%; }
+.os-range-bubble {
+  position: absolute; top: 0; left: var(--os-fill, 50%);
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, var(--os-accent-pale), var(--os-accent));
+  color: var(--os-accent-ink);
+  font-family: var(--os-mono); font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 6px; white-space: nowrap; line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  pointer-events: none;
+  transition: left var(--os-dur-micro) var(--os-ease-enter);
+}
+.os-range-bubble::after {
+  content: ""; position: absolute; left: 50%; bottom: -4px;
+  width: 8px; height: 8px; transform: translateX(-50%) rotate(45deg);
+  background: var(--os-accent); border-radius: 1px;
+}
+.os-ticks {
+  height: 6px; margin-top: 5px; border-radius: 2px; opacity: .65;
+  background: repeating-linear-gradient(90deg, var(--os-line) 0 1px, transparent 1px 10%);
+}
+.os-control-block.os-fader input[type="range"].os-range { --os-fill: 50%; }
+
+/* ---- Observation table as ledger: zebra + sticky head + row cascade ---- */
+.os-table-wrap.os-obs[data-os-ledger] { border-color: var(--os-line); }
+.os-table-wrap.os-obs table.os-table thead th {
+  position: sticky; top: 0; z-index: 2;
+  box-shadow: 0 2px 0 var(--os-accent-deep);
+}
+table.os-table tbody tr:nth-child(even) td { background: rgba(232,179,75,.045); }
+table.os-table tbody tr:hover td { background: rgba(232,179,75,.10); }
+table.os-table tbody tr:last-child td:first-child { box-shadow: inset 2px 0 0 var(--os-accent); }
+@keyframes os-row-cascade {
+  from { opacity: 0; transform: translateY(-7px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+#obsTable tbody tr.os-cascade {
+  animation: os-row-cascade var(--os-dur-enter) var(--os-ease-enter backwards);
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+/* ---- Sticky mobile action bar (Record/Save reachable) ---- */
+.os-actionbar { display: none; }
+@media (max-width: 980px) {
+  .os-actionbar[data-os-actionbar] {
+    display: flex; gap: 8px; align-items: stretch;
+    position: sticky; bottom: 0; z-index: 60;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(12,20,19,.92);
+    border-top: 1px solid var(--os-line);
+    backdrop-filter: blur(10px);
+  }
+  .os-actionbar[data-os-actionbar] .os-btn { flex: 1 1 0; min-height: 44px; }
+}
+
+/* ---- Collapsible theory (progressive disclosure) ---- */
+details.os-disclosure[data-os-disclosure] {
+  border: 1px solid var(--os-line-soft); border-radius: var(--os-radius-sm);
+  background: rgba(11,18,32,.4); margin-top: 10px;
+}
+details.os-disclosure[data-os-disclosure] > summary {
+  cursor: pointer; padding: 10px 12px; font-weight: 700; font-size: 13px;
+  list-style: none; display: flex; gap: 8px; align-items: center; color: var(--os-text);
+}
+details.os-disclosure[data-os-disclosure] > summary::-webkit-details-marker { display: none; }
+details.os-disclosure[data-os-disclosure] > summary::before {
+  content: "+"; flex: none; width: 20px; height: 20px; border-radius: 6px;
+  display: grid; place-items: center;
+  background: var(--os-accent-faint); border: 1px solid var(--os-line); color: var(--os-accent);
+  font-weight: 900; line-height: 1;
+}
+details.os-disclosure[data-os-disclosure][open] > summary::before { content: "\2013"; }
+details.os-disclosure[data-os-disclosure] > summary:focus-visible { outline: 3px solid var(--os-accent); outline-offset: 2px; }
+.os-disclosure-body { padding: 0 12px 12px; }
+[data-os-collapsible] { scroll-margin-top: 70px; }
+.os-collapsible { display: grid; grid-template-rows: 1fr; opacity: 1; transition: grid-template-rows var(--os-dur-enter) var(--os-ease-enter), opacity var(--os-dur-micro) var(--os-ease-enter); }
+.os-collapsible > .os-collapsible-inner { overflow: hidden; min-height: 0; }
+.os-collapsible.is-collapsed { grid-template-rows: 0fr; opacity: 0; }
+
+/* ---- Toast system: bottom-right stack replacing window.alert ---- */
+.os-toasts {
+  position: fixed; right: 16px; bottom: 16px; z-index: 1300;
+  display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+  max-width: min(360px, calc(100vw - 32px));
+}
+.os-toasts .os-toast, .os-toast-stack .os-toast { pointer-events: auto; max-width: 100%; }
+.os-toast { border-left: 4px solid var(--os-accent); text-align: left; }
+.os-toast.ok, .os-toast-success { border-left-color: var(--os-ok); }
+.os-toast.warn { border-color: rgba(255,204,85,.5); border-left-color: var(--os-warn); }
+.os-toast.danger, .os-toast-error { border-left-color: var(--os-danger); }
+.os-toast-close {
+  appearance: none; background: transparent; border: 1px solid var(--os-line);
+  color: var(--os-text-muted); border-radius: 6px; cursor: pointer;
+  font-size: 12px; line-height: 1; padding: 3px 7px; flex: none; font-family: inherit;
+}
+.os-toast-close:hover { color: var(--os-text); border-color: var(--os-accent); }
+.os-toast.is-leaving { opacity: 0; transform: translateY(6px) scale(.98); transition: opacity var(--os-dur-toast-out) var(--os-ease-exit), transform var(--os-dur-toast-out) var(--os-ease-exit); }
+@media (max-width: 980px) {
+  .os-toasts { left: 16px; right: 16px; bottom: calc(72px + env(safe-area-inset-bottom)); align-items: stretch; }
+}
+
+/* ---- Print stylesheet keeps reports clean ---- */
+@media print {
+  .os-topbar, .os-actionbar, .os-toasts, .os-toast-stack, .os-btn,
+  .os-tabs, .os-filters, .no-print,
+  [data-os-tts-btn], [data-os-bookmark-btn], [data-os-lang-toggle],
+  .os-range-wrap .os-range-bubble, .os-ticks { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  body::after { display: none !important; }
+  .os-app { display: block; }
+  .os-wrap { padding: 0; max-width: none; }
+  .os-lab-grid { display: block; }
+  .os-panel { border: 1px solid #999; box-shadow: none; break-inside: avoid; margin-bottom: 12px; }
+  .os-tabpanel { display: block !important; border-top: 1px solid #ccc; padding: 10px 0; }
+  .os-table-wrap { overflow: visible; max-height: none; }
+  table.os-table { background: #fff; color: #000; }
+  table.os-table th, table.os-table td { border-color: #666; }
+  .os-stage { break-inside: avoid; }
+  .os-stage canvas, canvas { max-width: 100%; }
+  a { color: #000; text-decoration: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-tab-indicator, .os-range-bubble { transition: none; }
+  .os-readout .row b.os-roll-in, #obsTable tbody tr.os-cascade,
+  .os-toast, .os-toast.is-leaving { animation: none !important; }
+  .os-collapsible { transition: none; }
+}

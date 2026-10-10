@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool — Compound Microscope (P-C12-20)</title>
+<link rel="stylesheet" href="../assets/css/lab-theme.css" />
+<!-- OS-ONLINE: premium shell — Google Fonts + GSAP CDN + ScrollTrigger + three importmap -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+/* OS-ONLINE-PREMIUM: font system + hero topbar + 3D stage + morph indicator. */
+:root{--os-font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--os-display:"Space Grotesk","Inter",system-ui,sans-serif;--os-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--os-font)}
+.os-brand,.os-kicker,h1,h2,h3,.os-control-title{font-family:var(--os-display)}
+.os-mono,.os-readout b,.os-digital,.os-stat b{font-family:var(--os-mono);font-variant-numeric:tabular-nums}
+.os-topbar.os-bench{background:linear-gradient(120deg,#0d1b2a 0%,#123524 55%,#0d1b2a 100%)}
+.os-3d-wrap{margin-top:0;margin-bottom:10px}
+#apparatus3d.os-3d{position:relative;overflow:hidden;min-height:420px;height:420px;border-radius:12px;background:radial-gradient(120% 100% at 50% 0%,#12263f 0%,#0d1b2a 70%)}
+#apparatus3d.os-3d canvas{width:100%!important;height:420px!important;display:block}
+.os-viewbar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.os-viewbar .os-filter-pill[aria-pressed="true"]{outline:2px solid #4fd6ff}
+.os-3d-capline{font-size:11px;opacity:.75;padding:6px 2px 0}
+.os-file-notice{margin-top:8px}
+#apparatus3d .os-3d-cap{position:absolute;left:10px;bottom:8px;font-size:11px;opacity:.75}
+.os-tabs{position:relative}
+.os-tab-indicator{transition:left .28s cubic-bezier(.2,.7,.3,1),width .28s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.os-tab-indicator{transition:none}}
+</style>
+</head>
+<body>
+<a class="os-skip-link" href="#main-content">Skip to main content</a>
+<div class="os-app">
+
+  <header class="os-topbar os-bench">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>Compound Microscope<small id="labCrumb">P-C12-20 · Class 12 Physics</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-chip"><span data-i18n="topbar.notebook">Notebook:</span> <b id="dbChip">…</b></span>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi">हिं</button>
+    </span>
+    <a class="os-btn ghost sm" href="../index.html" data-i18n="lab.back">← Curriculum Hub</a>
+  </header>
+
+  <main id="main-content" class="os-wrap">
+    <div class="os-lab-grid">
+
+      <!-- ============================ LEFT PANE ============================ -->
+      <section class="os-panel os-apparatus">
+        <header>
+          <span class="os-kicker" data-i18n="lab.apparatus">Apparatus</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="engineChip" data-i18n="lab.engineReady">Engine ready</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-stage os-spotlight">
+            <div class="os-viewbar" data-os-viewbar role="group" aria-label="Apparatus view">
+              <button type="button" class="os-filter-pill" data-os-view="3d">3D Apparatus</button>
+              <button type="button" class="os-filter-pill" data-os-view="2d">2D Board</button>
+            </div>
+            <div class="os-3d-wrap os-3d-hero" data-os-3d-wrap>
+              <div id="apparatus3d" data-apparatus="optical-bench" aria-label="3D apparatus viewer"></div>
+              <div class="os-3d-capline" data-os-3d-caption>3D apparatus hero — drag to orbit. Switch to 2D Board for the measurement canvas.</div>
+              <div class="os-callout warn os-file-notice" data-os-file-notice hidden>3D needs a local server or GitHub Pages (ES modules + import maps do not run over file://); the 2D board works everywhere.</div>
+            </div>
+            <canvas data-os-2d="1" role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="stage" width="720" height="440"></canvas>
+
+            <div class="os-readout os-instrument" id="readout">
+              <div class="row"><span>M (×)</span><b id="roX" data-os-rolling class="os-rolling">0.00</b></div>
+              <div class="row"><span>M<sub>o</sub> × M<sub>e</sub></span><b id="roY" data-os-rolling class="os-rolling">0.00</b></div>
+            </div>
+          </div>
+
+          <div class="os-control-block os-fader">
+            <div class="os-control-title">Microscope Optics — M = −(L/f<sub>o</sub>)·(D/f<sub>e</sub>), D = 25 cm</div>
+            <div class="os-field">
+              <label for="foRange">Objective focal length f<sub>o</sub> (cm) — <span class="os-mono" id="foVal">2.00</span></label>
+              <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="foRange" min="1" max="5" step="0.1" value="2" /><span class="os-ticks" aria-hidden="true"></span></div>
+            </div>
+            <div class="os-field">
+              <label for="feRange">Eyepiece focal length f<sub>e</sub> (cm) — <span class="os-mono" id="feVal">5.00</span></label>
+              <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="feRange" min="2" max="10" step="0.1" value="5" /><span class="os-ticks" aria-hidden="true"></span></div>
+            </div>
+            <div class="os-field">
+              <label for="tubeRange">Tube length L (cm) — <span class="os-mono" id="tubeVal">16.0</span></label>
+              <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="tubeRange" min="10" max="25" step="0.5" value="16" /><span class="os-ticks" aria-hidden="true"></span></div>
+            </div>
+            <div class="os-row">
+              <label class="os-toggle"><input type="checkbox" id="faultToggle" /> Inject experimental fault</label>
+            </div>
+          </div>
+
+          <div class="os-row">
+            <button class="os-btn primary" id="btnRecord" data-i18n="btn.record">Record Reading</button>
+            <button class="os-btn" id="btnReset" data-i18n="btn.reset">Reset Apparatus</button>
+          </div>
+
+          <div class="os-callout" id="faultMsg">
+            <h4>Live status</h4>
+            <span>Adjust f<sub>o</sub>, f<sub>e</sub> and L, then press <b>Record Reading</b> to populate the observation table.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ RIGHT PANE =========================== -->
+      <section class="os-panel">
+        <header>
+          <span class="os-kicker" data-i18n="lab.observation">Observation Table</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="trialCount">0 trials</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-table-wrap os-obs" data-os-ledger>
+            <table class="os-table" id="obsTable">
+              <thead>
+                <tr><th>#</th><th>f<sub>o</sub> (cm)</th><th>f<sub>e</sub> (cm)</th><th>L (cm)</th><th>M (×)</th><th></th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="os-stat-grid">
+            <div class="os-stat"><span>Mean |M|</span><b id="statMean">0.000</b></div>
+            <div class="os-stat"><span data-i18n="stats.stderr">Std. Error</span><b id="statErr">0.000</b></div>
+            <div class="os-stat"><span data-i18n="stats.trials">Trials</span><b id="statN">0</b></div>
+          </div>
+
+          <div class="os-row">
+            <button class="os-btn success" id="btnSave" data-i18n="btn.save">Save to Notebook</button>
+            <button class="os-btn" id="btnExport" data-i18n="btn.export">Export CBSE Sheet</button>
+            <button class="os-btn" id="btnReport" data-i18n="btn.report">Print Report</button>
+            <button class="os-btn danger" id="btnClear" data-i18n="btn.clear">Clear Trials</button>
+          </div>
+          <div class="os-callout ok" id="saveMsg" style="display:none"></div>
+        </div>
+      </section>
+    </div>
+
+    
+    <!-- OS-ACTIONBAR: sticky mobile quick actions (proxies, no duplicate ids) -->
+    <div class="os-actionbar" data-os-actionbar role="toolbar" aria-label="Quick actions">
+      <button class="os-btn primary" type="button" data-os-proxy="btnRecord">Record Reading</button>
+      <button class="os-btn success" type="button" data-os-proxy="btnSave">Save to Notebook</button>
+      <button class="os-btn" type="button" data-os-proxy="btnReport">Print Report</button>
+    </div>
+
+<!-- ============================ BOTTOM TABS ============================ -->
+    <section class="os-panel" style="margin-top:18px">
+      <div class="os-tabs os-tabs-anim" role="tablist" aria-label="Lab information tabs" id="tabs" data-os-tablist>
+        <button class="os-tab active" data-tab="theory" role="tab" aria-selected="true" data-i18n="tabs.theory" tabindex="0" aria-controls="panel-theory" id="tab-theory">Theory &amp; Diagram</button>
+        <button class="os-tab" data-tab="errors" role="tab" aria-selected="false" data-i18n="tabs.errors" tabindex="-1" aria-controls="panel-errors" id="tab-errors">Precautions &amp; Errors</button>
+        <button class="os-tab" data-tab="viva" role="tab" aria-selected="false" data-i18n="tabs.viva" tabindex="-1" aria-controls="panel-viva" id="tab-viva">Viva-Voce Arena</button>
+        <button class="os-tab" data-tab="procedure" role="tab" aria-selected="false" data-i18n="tabs.procedure" aria-controls="panel-procedure" id="tab-procedure" tabindex="-1">Procedure</button>
+        <button class="os-tab" data-tab="quiz" role="tab" aria-selected="false" data-i18n="tabs.quiz" aria-controls="panel-quiz" id="tab-quiz" tabindex="-1">Quiz</button>
+      
+        <span class="os-tab-indicator" id="tabIndicator" aria-hidden="true"></span>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel active" data-panel="theory" data-os-collapsible id="panel-theory" aria-labelledby="tab-theory">
+        <h3>Theory</h3>
+        <button class="os-btn sm ghost" type="button" data-os-tts-btn data-os-tts-label="Theory">🔊 Read aloud</button>
+        <p class="os-muted">A compound microscope uses a short-focus objective to form a real, inverted,
+          magnified intermediate image inside the tube, which the eyepiece then magnifies again as a
+          simple magnifier with the final image at the near point (D = 25 cm).</p>
+        <div class="os-eq">M = M<sub>o</sub> · M<sub>e</sub> = −(L / f<sub>o</sub>) · (D / f<sub>e</sub>), &nbsp; D = 25 cm</div>
+        <p class="os-muted">L is the tube length (distance between objective and intermediate image),
+          f<sub>o</sub> the objective focal length and f<sub>e</sub> the eyepiece focal length.
+          The negative sign denotes inversion. Shorter f<sub>o</sub> and f<sub>e</sub>, and a longer tube,
+          all increase magnification. Ray diagram on the stage shows: object arrow → objective lens →
+          intermediate image arrow (inverted, magnified) → eyepiece lens → final magnified image arrow.</p>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="errors" id="panel-errors" aria-labelledby="tab-errors">
+        <h3>Precautions &amp; Standard Errors</h3>
+        <ul class="os-muted">
+          <li>Focus the objective first, then the eyepiece; never force coarse focus near the slide.</li>
+          <li>Keep lenses clean and centred on the same optical axis; avoid parallax while reading scales.</li>
+          <li>Use uniform illumination and record f<sub>o</sub>, f<sub>e</sub>, L with correct units (cm).</li>
+          <li>Take multiple readings and use the mean magnification to reduce random error.</li>
+        </ul>
+        <div class="os-callout warn" id="triageBox"><h4>Triage</h4><span>Toggle “Inject experimental fault” to simulate a misaligned tube (+8% systematic error on M).</span></div>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="viva" id="panel-viva" aria-labelledby="tab-viva">
+        <div class="os-row between">
+          <h3 style="margin:0">Viva-Voce Arena</h3>
+          <div class="os-row">
+            <button class="os-filter-pill active" id="modeOffline" data-i18n="viva.offline">Offline Viva</button>
+            <button class="os-filter-pill" id="modeAI" data-i18n="viva.ai">AI Examiner</button>
+          </div>
+        </div>
+        <div id="offlineViva">
+          <div class="os-callout" id="vivaProgress">Offline viva: 0 / 0 questions answered.</div>
+          <div id="vivaQA"></div>
+          <div class="os-row" style="margin-top:10px">
+            <button class="os-btn primary" id="vivaStart" data-i18n="viva.startOffline">Start Offline Viva</button>
+          </div>
+        </div>
+        <div id="aiViva" style="display:none">
+          <div class="os-grid-3">
+            <div class="os-field"><label for="aiProvider">Provider</label>
+              <select class="os-select" id="aiProvider">
+                <option value="ollama">Local Ollama</option>
+                <option value="openai">OpenAI (key)</option>
+                <option value="anthropic">Anthropic (key)</option>
+              </select></div>
+            <div class="os-field"><label for="aiEndpoint">Endpoint (optional)</label>
+              <input aria-label="http://localhost:11434" class="os-input" id="aiEndpoint" placeholder="http://localhost:11434" /></div>
+            <div class="os-field"><label for="aiModel">Model</label>
+              <input aria-label="llama3.1" class="os-input" id="aiModel" placeholder="llama3.1" /></div>
+          </div>
+          <div class="os-field" style="margin-top:8px"><label for="aiKey">API key (only for cloud providers — supplied by you)</label>
+            <input aria-label="sk-… (never stored)" class="os-input" id="aiKey" type="password" placeholder="sk-… (never stored)" /></div>
+          <div class="os-row" style="margin-top:10px">
+            <button class="os-btn primary" id="aiStart" data-i18n="viva.startAI">Start AI Viva</button>
+          </div>
+          <div id="aiTranscript" class="os-control-block os-fader" style="margin-top:12px;max-height:300px;overflow:auto"></div>
+          <div class="os-row" style="margin-top:8px">
+            <input aria-label="Type your answer…" class="os-input" id="aiReply" placeholder="Type your answer…" data-i18n-ph="viva.answerPh">
+            <button class="os-btn success" id="aiSend" data-i18n="viva.send">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="os-tabpanel" data-panel="procedure" role="tabpanel" tabindex="0" aria-label="Procedure" id="panel-procedure" aria-labelledby="tab-procedure">
+        <h3>Procedure</h3>
+        <div data-os-procedure></div>
+      </div>
+      <div class="os-tabpanel" data-panel="quiz" role="tabpanel" tabindex="0" aria-label="Quiz" id="panel-quiz" aria-labelledby="tab-quiz">
+        <h3>Quiz</h3>
+        <button class="os-btn sm ghost" type="button" data-os-bookmark-btn aria-pressed="false">☆ Bookmark</button>
+        <div data-os-quiz></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../assets/js/storage.js"></script>
+<script src="../assets/js/report.js"></script>
+<script src="../assets/js/graph.js"></script>
+<script src="../assets/js/quiz-bank-1.js"></script>
+<script src="../assets/js/quiz-bank-2.js"></script>
+<script src="../assets/js/quiz-bank-3.js"></script>
+<script src="../assets/js/quiz-bank-4.js"></script>
+<script src="../assets/js/quiz-bank-5.js"></script>
+<script src="../assets/js/quiz-bank-hi-1.js"></script>
+<script src="../assets/js/quiz-bank-hi-2.js"></script>
+<script src="../assets/js/quiz-bank-hi-3.js"></script>
+<script src="../assets/js/quiz-bank-hi-4.js"></script>
+<script src="../assets/js/quiz-bank-hi-5.js"></script>
+<script src="../assets/js/quiz-bank.js"></script>
+<script src="../assets/js/quiz.js"></script>
+<script src="../assets/js/tts.js"></script>
+<script src="../assets/js/bookmarks.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/procedure.js"></script>
+<script src="../assets/js/procedure-bank.js"></script>
+<script src="../assets/js/procedure-bank-hi.js"></script>
+<script>
+/* OS-STORAGE-GUARD: local-only fallback notice. If storage.js failed to load
+   (e.g. this file was copied out of the project tree standalone), show a
+   .os-callout warning with the path fix. No CDN, no downloads -- local only. */
+(function () {
+  function showGuard() {
+    if (window.LabNotebook || window.LabNotebookDB) return;
+    if (document.querySelector("[data-os-storage-guard]")) return;
+    var d = document.createElement("div");
+    d.className = "os-callout warn";
+    d.setAttribute("data-os-storage-guard", "1");
+    d.innerHTML = "<h4>Notebook storage missing</h4><span>" +
+      "Could not load <b>../assets/js/storage.js</b>, so Save / Export are disabled. " +
+      "Keep this file inside the project tree (<b>OnlineDeploy/labs/compound_microscope.html</b>) " +
+      "so the relative path resolves -- do not open it as a standalone copy and do not " +
+      "fetch anything from a CDN; this lab is fully local.</span>";
+    var host = document.querySelector(".os-wrap") || document.querySelector(".os-app") || document.body;
+    host.insertBefore(d, host.firstChild);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showGuard);
+  else showGuard();
+})();
+</script>
+<script src="../assets/js/ai-examiner.js"></script>
+<script src="../assets/js/viva-bank-hi.js"></script>
+<script src="../assets/js/viva-hi.js"></script>
+<!-- OS-MOTION: vendored GSAP + guarded motion helper (offline, no CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- OS-MOTION: CDN GSAP above, vendored fallback below (offline copy) -->
+<script src="../assets/vendor/gsap/gsap.min.js"></script>
+<script src="../assets/js/motion.js"></script>
+<script src="../assets/js/perf.js"></script>
+<script>
+/* Compound microscope engine — fully deterministic, no randomness. */
+const CONFIG = {
+  experimentId: "P-C12-20",
+  experimentTitle: "Compound Microscope",
+  subject: "physics",
+  classLevel: 12
+};
+
+const D = 25;
+
+const ENGINE = {
+  fo: 2.0,
+  fe: 5.0,
+  L: 16.0,
+  fault: false,
+  compute(fo, fe, L) {
+    const f1 = (fo === undefined) ? this.fo : fo;
+    const f2 = (fe === undefined) ? this.fe : fe;
+    const Tl = (L === undefined) ? this.L : L;
+    const Mo = -(Tl / f1);
+    const Me = D / f2;
+    let M = Mo * Me;
+    if (this.fault) M = M * 1.08; // misaligned tube: +8% systematic error
+    return { Mo: Mo, Me: Me, M: M };
+  }
+};
+
+const VIVA_BANK = [
+  { question: "State the magnification formula of a compound microscope with final image at the near point.",
+    answer: "M = Mo x Me = -(L/fo) x (D/fe), where L is tube length, fo objective focal length, fe eyepiece focal length and D = 25 cm." },
+  { question: "Where is the final image formed for relaxed vs strained-eye adjustment, and which case does this lab use?",
+    answer: "This lab uses final image at the near point (D = 25 cm) with Me = D/fe. For relaxed-eye (image at infinity) Me = 1 + D/fe approx D/fe; near-point setting gives slightly higher magnification." },
+  { question: "Does a compound microscope increase resolving power or only magnifying power? Explain.",
+    answer: "It increases magnifying power; resolving power is set by the objective numerical aperture and wavelength. Excess magnification beyond useful magnification gives empty magnification without new detail." },
+  { question: "How does increasing the tube length L affect magnification, and what is the practical limit?",
+    answer: "Magnification grows linearly with L since Mo = -L/fo. In practice a very long tube dims the image, adds aberrations and makes the instrument unwieldy, so L is kept around 16-18 cm." }
+];
+
+const trials = [];
+let vivaState = null;
+
+/* ---- Canvas rendering: deterministic ray diagram ------------------------- */
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+
+function arrow(x, yBase, hgt, color, label) {
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x, yBase); ctx.lineTo(x, yBase - hgt); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, yBase - hgt); ctx.lineTo(x - 5, yBase - hgt + 9); ctx.lineTo(x + 5, yBase - hgt + 9);
+  ctx.closePath(); ctx.fill();
+  if (label) { ctx.font = "12px system-ui"; ctx.fillText(label, x - 18, yBase + 16); }
+}
+
+function lens(x, yTop, yBot, label) {
+  ctx.strokeStyle = "#4fd6ff"; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(x, yTop); ctx.lineTo(x, yBot); ctx.stroke();
+  // arrowheads marking convex lens
+  ctx.fillStyle = "#4fd6ff";
+  ctx.beginPath(); ctx.moveTo(x, yTop); ctx.lineTo(x - 6, yTop + 12); ctx.lineTo(x + 6, yTop + 12); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x, yBot); ctx.lineTo(x - 6, yBot - 12); ctx.lineTo(x + 6, yBot - 12); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#9fd8ff"; ctx.font = "12px system-ui";
+  ctx.fillText(label, x - 22, yBot + 18);
+}
+
+function draw() {
+  const w = canvas.width, h = canvas.height;
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, "#0d1b2a"); grad.addColorStop(1, "#0d1b2a");
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = "rgba(79,214,255,.12)"; ctx.lineWidth = 1;
+  for (let gx = 0; gx <= w; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
+  for (let gy = 0; gy <= h; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
+
+  const r = ENGINE.compute();
+  const M = r.M, Mo = r.Mo, Me = r.Me;
+
+  // optical axis
+  const axisY = 220;
+  ctx.strokeStyle = "#f4f1e3"; ctx.lineWidth = 1.5;
+  ctx.setLineDash([8, 6]);
+  ctx.beginPath(); ctx.moveTo(20, axisY); ctx.lineTo(w - 20, axisY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // geometry: object left, objective lens, intermediate image, eyepiece, final image right
+  const xObj = 70, xO = 220, xI = 430, xE = 530, xF = 660;
+  // arrow heights scaled deterministically from magnifications, clamped for display
+  const hObj = 34;
+  let hI = Math.min(150, Math.abs(Mo) * hObj * 0.55 + 20);
+  let hF = Math.min(170, Math.abs(M) * 2.2 + 30);
+  if (hF < hI + 24) hF = Math.min(170, hI + 40);
+
+  arrow(xObj, axisY, hObj, "#4fd6ff", "Object");
+  lens(xO, axisY - 130, axisY + 130, "Objective");
+  // intermediate image: inverted (drawn below axis)
+  ctx.strokeStyle = "#ffd166"; ctx.fillStyle = "#ffd166"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(xI, axisY); ctx.lineTo(xI, axisY + hI); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(xI, axisY + hI); ctx.lineTo(xI - 5, axisY + hI - 9); ctx.lineTo(xI + 5, axisY + hI - 9);
+  ctx.closePath(); ctx.fill();
+  ctx.font = "12px system-ui"; ctx.fillText("Interm. img", xI - 34, axisY + hI + 16);
+  lens(xE, axisY - 140, axisY + 140, "Eyepiece");
+  // final image: virtual, magnified, inverted (taller, below axis), dashed style cue
+  ctx.strokeStyle = "#ff7a9e"; ctx.fillStyle = "#ff7a9e";
+  ctx.beginPath(); ctx.moveTo(xF, axisY); ctx.lineTo(xF, axisY + hF); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(xF, axisY + hF); ctx.lineTo(xF - 6, axisY + hF - 10); ctx.lineTo(xF + 6, axisY + hF - 10);
+  ctx.closePath(); ctx.fill();
+  ctx.font = "12px system-ui"; ctx.fillText("Final img", xF - 28, axisY + hF + 16);
+
+  // deterministic rays (top of object through lenses)
+  const yTop = axisY - hObj;
+  ctx.lineWidth = 1.8;
+  // Ray 1: parallel from object top to objective, then through its focal point toward intermediate image top
+  ctx.strokeStyle = "rgba(79,214,255,.95)";
+  ctx.beginPath(); ctx.moveTo(xObj, yTop); ctx.lineTo(xO, yTop); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(xO, yTop); ctx.lineTo(xI, axisY + hI); ctx.stroke();
+  // Ray 2: through centre of objective (undeviated) to intermediate image top
+  ctx.strokeStyle = "rgba(79,214,255,.9)";
+  ctx.beginPath(); ctx.moveTo(xObj, yTop); ctx.lineTo(xI, axisY + hI); ctx.stroke();
+  // Ray 3: intermediate image top through centre of eyepiece to final image top
+  ctx.strokeStyle = "rgba(255,209,102,.9)";
+  ctx.beginPath(); ctx.moveTo(xI, axisY + hI); ctx.lineTo(xE, axisY + (hI * 0.35)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(xE, axisY + (hI * 0.35)); ctx.lineTo(xF, axisY + hF); ctx.stroke();
+
+  // annotation
+  ctx.fillStyle = "#dbe7ff"; ctx.font = "13px system-ui";
+  const sign = M < 0 ? "−" : "+";
+  ctx.fillText("Mo=" + Mo.toFixed(2) + "  Me=" + Me.toFixed(2) + "  M=" + sign + Math.abs(M).toFixed(2) + "×", 24, 30);
+  ctx.fillStyle = ENGINE.fault ? "#ff9aa8" : "#8fd6a0"; ctx.font = "12px system-ui";
+  ctx.fillText(ENGINE.fault ? "FAULT: tube misaligned (+8%)" : "Aligned tube · D = 25 cm", 24, 50);
+
+  document.getElementById("roX").textContent = sign + Math.abs(M).toFixed(2) + "×";
+  document.getElementById("roY").textContent = Mo.toFixed(2) + " × " + Me.toFixed(2);
+  const chip = document.getElementById("engineChip");
+  if (chip) chip.textContent = "M = " + sign + Math.abs(M).toFixed(2) + "×";
+}
+
+/* ---- Observation table arithmetic --------------------------------------- */
+function recompute() {
+  const vals = trials.map(function (t) { return Math.abs(t.M); });
+  const n = vals.length;
+  const mean = n ? vals.reduce(function (a, b) { return a + b; }, 0) / n : 0;
+  let stderr = 0;
+  if (n > 1) {
+    const variance = vals.reduce(function (a, b) { return a + (b - mean) * (b - mean); }, 0) / (n - 1);
+    stderr = Math.sqrt(variance) / Math.sqrt(n);
+  }
+  document.getElementById("statMean").textContent = mean.toFixed(3);
+  document.getElementById("statErr").textContent = stderr.toFixed(3);
+  document.getElementById("statN").textContent = String(n);
+  document.getElementById("trialCount").textContent = n + " " + ((window.OS_I18N&&window.OS_I18N.t)?window.OS_I18N.t("trials.unit"):"trials");
+}
+
+function renderTable() {
+  const tbody = document.querySelector("#obsTable tbody");
+  tbody.innerHTML = "";
+  trials.forEach(function (t, i) {
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + (i + 1) + "</td>" +
+      '<td class="num">' + t.fo.toFixed(1) + "</td>" +
+      '<td class="num">' + t.fe.toFixed(1) + "</td>" +
+      '<td class="num">' + t.L.toFixed(1) + "</td>" +
+      '<td class="num">' + (t.M < 0 ? "−" : "+") + Math.abs(t.M).toFixed(2) + "×</td>" +
+      '<td><button class="os-btn danger sm" data-row="' + i + '">×</button></td>';
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll("button[data-row]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      trials.splice(parseInt(btn.dataset.row, 10), 1);
+      renderTable(); recompute();
+    });
+  });
+  recompute();
+}
+
+/* ---- Controls ------------------------------------------------------------ */
+function syncFromInputs() {
+  ENGINE.fo = parseFloat(document.getElementById("foRange").value);
+  ENGINE.fe = parseFloat(document.getElementById("feRange").value);
+  ENGINE.L = parseFloat(document.getElementById("tubeRange").value);
+  document.getElementById("foVal").textContent = ENGINE.fo.toFixed(2);
+  document.getElementById("feVal").textContent = ENGINE.fe.toFixed(2);
+  document.getElementById("tubeVal").textContent = ENGINE.L.toFixed(1);
+  draw();
+}
+document.getElementById("foRange").addEventListener("input", syncFromInputs);
+document.getElementById("feRange").addEventListener("input", syncFromInputs);
+document.getElementById("tubeRange").addEventListener("input", syncFromInputs);
+document.getElementById("faultToggle").addEventListener("change", function (e) {
+  ENGINE.fault = e.target.checked;
+  const box = document.getElementById("faultMsg");
+  if (ENGINE.fault) {
+    box.className = "os-callout danger";
+    box.innerHTML = "<h4>Fault injected</h4><span>Tube misalignment adds +8% systematic error to every M reading.</span>";
+  } else {
+    box.className = "os-callout";
+    box.innerHTML = "<h4>Live status</h4><span>Apparatus operating normally.</span>";
+  }
+  draw();
+});
+document.getElementById("btnRecord").addEventListener("click", function () {
+  const r = ENGINE.compute();
+  trials.push({ fo: ENGINE.fo, fe: ENGINE.fe, L: ENGINE.L, M: r.M, Mo: r.Mo, Me: r.Me });
+  renderTable();
+});
+document.getElementById("btnReset").addEventListener("click", function () {
+  document.getElementById("foRange").value = 2;
+  document.getElementById("feRange").value = 5;
+  document.getElementById("tubeRange").value = 16;
+  document.getElementById("faultToggle").checked = false;
+  ENGINE.fault = false;
+  syncFromInputs();
+  document.getElementById("faultMsg").className = "os-callout";
+  document.getElementById("faultMsg").innerHTML = "<h4>Live status</h4><span>Apparatus operating normally.</span>";
+});
+document.getElementById("btnClear").addEventListener("click", function () {
+  trials.length = 0; renderTable();
+});
+
+/* ---- Notebook persistence ------------------------------------------------ */
+function flash(msg, ok) {
+  const el = document.getElementById("saveMsg");
+  el.style.display = "block";
+  el.className = "os-callout " + (ok === false ? "danger" : "ok");
+  el.textContent = msg;
+  setTimeout(function () { el.style.display = "none"; }, 4000);
+}
+
+document.getElementById("btnSave").addEventListener("click", async function () {
+  if (!trials.length) return flash("Record at least one reading first.", false);
+  await window.LabNotebook.open();
+  await window.LabNotebook.saveTrial(CONFIG.experimentId, {
+    class_level: CONFIG.classLevel, subject: CONFIG.subject, title: CONFIG.experimentTitle,
+    readings: trials.map(function (t) {
+      return { "fo (cm)": t.fo.toFixed(1), "fe (cm)": t.fe.toFixed(1), "L (cm)": t.L.toFixed(1),
+               "Mo": t.Mo.toFixed(2), "Me": t.Me.toFixed(2), "M (x)": t.M.toFixed(2) };
+    }),
+    results: { "Mean |M|": document.getElementById("statMean").textContent, "Std. Error": document.getElementById("statErr").textContent }
+  });
+  flash("Trial saved to the IndexedDB notebook.", true);
+});
+
+document.getElementById("btnExport").addEventListener("click", async function () {
+  await window.LabNotebook.open();
+  const html = await window.LabNotebook.exportToCBSEFormat(CONFIG.experimentId);
+  const w = window.open("", "_blank");
+  if (w) { w.document.write(html); w.document.close(); }
+  else flash("Allow pop-ups to view the exported CBSE sheet.", false);
+});
+
+/* ---- Tab switching ------------------------------------------------------- */
+document.getElementById("tabs").addEventListener("click", function (ev) {
+  const tab = ev.target.closest(".os-tab"); if (!tab) return;
+  document.querySelectorAll(".os-tab").forEach(function (t) { t.classList.remove("active"); });
+  document.querySelectorAll(".os-tabpanel").forEach(function (p) { p.classList.remove("active"); });
+  tab.classList.add("active");
+  document.querySelector('.os-tabpanel[data-panel="' + tab.dataset.tab + '"]').classList.add("active");
+});
+
+/* ---- Viva engine --------------------------------------------------------- */
+const examiner = new window.AIExaminer({
+  experimentId: CONFIG.experimentId,
+  experimentTitle: CONFIG.experimentTitle,
+  subject: CONFIG.subject,
+  classLevel: CONFIG.classLevel,
+  vivaBank: VIVA_BANK,
+  getObservations: function () {
+    return trials.map(function (t) { return { "fo": t.fo.toFixed(1), "fe": t.fe.toFixed(1), "L": t.L.toFixed(1), "M": t.M.toFixed(2) }; });
+  },
+  onToken: function (_chunk, full) { appendAI("examiner", full, true); },
+  onMessage: function (text) { appendAI("examiner", text, false); },
+  onError: function (e) { appendAI("system", "Error: " + (e.message || e), false); }
+});
+
+function appendAI(role, text, replaceLast) {
+  const host = document.getElementById("aiTranscript");
+  if (replaceLast) {
+    let last = host.querySelector('[data-stream="1"]');
+    if (!last) { last = document.createElement("div"); last.dataset.stream = "1"; last.className = "os-callout"; host.appendChild(last); }
+    last.textContent = text;
+  } else {
+    const d = document.createElement("div");
+    d.className = "os-callout " + (role === "student" ? "ok" : "warn");
+    d.textContent = (role === "student" ? "You: " : role === "examiner" ? "Examiner: " : "") + text;
+    host.appendChild(d);
+  }
+  host.scrollTop = host.scrollHeight;
+}
+
+/* offline viva */
+function renderOffline() {
+  const q = examiner.offlineQuestion();
+  const host = document.getElementById("vivaQA");
+  host.innerHTML = "";
+  document.getElementById("vivaProgress").textContent =
+    "Offline viva: " + examiner.offline.index + " / " + VIVA_BANK.length + " questions answered — score " +
+    examiner.offline.score + "/" + examiner.offline.total + ".";
+  if (!q) {
+    host.innerHTML = '<div class="os-callout ok"><h4>Viva complete</h4><span>Final score ' +
+      examiner.offline.score + "/" + examiner.offline.total + ". Review the model answers below.</span></div>";
+    examiner.offline.answers.forEach(function (a) {
+      const d = document.createElement("div");
+      d.className = "os-viva-item open";
+      d.innerHTML = '<div class="os-viva-q"><span class="qmark">Q</span><span>' + a.question + ' <span class="os-chip">' + a.mark + '/2</span></span></div>' +
+        '<div class="os-viva-a"><b>Your answer:</b> ' + (a.answer || "<em>blank</em>") + "<br><b>Model answer:</b> " + a.model + "</div>";
+      host.appendChild(d);
+    });
+    return;
+  }
+  const wrap = document.createElement("div");
+  wrap.className = "os-callout";
+  wrap.innerHTML = "<h4>Question " + (q.index + 1) + "</h4><span>" + q.question + "</span>";
+  const input = document.createElement("textarea");
+  input.className = "os-input"; input.rows = 3; input.placeholder = "Type your answer…";
+  const btn = document.createElement("button");
+  btn.className = "os-btn primary"; btn.textContent = "Submit Answer";
+  btn.style.marginTop = "8px";
+  btn.addEventListener("click", function () {
+    examiner.offlineSubmit(input.value);
+    renderOffline();
+  });
+  host.appendChild(wrap); host.appendChild(input); host.appendChild(btn);
+}
+
+document.getElementById("vivaStart").addEventListener("click", function () {
+  examiner.offlineStart(); renderOffline();
+});
+document.getElementById("modeOffline").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeAI").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "block";
+  document.getElementById("aiViva").style.display = "none";
+});
+document.getElementById("modeAI").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeOffline").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "none";
+  document.getElementById("aiViva").style.display = "block";
+});
+document.getElementById("aiStart").addEventListener("click", function () {
+  examiner.configure({
+    provider: document.getElementById("aiProvider").value,
+    model: document.getElementById("aiModel").value.trim(),
+    endpoint: document.getElementById("aiEndpoint").value.trim(),
+    apiKey: document.getElementById("aiKey").value.trim()
+  });
+  document.getElementById("aiTranscript").innerHTML = "";
+  examiner.aiStart();
+});
+document.getElementById("aiSend").addEventListener("click", function () {
+  const box = document.getElementById("aiReply");
+  if (!box.value.trim()) return;
+  appendAI("student", box.value, false);
+  const text = box.value; box.value = "";
+  examiner.aiSend(text);
+});
+
+/* ---- Boot ---------------------------------------------------------------- */
+(async function () {
+  syncFromInputs();
+  renderTable();
+  try {
+    await window.LabNotebook.open();
+    document.getElementById("dbChip").textContent = window.LabNotebook.isFallback() ? "memory" : "IndexedDB";
+  } catch (e) { document.getElementById("dbChip").textContent = "unavailable"; }
+})();
+</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{var el=document.querySelector("[data-os-quiz]");if(el&&window.OSQuiz&&!el.getAttribute("data-os-quiz-done")){var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:"";window.OSQuiz.renderInto(el,id);}}catch(e){}});</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{if(window.OSProcedure&&window.OSProcedure.initFromBank)window.OSProcedure.initFromBank();}catch(e){}});</script>
+<script>/* OS-REPORT-WIRING: generic printable-report hook (idempotent). */
+window.addEventListener("DOMContentLoaded",function(){
+  var b=document.getElementById("btnReport");
+  if(!b||b.getAttribute("data-os-report-done"))return;
+  b.setAttribute("data-os-report-done","1");
+  b.addEventListener("click",function(){
+    try{
+      if(!window.OSReport){alert("Report helper (assets/js/report.js) failed to load.");return;}
+      var T=(typeof trials!=="undefined"&&Array.isArray(trials))?trials:[];
+      if(!T.length){alert("Record at least one reading first.");return;}
+      var cfg=(typeof CONFIG!=="undefined"&&CONFIG)?CONFIG:{};
+      var th=document.querySelector('[data-panel="theory"]');
+      var mEl=document.getElementById("statMean"),eEl=document.getElementById("statErr"),
+          nEl=document.getElementById("statN"),gEl=document.getElementById("statG");
+      window.OSReport.printLabReport({
+        experimentId:cfg.experimentId||document.title,
+        title:cfg.experimentTitle||document.title,
+        readings:T,
+        stats:{
+          mean:mEl?mEl.textContent:(gEl?gEl.textContent:""),
+          stderr:eEl?eEl.textContent:"",
+          n:nEl?nEl.textContent:T.length
+        },
+        canvasEl:document.getElementById("stage"),
+        theory:th?th.innerText.slice(0,600):""
+      });
+    }catch(err){alert("Report failed: "+(err&&err.message||err));}
+  });
+});</script>
+<script>/* OS-I18N-CHROME: re-render dynamic chrome on language toggle (guarded, idempotent). */
+(function(){function rr(){try{if(typeof renderHead==="function"&&document.getElementById("obsHead"))renderHead();}catch(e){}try{if(typeof renderTable==="function"&&document.getElementById("obsTable"))renderTable();}catch(e){}try{if(typeof recompute==="function")recompute();}catch(e){}}if(window.__osI18nChromeWired)return;window.__osI18nChromeWired=true;document.addEventListener("os-lang-change",rr);})();</script>
+
+<!-- OS-FLUID-SHELL hooks: toast stack + alert routing + proxy/fader/indicator targets.
+     CSS lives in lab-theme.css; motion.js sibling drives animation. Idempotent. -->
+<div class="os-toasts os-toast-stack" id="osToasts" role="status" aria-live="polite" aria-atomic="false"></div>
+<script>/* OS-TOAST: toast system replacing window.alert (guarded, idempotent). */
+(function(){
+  if(window.OSToast&&window.OSToast.__osFluid)return;
+  function host(){
+    var h=document.getElementById("osToasts");
+    if(h)return h;
+    h=document.createElement("div");
+    h.className="os-toasts os-toast-stack";h.id="osToasts";
+    h.setAttribute("role","status");h.setAttribute("aria-live","polite");h.setAttribute("aria-atomic","false");
+    document.body.appendChild(h);return h;
+  }
+  function show(msg,type){
+    try{
+      var h=host();
+      var t=document.createElement("div");
+      var kind=(type==="ok"||type==="success")?"ok":(type==="danger"||type==="error")?"danger":(type==="warn"?"warn":"");
+      t.className=("os-toast "+kind).trim();
+      var dot=document.createElement("span");dot.className="os-toast-dot";dot.setAttribute("aria-hidden","true");
+      var m=document.createElement("span");m.className="os-toast-msg";m.textContent=String(msg==null?"":msg);
+      var x=document.createElement("button");x.className="os-toast-close";x.type="button";x.textContent="×";x.setAttribute("aria-label","Dismiss");
+      x.addEventListener("click",function(){dismiss(t);});
+      t.appendChild(dot);t.appendChild(m);t.appendChild(x);
+      h.appendChild(t);
+      while(h.children.length>4)h.removeChild(h.firstChild);
+      setTimeout(function(){dismiss(t);},4200);
+      return t;
+    }catch(e){try{window.__osNativeAlert(String(msg));}catch(_){}return null;}
+  }
+  function dismiss(t){
+    if(!t||!t.parentNode||t.classList.contains("is-leaving"))return;
+    try{
+      t.classList.add("is-leaving");
+      setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},200);
+    }catch(e){if(t.parentNode)t.parentNode.removeChild(t);}
+  }
+  window.OSToast={show:show,dismiss:dismiss,__osFluid:true};
+  if(!window.__osNativeAlert){
+    try{window.__osNativeAlert=window.alert;}catch(e){}
+    try{window.alert=function(m){return show(m,"warn");};}catch(e){}
+  }
+  /* Sticky action-bar proxies: [data-os-proxy] clicks forward to #id buttons. */
+  document.addEventListener("click",function(ev){
+    var p=ev.target&&ev.target.closest?ev.target.closest("[data-os-proxy]"):null;
+    if(!p)return;
+    var target=document.getElementById(p.getAttribute("data-os-proxy"));
+    if(target&&target!==p&&typeof target.click==="function"){ev.preventDefault();target.click();}
+  });
+})();</script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="../assets/js/apparatus3d.js"></script>
+<script>/* OS-VIEW-TOGGLE: 2D/3D hero toggle (per-lab persist) + file:// 3D notice. Idempotent. */
+(function(){
+  if(window.__osViewToggle)return;window.__osViewToggle=true;
+  function labKey(){
+    try{
+      var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:location.pathname;
+      return "os-view:"+id;
+    }catch(e){return "os-view:lab";}
+  }
+  function apply(mode){
+    var show3D=(mode!=="2d");
+    var wrap=document.querySelector("[data-os-3d-wrap]");
+    if(wrap)wrap.style.display=show3D?"":"none";
+    var cvs=document.querySelectorAll("canvas[data-os-2d]");
+    for(var i=0;i<cvs.length;i++){cvs[i].style.display=show3D?"none":"";}
+    var pills=document.querySelectorAll("[data-os-view]");
+    for(var j=0;j<pills.length;j++){
+      var on=pills[j].getAttribute("data-os-view")===(show3D?"3d":"2d");
+      pills[j].classList.toggle("active",on);
+      pills[j].setAttribute("aria-pressed",on?"true":"false");
+    }
+  }
+  document.addEventListener("click",function(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest("[data-os-view]"):null;
+    if(!b)return;
+    var m=b.getAttribute("data-os-view");
+    try{localStorage.setItem(labKey(),m);}catch(e){}
+    apply(m);
+  });
+  function init(){
+    var m=null;
+    try{m=localStorage.getItem(labKey());}catch(e){}
+    apply(m==="2d"?"2d":"3d");
+    try{
+      if(location.protocol==="file:"){
+        var ns=document.querySelectorAll("[data-os-file-notice]");
+        for(var k=0;k<ns.length;k++){ns[k].hidden=false;}
+      }
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+<script>/* OS-ONLINE-SHELL: tab morph indicator + ScrollTrigger reveals + premium flag. Idempotent. */
+(function(){
+  if(window.__osOnlineShell)return;window.__osOnlineShell=true;
+  window.OSOnline={premium:true};
+  /* Tab morph indicator: glide #tabIndicator under the active tab. */
+  function moveIndicator(tabsEl){
+    try{
+      var ind=tabsEl.querySelector(".os-tab-indicator")||document.getElementById("tabIndicator");
+      var tab=tabsEl.querySelector(".os-tab.active");
+      if(!ind||!tab)return;
+      var tr=tabsEl.getBoundingClientRect(),r=tab.getBoundingClientRect();
+      ind.style.left=(r.left-tr.left)+"px";
+      ind.style.width=r.width+"px";
+      tabsEl.setAttribute("data-os-indicator-ready","1");
+    }catch(e){}
+  }
+  function wireTabs(){
+    document.querySelectorAll(".os-tabs").forEach(function(tabsEl){
+      moveIndicator(tabsEl);
+      ["click","keydown"].forEach(function(ev){
+        tabsEl.addEventListener(ev,function(){setTimeout(function(){moveIndicator(tabsEl);},0);});
+      });
+    });
+    window.addEventListener("resize",function(){
+      document.querySelectorAll(".os-tabs").forEach(moveIndicator);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireTabs);
+  else wireTabs();
+  /* ScrollTrigger reveals: one-shot panel entrances (motion.js guards reduced motion). */
+  function reveals(){
+    try{
+      if(!(window.gsap&&window.ScrollTrigger))return;
+      window.gsap.registerPlugin(window.ScrollTrigger);
+      window.gsap.utils.toArray(".os-panel").forEach(function(p){
+        window.gsap.fromTo(p,{y:14,opacity:0},{y:0,opacity:1,duration:.45,ease:"power2.out",
+          scrollTrigger:{trigger:p,start:"top 92%",once:true},clearProps:"transform,opacity"});
+      });
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",reveals);
+  else reveals();
+})();</script>
+</body>
+</html>

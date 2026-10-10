@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool NCERT — Virtual STEM Laboratory · Online Edition</title>
+<meta name="description" content="Premium online edition of the OpenSchool NCERT virtual STEM laboratory — 78 curriculum-mapped Class 9–12 experiments with CDN-accelerated motion design." />
+<!-- ONLINE EDITION: Google Fonts CDN (the offline build stays font-free) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/lab-theme.css?v=3" />
+<style>
+/* OS-ONLINE-PREMIUM (index-only): editorial hub over the shared lab-theme.
+   Premium deltas vs the offline hub: Fraunces display + Inter body, film
+   grain, marquee ticker, 3D-tilt spreads, Ctrl+K command palette, online
+   colophon. Zero references to the offline build. */
+:root{
+  --os-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --os-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+body{font-family:var(--os-body)}
+.os-hero-cine{position:relative;overflow:hidden;border:1px solid var(--os-line);border-radius:14px;
+  background:linear-gradient(180deg,rgba(26,41,60,.55),rgba(12,20,19,.75));margin-top:18px}
+#heroArt{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:.95}
+.hero-inner{position:relative;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(260px,.85fr);gap:30px;padding:clamp(24px,4vw,54px)}
+.os-hero-cine .os-kicker{display:inline-flex;align-items:center;gap:8px}
+.os-hero-cine .os-kicker::before{content:"";width:26px;height:2px;background:var(--os-accent);display:inline-block}
+.display{font-family:var(--os-display);font-optical-sizing:auto;font-size:clamp(46px,8.2vw,102px);line-height:.96;letter-spacing:-.025em;margin:12px 0 0;font-weight:600}
+.display em{font-style:italic;font-weight:400;background:linear-gradient(92deg,var(--os-accent-pale),var(--os-accent) 60%,var(--os-accent-deep));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.brass-rule{position:relative;height:3px;margin:20px 0 16px;max-width:560px;
+  background:linear-gradient(90deg,var(--os-accent) 0%,var(--os-accent-deep) 55%,transparent 100%)}
+.brass-rule::after{content:"";position:absolute;right:0;top:50%;width:9px;height:9px;transform:translateY(-50%) rotate(45deg);
+  background:var(--os-accent);box-shadow:0 0 12px var(--os-accent-glow)}
+.hero-sub{margin:0;max-width:60ch;color:var(--os-text-muted);font-size:15px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.hero-stats{display:flex;flex-wrap:wrap;gap:10px 30px;margin:22px 0 0;padding:0;list-style:none}
+.hero-stats li{display:flex;align-items:baseline;gap:9px;font-size:12.5px;color:var(--os-text-muted)}
+.hero-stats b{font-family:var(--os-mono);font-size:26px;color:var(--os-text);font-weight:700;font-variant-numeric:tabular-nums}
+.hero-stats b .suffix{font-size:15px;color:var(--os-accent)}
+.folio{border:1px solid var(--os-line);border-radius:10px;background:rgba(8,14,24,.72);padding:16px;align-self:start;font-variant-numeric:tabular-nums}
+.folio h4{margin:0 0 2px;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--os-accent)}
+.folio .folio-sub{font-size:12px;color:var(--os-text-dim);margin:0 0 12px}
+.fbar{margin:9px 0}
+.fbar .lab{display:flex;justify-content:space-between;font-size:12px;color:var(--os-text-muted)}
+.fbar .lab b{color:var(--os-text);font-family:var(--os-mono)}
+.fbar .track{height:6px;border-radius:99px;background:var(--os-bg-600);border:1px solid var(--os-line-soft);overflow:hidden;margin-top:4px}
+.fbar .track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--os-accent-deep),var(--os-accent));border-radius:99px;transition:width 1s var(--os-ease-enter)}
+.folio .feat-mini{margin-top:12px;border-top:1px dashed var(--os-line);padding-top:10px;font-size:12.5px;color:var(--os-text-muted)}
+.folio .feat-mini a{color:var(--os-accent)}
+/* Instrument dials */
+.os-dials{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px;margin:16px 0 4px}
+.dial{display:flex;align-items:center;gap:13px;border:1px solid var(--os-line);border-radius:12px;
+  background:linear-gradient(180deg,rgba(26,41,60,.55),rgba(12,20,19,.6));padding:12px 14px;min-width:0}
+.dial .dial-cap{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--os-text-dim)}
+.dial .dial-val{font-family:var(--os-mono);font-size:15px;color:var(--os-text)}
+.ring{position:relative;width:56px;height:56px;flex:none}
+.ring svg{width:56px;height:56px;transform:rotate(-90deg)}
+.ring .pct{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--os-mono);font-size:11px;color:var(--os-text)}
+.flame{width:24px;height:32px;flex:none;position:relative;
+  background:radial-gradient(circle at 50% 78%,#fff1cf 0 18%,var(--os-accent) 34%,#c96a1e 62%,rgba(201,106,30,0) 72%),
+  linear-gradient(180deg,#f5cf7d,#c96a1e 75%,#7a3c10);
+  border-radius:50% 50% 50% 50%/62% 62% 38% 38%;box-shadow:0 0 16px rgba(232,179,75,.45)}
+.flame::after{content:"";position:absolute;left:50%;bottom:6px;width:10px;height:14px;transform:translateX(-50%);
+  background:radial-gradient(circle at 50% 75%,#fff 0 30%,#ffd777 55%,rgba(255,215,119,0) 75%);border-radius:inherit}
+@media (prefers-reduced-motion:no-preference){.flame{animation:flick 1.6s ease-in-out infinite;transform-origin:50% 90%}
+  @keyframes flick{0%,100%{transform:scale(1)}50%{transform:scale(1.06) skewX(1.5deg)}}}
+/* Marquee ticker (online flourish) */
+.ticker{overflow:hidden;border:1px solid var(--os-line);border-radius:10px;margin:14px 0 0;
+  background:rgba(8,14,24,.6);font-family:var(--os-mono);font-size:12px;color:var(--os-text-muted);white-space:nowrap}
+.ticker .lane{display:inline-block;padding:9px 0;animation:tick 36s linear infinite}
+.ticker .lane span{margin:0 22px}
+.ticker .lane b{color:var(--os-accent)}
+@media (prefers-reduced-motion:reduce){.ticker .lane{animation:none}}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.queue-mini{font-size:12px;color:var(--os-text-muted)}
+.queue-mini b{color:var(--os-accent);font-family:var(--os-mono)}
+/* Filters + palette hint */
+.os-filters{display:flex;flex-wrap:wrap;gap:9px;align-items:center;justify-content:flex-start;margin:18px auto;max-width:1100px}
+.palette{position:relative;flex:1 1 300px;max-width:520px;display:flex;align-items:center}
+.palette .os-search{width:100%;padding-right:96px}
+.palette .kbd{position:absolute;right:10px;display:flex;gap:4px;align-items:center;pointer-events:none}
+.kbd kbd{font-family:var(--os-mono);font-size:11px;border:1px solid var(--os-line);border-bottom-width:2px;border-radius:5px;
+  padding:1px 7px;background:var(--os-bg-600);color:var(--os-text-muted)}
+.palette-hint{flex-basis:100%;font-size:12px;color:var(--os-text-dim)}
+.palette-hint b{color:var(--os-text-muted)}
+/* Editorial spreads with 3D tilt */
+.spreads{display:flex;flex-direction:column;gap:16px;margin:8px 0 20px;perspective:1200px}
+.spread{position:relative;display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:18px;align-items:center;
+  border:1px solid var(--os-line);border-radius:12px;padding:20px 22px;overflow:hidden;
+  background:linear-gradient(100deg,rgba(26,41,60,.72),rgba(12,20,19,.72));
+  transform-style:preserve-3d;will-change:transform;transition:box-shadow .3s ease}
+.spread::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(180deg,var(--os-accent-pale),var(--os-accent),var(--os-accent-deep))}
+.spread.tilting{box-shadow:0 24px 60px rgba(0,0,0,.45),0 0 0 1px var(--os-line-soft)}
+.spread .glare{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s ease;
+  background:radial-gradient(600px circle at var(--gx,50%) var(--gy,50%),rgba(232,179,75,.14),transparent 60%)}
+.spread.tilting .glare{opacity:1}
+.spread.flip{grid-template-columns:auto minmax(0,1fr) 110px}
+.spread.flip .folio-num{order:3}
+.folio-num{font-family:var(--os-display);font-style:italic;font-size:76px;line-height:1;color:transparent;
+  -webkit-text-stroke:1.5px var(--os-accent-deep);opacity:.9;user-select:none}
+.spread h3{font-family:var(--os-display);font-weight:600}
+.spread .ed-kicker{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--os-accent);font-weight:800}
+.spread h3{margin:6px 0;font-size:clamp(19px,2.6vw,28px);letter-spacing:-.01em;line-height:1.15}
+.spread .aim{margin:0 0 10px;color:var(--os-text-muted);font-size:13.5px;max-width:70ch}
+.spread .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+.spread .go{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.ghost-num{position:absolute;right:14px;bottom:-18px;font-family:var(--os-mono);font-size:12px;color:var(--os-text-dim);opacity:.7}
+/* Cards: asymmetric rhythm */
+.os-cards--asym{grid-template-columns:repeat(6,minmax(0,1fr))}
+.os-cards--asym .os-card{grid-column:span 2;min-height:220px}
+.os-cards--asym .os-card:nth-child(3n+2){margin-top:16px}
+.os-cards--asym .os-card .launch{margin-top:auto;padding-top:8px}
+.os-card.is-active{outline:2px solid var(--os-accent);outline-offset:2px}
+.os-card h3{font-family:var(--os-display);font-weight:600}
+@media (max-width:980px){.os-cards--asym{grid-template-columns:repeat(2,minmax(0,1fr))}.os-cards--asym .os-card{grid-column:auto}.os-cards--asym .os-card:nth-child(3n+2){margin-top:0}
+  .hero-inner{grid-template-columns:1fr}.os-dials{grid-template-columns:1fr}.spread,.spread.flip{grid-template-columns:1fr}.spread.flip .folio-num{order:0}.folio-num{font-size:56px}}
+@media (max-width:600px){.os-cards--asym{grid-template-columns:1fr}}
+.os-skel{pointer-events:none;min-height:220px}
+.os-skel .sk{border-radius:8px;background:rgba(127,143,178,.22)}
+.os-skel .sk-line{height:12px}
+.os-skel .sk-w40{width:40%}.os-skel .sk-w60{width:60%}.os-skel .sk-w90{width:90%}
+.os-skel .sk-title{height:18px;width:75%}
+.os-skel .sk-cta{height:30px;width:45%;border-radius:8px}
+@media (prefers-reduced-motion:no-preference){.os-skel{animation:osSkelPulse 1.2s ease-in-out infinite}}
+@keyframes osSkelPulse{0%,100%{opacity:1}50%{opacity:.55}}
+.os-empty{grid-column:1/-1;text-align:center;border:1px dashed var(--os-line);border-radius:var(--os-radius);padding:44px 22px;background:rgba(11,18,32,.35)}
+.os-empty__icon{font-size:34px;line-height:1;color:var(--os-text-dim)}
+.os-empty h3{margin:10px 0 6px;font-size:17px}
+.os-empty p{margin:0 auto 16px;max-width:52ch;color:var(--os-text-muted);font-size:13.5px}
+.os-card.os-enter{opacity:0;transform:translateY(14px)}
+.os-card.os-enter.is-in{opacity:1;transform:none;transition:opacity .45s ease,transform .45s ease}
+.spread.os-enter{opacity:0;transform:translateY(14px)}
+.spread.os-enter.is-in{opacity:1;transform:none;transition:opacity .45s ease,transform .45s ease}
+@media (prefers-reduced-motion:reduce){.os-card.os-enter,.spread.os-enter{opacity:1;transform:none}.os-card.os-enter.is-in,.spread.os-enter.is-in{transition:none}.os-skel{animation:none}.fbar .track i{transition:none}}
+/* Command palette (Ctrl+K) */
+.cmdk-backdrop{position:fixed;inset:0;z-index:80;display:none;align-items:flex-start;justify-content:center;
+  padding:12vh 16px 16px;background:rgba(4,8,14,.62);backdrop-filter:blur(6px)}
+.cmdk-backdrop.open{display:flex}
+.cmdk{width:min(640px,100%);border:1px solid var(--os-line);border-radius:14px;overflow:hidden;
+  background:linear-gradient(180deg,#101c30,#0a1220);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.cmdk input{width:100%;border:0;outline:0;background:transparent;color:var(--os-text);
+  font-family:var(--os-body);font-size:15px;padding:15px 16px;border-bottom:1px solid var(--os-line)}
+.cmdk ul{list-style:none;margin:0;padding:8px;max-height:46vh;overflow:auto}
+.cmdk li{display:flex;gap:10px;align-items:baseline;padding:9px 11px;border-radius:9px;font-size:13.5px;
+  color:var(--os-text-muted);cursor:pointer}
+.cmdk li .k{font-family:var(--os-mono);font-size:11px;color:var(--os-accent);flex:none}
+.cmdk li b{color:var(--os-text);font-weight:600}
+.cmdk li.sel{background:rgba(232,179,75,.12);color:var(--os-text);outline:1px solid var(--os-line-soft)}
+.cmdk .foot{display:flex;gap:12px;padding:9px 14px;border-top:1px solid var(--os-line-soft);
+  font-size:11.5px;color:var(--os-text-dim);font-family:var(--os-mono)}
+/* Online badge + film grain */
+.mode-online{border-color:var(--os-accent)!important}
+.mode-online b{color:var(--os-accent)!important}
+.grain{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+/* Colophon footer */
+.colophon{border-top:1px solid var(--os-line);margin-top:44px;padding:30px 22px 34px;display:grid;
+  grid-template-columns:1.3fr 1fr 1fr;gap:22px;max-width:1100px;margin-left:auto;margin-right:auto;text-align:left}
+.colophon h5{margin:0 0 8px;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:var(--os-accent)}
+.colophon p{margin:0;font-size:12.5px;color:var(--os-text-muted);max-width:44ch}
+.colophon nav{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.colophon .fine{grid-column:1/-1;border-top:1px dashed var(--os-line-soft);padding-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px;color:var(--os-text-dim)}
+@media (max-width:800px){.colophon{grid-template-columns:1fr}}
+@media print{.os-hero-cine,.os-dials,.os-filters,.no-print,.ticker{display:none!important}}
+</style>
+</head>
+<body>
+<a class="os-skip-link" href="#main-content">Skip to main content</a>
+<div class="grain" aria-hidden="true"></div>
+<div class="os-app">
+
+  <header class="os-topbar">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>OpenSchool<small data-i18n="brand.tag">NCERT VIRTUAL STEM LAB</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-chip" id="dbStatus"><span data-i18n="topbar.notebook">Notebook:</span> <b>checking…</b></span>
+    <span class="os-chip mode-online"><span data-i18n="topbar.mode">Mode:</span> <b>Online · CDN</b></span>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi">हिं</button>
+    </span>
+  </header>
+
+  <main class="os-wrap" id="main-content">
+    <!-- Cinematic editorial hero: ambient canvas + Fraunces display + live counters -->
+    <section class="os-hero-cine" aria-label="Laboratory overview">
+      <canvas id="heroArt" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <div>
+          <span class="os-kicker">Online edition · CDN-accelerated · Zero-build</span>
+          <h1 class="display" data-i18n="hero.title">Virtual <em>STEM</em> laboratory</h1>
+          <div class="brass-rule" aria-hidden="true"></div>
+          <p class="hero-sub" data-i18n="hero.sub">Experiential, apparatus-free science practicals mapped to the NCERT / CBSE Class 9–12 curriculum.
+             This premium online edition pairs the full 78-experiment cabinet with editorial motion design — press Ctrl+K to jump anywhere.</p>
+          <div class="hero-cta">
+            <a class="os-btn primary" href="#catalog">Browse the catalog ↓</a>
+            <button class="os-btn ghost" type="button" id="cmdkOpen">⌘ Command palette <span class="os-mono" style="opacity:.7">Ctrl+K</span></button>
+            <a class="os-btn ghost" href="formulas.html">ƒx Formula Sheets</a>
+            <span class="os-chip mode-online">Online Edition · Fraunces + GSAP CDN</span>
+          </div>
+          <ul class="hero-stats" aria-label="Library statistics">
+            <li><b><span data-count="total">78</span></b><span>experiments</span></li>
+            <li><b><span data-count="bio">12</span></b><span>biology</span></li>
+            <li><b><span data-count="classes">4</span></b><span>classes IX–XII</span></li>
+            <li><b><span data-count="labs">78</span><span class="suffix">labs</span></b><span>live</span></li>
+          </ul>
+        </div>
+        <aside class="folio" aria-label="Catalog composition">
+          <h4>Field ledger · Vol. IX–XII</h4>
+          <p class="folio-sub">Composition of the online cabinet, counted live from the catalog.</p>
+          <div class="fbar"><div class="lab"><span>Physics</span><b data-count="phys">37</b></div><div class="track"><i id="barPhys"></i></div></div>
+          <div class="fbar"><div class="lab"><span>Chemistry</span><b data-count="chem">29</b></div><div class="track"><i id="barChem"></i></div></div>
+          <div class="fbar"><div class="lab"><span>Biology</span><b data-count="bio2">12</b></div><div class="track"><i id="barBio"></i></div></div>
+          <p class="feat-mini" id="folioFeat">Featured this week — <a href="#featured">two editorial spreads ↓</a></p>
+        </aside>
+      </div>
+    </section>
+
+    <div class="ticker" aria-hidden="true"><div class="lane" id="tickerLane"></div></div>
+
+    <!-- Instrument dials: mastery ring · streak flame (CSS) · mistake book -->
+    <section class="os-dials" aria-label="Progress instruments">
+      <div class="dial">
+        <div class="ring" role="img" aria-label="Mastery progress ring">
+          <svg viewBox="0 0 56 56" aria-hidden="true">
+            <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(127,127,127,.25)" stroke-width="6"/>
+            <circle id="osRingFg" cx="28" cy="28" r="24" fill="none" stroke="#e8b34b" stroke-width="6"
+              stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
+          </svg>
+          <span class="pct" id="osRingPct">0%</span>
+        </div>
+        <div>
+          <div class="dial-cap">Mastery</div>
+          <div class="dial-val"><span class="os-chip" id="osXpChip"><b>0</b> XP</span>
+            <span class="os-chip" id="osLevelChip">Novice</span></div>
+        </div>
+      </div>
+      <div class="dial">
+        <span class="flame" aria-hidden="true"></span>
+        <div>
+          <div class="dial-cap">Streak</div>
+          <div class="dial-val"><span class="os-chip" id="osStreakChip">0-day streak</span></div>
+        </div>
+      </div>
+      <div class="dial">
+        <div>
+          <div class="dial-cap">Queue</div>
+          <div class="queue-mini" id="osQueueMini">Today's revision: <b>—</b></div>
+          <div style="margin-top:6px"><a class="os-chip" id="osMistakesChip" href="mistakes.html" style="text-decoration:none">📝 Mistakes: <b>0</b> → review</a></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="os-filters" id="catalog">
+      <div class="os-row" id="classFilters" role="group" aria-label="Filter by class">
+        <button class="os-filter-pill active" data-class="all" aria-pressed="true" data-i18n="filters.allClasses">All Classes</button>
+        <button class="os-filter-pill" data-class="9" aria-pressed="false" data-i18n="filters.class9">Class 9</button>
+        <button class="os-filter-pill" data-class="10" aria-pressed="false" data-i18n="filters.class10">Class 10</button>
+        <button class="os-filter-pill" data-class="11" aria-pressed="false" data-i18n="filters.class11">Class 11</button>
+        <button class="os-filter-pill" data-class="12" aria-pressed="false" data-i18n="filters.class12">Class 12</button>
+      </div>
+      <div class="os-row" id="subjectFilters" role="group" aria-label="Filter by subject">
+        <button class="os-filter-pill active" data-subject="all" aria-pressed="true" data-i18n="filters.allSubjects">All Subjects</button>
+        <button class="os-filter-pill" data-subject="physics" aria-pressed="false" data-i18n="filters.physics">Physics</button>
+        <button class="os-filter-pill" data-subject="chemistry" aria-pressed="false" data-i18n="filters.chemistry">Chemistry</button>
+        <button class="os-filter-pill" data-subject="biology" aria-pressed="false" data-i18n="filters.biology">Biology</button>
+      </div>
+      <div class="palette">
+        <label class="os-hidden" for="search">Search experiments</label>
+        <input class="os-input os-search" id="search" type="search" data-i18n-ph="search.placeholder" placeholder="Search experiment, aim, or keyword…" aria-label="Search experiments by title, aim, or keyword" autocomplete="off" />
+        <span class="kbd" aria-hidden="true"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+      </div>
+      <span class="os-chip" id="resultCount"><b>0</b> experiments</span>
+      <span class="palette-hint"><b>Ctrl+K</b> command palette · <b>↑↓</b> navigate results · <b>↵</b> open lab · <b>/</b> focus · <b>esc</b> clear</span>
+    </div>
+
+    <section class="os-panel" id="plannerPanel" aria-label="Today's revision plan">
+      <div class="os-body" id="plannerWidget"><p class="os-dim" style="margin:0">Loading revision plan…</p></div>
+    </section>
+    <div class="os-row" style="margin:10px 0" role="group" aria-label="Bookmark view">
+      <button class="os-filter-pill" id="starredFilter" aria-pressed="false" type="button">☆ Starred only</button>
+      <span class="os-chip" id="bookmarkCount"><b>0</b> starred</span>
+    </div>
+
+    <div class="spreads" id="featured" aria-label="Featured laboratories"></div>
+    <div class="os-cards os-cards--asym" id="cards" aria-live="polite"></div>
+  </main>
+
+  <footer class="os-footer" style="padding:0;border:none;margin-top:0">
+    <div class="colophon">
+      <div>
+        <h5>Colophon</h5>
+        <p><span data-i18n="footer.note">OpenSchool NCERT · Online edition · IndexedDB-powered lab notebook ·</span>
+        Set in Fraunces &amp; Inter over Google Fonts; motion scored with GSAP + ScrollTrigger over CDN. Ambient art is a canvas tide; grain is an inline SVG tile.</p>
+      </div>
+      <nav aria-label="Laboratory">
+        <h5>Index</h5>
+        <a href="teacher-dashboard.html" data-i18n="dashboard.title">Teacher Dashboard</a>
+        <a href="exam.html">Exam Hall (Timed Paper)</a>
+        <a href="formulas.html" data-i18n="formulas.title">Formula Sheets</a>
+      </nav>
+      <nav aria-label="Notebook">
+        <h5>Notebook</h5>
+        <a href="mistakes.html">Mistake Book</a>
+        <a href="tests.html">Kernel Tests</a>
+        <span id="storageNote"></span>
+      </nav>
+      <div class="fine">
+        <span class="os-chip mode-online">Online Edition · Fonts + GSAP via CDN · labs/ served alongside</span>
+        <span class="os-mono" id="colophonCount">CATALOG 78</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- Command palette overlay -->
+<div class="cmdk-backdrop" id="cmdkBackdrop" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk">
+    <input id="cmdkInput" type="text" placeholder="Type a lab, aim, class, or subject…  (↑↓ navigate · ↵ open · esc close)" autocomplete="off" aria-label="Command palette search" />
+    <ul id="cmdkList" role="listbox" aria-label="Matching experiments"></ul>
+    <div class="foot"><span>↵ open lab</span><span>↑↓ move</span><span>esc close</span><span id="cmdkCount"></span></div>
+  </div>
+</div>
+
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/catalog-hi.js"></script>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/planner.js"></script>
+<script src="assets/js/bookmarks.js"></script>
+<script src="assets/js/mastery.js"></script>
+<script src="assets/js/mistakes.js"></script>
+<!-- ONLINE EDITION: GSAP 3.12 + ScrollTrigger over jsDelivr CDN (local vendored copy is the fallback) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+/* Online CDN fallback: if jsDelivr is unreachable, use the vendored copy. */
+(function () {
+  if (!window.gsap) {
+    var s = document.createElement("script");
+    s.src = "assets/vendor/gsap/gsap.min.js";
+    document.head.appendChild(s);
+  }
+  try { if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger); } catch (e) {}
+})();
+</script>
+<script>
+/* ==========================================================================
+   OpenSchool curriculum catalog — same 78-lab cabinet as manifests/catalog.json
+   (inline so the hub paints instantly; verified against the manifest below).
+   ========================================================================== */
+const CATALOG = [
+  { id:"P-C09-01", cls:9, subject:"physics", archetype:"VOLUMETRIC_GLASSWARE", title:"Density of a Solid (Archimedes' Principle)", aim:"Determine the density of a solid (denser than water) using a spring balance and a measuring cylinder.", ready:true, href:"labs/class9/density_archimedes.html" },
+  { id:"P-C09-02", cls:9, subject:"physics", archetype:"1D_BRIDGE", title:"Verification of Ohm's Law", aim:"Verify Ohm's law by studying the variation of current with potential difference across a resistor.", ready:true, href:"labs/class9/ohm_law_basic.html" },
+  { id:"P-C09-03", cls:9, subject:"physics", archetype:"OPTICS_RAIL", title:"Refraction through a Glass Slab", aim:"Trace the path of a ray of light passing through a rectangular glass slab and measure the lateral displacement and angle of refraction.", ready:true, href:"labs/class9/refraction_glass_slab.html" },
+  { id:"P-C09-04", cls:9, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Laws of Reflection of Sound", aim:"Verify the laws of reflection of sound using two tubes and a reflecting surface.", ready:true, href:"labs/class9/sound_reflection.html" },
+  { id:"P-C09-05", cls:9, subject:"physics", archetype:"VOLUMETRIC_GLASSWARE", title:"Buoyant Force and Displaced Liquid", aim:"Establish the relation between the weight of a body and the buoyant force acting on it.", ready:true, href:"labs/class9/buoyancy_relation.html" },
+  { id:"P-C09-06", cls:9, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"True Solution, Colloid and Suspension", aim:"Prepare a true solution, a colloid and a suspension, and distinguish them by their properties.", ready:true, href:"labs/class9/solution_types.html" },
+  { id:"P-C09-07", cls:9, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Separation of a Mixture by Chromatography", aim:"Separate the components of a mixture using sublimation and paper chromatography.", ready:true, href:"labs/class9/mixture_separation.html" },
+  { id:"P-C09-08", cls:9, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"Melting Point of Ice and Boiling Point of Water", aim:"Determine the melting point of ice and the boiling point of water.", ready:true, href:"labs/class9/melting_boiling.html" },
+  { id:"P-C09-09", cls:9, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Action of Acids and Bases on Indicators", aim:"Study the action of acids and bases on indicators and test the pH of common solutions.", ready:true, href:"labs/class9/acid_base_indicator.html" },
+  { id:"P-C09-10", cls:9, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Reaction of Acids with Metals and Carbonates", aim:"Carry out the reaction of acids with metals and with metal carbonates and identify the gases evolved.", ready:true, href:"labs/class9/acid_metal_carbonate.html" },
+  { id:"P-C10-01", cls:10, subject:"physics", archetype:"1D_BRIDGE", title:"Resistors in Series and Parallel", aim:"Determine the equivalent resistance of a combination of resistors connected in series and in parallel.", ready:true, href:"labs/class10/resistance_combo.html" },
+  { id:"P-C10-02", cls:10, subject:"physics", archetype:"OPTICS_RAIL", title:"Image Formation by a Convex Lens", aim:"Determine the focal length of a convex lens by focusing a distant object and by the u–v method.", ready:true, href:"labs/class10/convex_lens_focal.html" },
+  { id:"P-C10-03", cls:10, subject:"physics", archetype:"OPTICS_RAIL", title:"Image Formation by a Concave Mirror", aim:"Study the nature and position of the image formed by a concave mirror for different object distances.", ready:true, href:"labs/class10/concave_mirror.html" },
+  { id:"P-C10-04", cls:10, subject:"physics", archetype:"OPTICS_RAIL", title:"Path of a Ray through a Prism", aim:"Trace the path of a ray of light through a triangular glass prism and measure the angle of deviation.", ready:true, href:"labs/class10/prism_refraction.html" },
+  { id:"P-C10-05", cls:10, subject:"physics", archetype:"OPTICS_RAIL", title:"Magnetic Field around a Bar Magnet", aim:"Trace the magnetic field lines around a bar magnet using a plotting compass.", ready:true, href:"labs/class10/magnetic_field_lines.html" },
+  { id:"P-C10-06", cls:10, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"pH of Solutions (Dilution)", aim:"Determine the pH of some common solutions using pH paper and a calibrated pH meter.", ready:true, href:"labs/class10/ph_of_samples.html" },
+  { id:"P-C10-07", cls:10, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Types of Chemical Reactions", aim:"Study the various types of chemical reactions: combination, decomposition, displacement and double displacement.", ready:true, href:"labs/class10/reaction_types.html" },
+  { id:"P-C10-08", cls:10, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Cleansing Action of Soap and Micelle Formation", aim:"Study the cleansing action of soap and the formation of micelles.", ready:true, href:"labs/class10/soap_micelle.html" },
+  { id:"P-C10-09", cls:10, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Properties of Acids and Bases", aim:"Study the properties of acids and bases by their reaction with metals, carbonates and the neutralisation reaction.", ready:true, href:"labs/class10/acid_base_properties.html" },
+  { id:"P-C10-10", cls:10, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Electrolysis of Water", aim:"Carry out the electrolysis of water and identify the gases liberated at the electrodes.", ready:true, href:"labs/class10/electrolysis.html" },
+  { id:"P-C11-01", cls:11, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Acceleration due to Gravity (g) — Simple Pendulum", aim:"Determine the acceleration due to gravity using a simple pendulum and plot L–T and L–T² graphs.", ready:true, href:"labs/class11/physics/simple_pendulum.html" },
+  { id:"P-C11-02", cls:11, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Laws of a Sonometer", aim:"Verify the laws of a sonometer (laws of length, tension and frequency).", ready:true, href:"labs/class11/physics/sonometer_laws.html" },
+  { id:"P-C11-03", cls:11, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Force Constant of a Helical Spring", aim:"Determine the force constant of a helical spring from the load–extension graph.", ready:true, href:"labs/class11/physics/spring_constant.html" },
+  { id:"P-C11-04", cls:11, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Velocity of Sound — Resonance Tube", aim:"Determine the velocity of sound in air using a resonance tube.", ready:true, href:"labs/class11/physics/resonance_tube.html" },
+  { id:"P-C11-05", cls:11, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Coefficient of Viscosity — Stokes' Method", aim:"Determine the coefficient of viscosity of a liquid by measuring the terminal velocity of a falling sphere (Stokes' method).", ready:true, href:"labs/class11/physics/viscosity_terminal.html" },
+  { id:"P-C11-06", cls:11, subject:"physics", archetype:"VOLUMETRIC_GLASSWARE", title:"Surface Tension by Capillary Rise", aim:"Determine the surface tension of water by the capillary-rise method.", ready:true, href:"labs/class11/physics/capillary_rise.html" },
+  { id:"P-C11-07", cls:11, subject:"physics", archetype:"1D_BRIDGE", title:"Young's Modulus — Searle's Apparatus", aim:"Determine Young's modulus of the material of a wire using Searle's apparatus.", ready:true, href:"labs/class11/physics/youngs_modulus.html" },
+  { id:"P-C11-08", cls:11, subject:"physics", archetype:"1D_BRIDGE", title:"Force of Limiting Friction", aim:"Study the relationship between the force of limiting friction and the normal reaction and find the coefficient of friction.", ready:true, href:"labs/class11/physics/friction.html" },
+  { id:"P-C11-09", cls:11, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"pH Change during Strong Acid–Strong Base Titration", aim:"Study the variation of pH during the titration of a strong acid with a strong base.", ready:true, href:"labs/class11/chemistry/ph_equilibrium.html" },
+  { id:"P-C11-10", cls:11, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Functional Group Analysis — Dry Tests", aim:"Detect the functional groups present in an organic compound using dry tests.", ready:true, href:"labs/class11/chemistry/salt_analysis_dry.html" },
+  { id:"P-C11-11", cls:11, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"Enthalpy of Neutralisation", aim:"Determine the enthalpy of neutralisation of a strong acid with a strong base using a calorimeter.", ready:true, href:"labs/class11/chemistry/enthalpy_neutralisation.html" },
+  { id:"P-C11-12", cls:11, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Effect of Temperature on Reaction Rate", aim:"Study the effect of concentration and temperature on the rate of a chemical reaction.", ready:true, href:"labs/class11/chemistry/reaction_rates.html" },
+  { id:"P-C11-13", cls:11, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"Distribution (Partition) Coefficient", aim:"Determine the distribution (partition) coefficient of a solute between two immiscible solvents.", ready:true, href:"labs/class11/chemistry/partition_coefficient.html" },
+  { id:"P-C11-14", cls:11, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"Standard Solution of Oxalic Acid", aim:"Prepare a standard solution of oxalic acid and determine the strength of a given solution.", ready:true, href:"labs/class11/chemistry/standard_solution.html" },
+  { id:"P-C11-15", cls:11, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Functional Group Analysis — Wet Tests", aim:"Identify the functional groups of an organic compound using wet tests.", ready:true, href:"labs/class11/chemistry/functional_groups_wet.html" },
+  { id:"P-C12-01", cls:12, subject:"physics", archetype:"1D_BRIDGE", title:"Resistance & Resistivity — Meter Bridge", aim:"Determine the resistance of a given wire using a metre bridge and hence the resistivity of its material.", ready:true, href:"labs/class12/physics/meter_bridge.html" },
+  { id:"P-C12-02", cls:12, subject:"physics", archetype:"1D_BRIDGE", title:"Comparison of EMFs using a Potentiometer", aim:"Compare the electromotive forces of two primary cells using a potentiometer.", ready:true, href:"labs/class12/physics/potentiometer_emf.html" },
+  { id:"P-C12-03", cls:12, subject:"physics", archetype:"1D_BRIDGE", title:"Internal Resistance using a Potentiometer", aim:"Determine the internal resistance of a primary cell using a potentiometer.", ready:true, href:"labs/class12/physics/potentiometer_internal_r.html" },
+  { id:"P-C12-04", cls:12, subject:"physics", archetype:"OPTICS_RAIL", title:"Focal Length of a Convex Lens (u–v)", aim:"Determine the focal length of a convex lens by plotting graphs between u and v and between 1/u and 1/v.", ready:true, href:"labs/class12/physics/convex_lens_uv.html" },
+  { id:"P-C12-05", cls:12, subject:"physics", archetype:"OPTICS_RAIL", title:"Focal Length of a Convex Mirror (auxiliary lens)", aim:"Determine the focal length of a convex mirror using a convex auxiliary lens.", ready:true, href:"labs/class12/physics/convex_mirror_aux.html" },
+  { id:"P-C12-06", cls:12, subject:"physics", archetype:"OPTICS_RAIL", title:"Angle of Minimum Deviation and Refractive Index of a Prism", aim:"Determine the angle of minimum deviation and the refractive index of the material of a prism.", ready:true, href:"labs/class12/physics/prism_deviation.html" },
+  { id:"P-C12-07", cls:12, subject:"physics", archetype:"1D_BRIDGE", title:"V–I Characteristics of a P-N Junction Diode", aim:"Draw the V–I characteristics of a P-N junction diode in forward and reverse bias.", ready:true, href:"labs/class12/physics/pn_diode_characteristics.html" },
+  { id:"P-C12-08", cls:12, subject:"physics", archetype:"1D_BRIDGE", title:"Zener Diode Characteristics and Voltage Regulation", aim:"Study the characteristics of a Zener diode and its use as a voltage regulator / rectifier.", ready:true, href:"labs/class12/physics/zener_rectifier.html" },
+  { id:"P-C12-09", cls:12, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"KMnO₄ vs. Mohr's Salt — Redox Titration", aim:"Determine the molarity and strength of a given KMnO4 solution by titrating it against standard 0.05 M Mohr's salt solution.", ready:true, href:"labs/class12/chemistry/titration_mohr_salt.html" },
+  { id:"P-C12-10", cls:12, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"NaOH vs Oxalic Acid Titration", aim:"Determine the molarity and strength of a NaOH solution by titrating against a standard oxalic acid solution.", ready:true, href:"labs/class12/chemistry/titration_oxalic_acid.html" },
+  { id:"P-C12-11", cls:12, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Qualitative Inorganic Salt Analysis", aim:"Identify one cation and one anion in a given unknown inorganic salt by systematic qualitative analysis.", ready:true, href:"labs/class12/chemistry/qualitative_salt_analysis.html" },
+  { id:"P-C12-12", cls:12, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Functional Group Analysis of an Organic Compound", aim:"Identify the functional group present in a given organic compound by wet tests.", ready:true, href:"labs/class12/chemistry/functional_group_analysis.html" },
+  { id:"P-C12-13", cls:12, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Preparation of Acetanilide / Aspirin (Yield)", aim:"Prepare a sample of acetanilide (or aspirin) from the given starting material.", ready:true, href:"labs/class12/chemistry/preparation_aspirin.html" },
+  { id:"P-C12-14", cls:12, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"Colorimetry — Concentration of a Coloured Solution", aim:"Determine the concentration of a coloured species in solution using a colorimeter (Beer–Lambert law).", ready:true, href:"labs/class12/chemistry/colorimetry.html" },
+  { id:"P-C12-15", cls:12, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Kinetics of the Thiosulphate–Acid Reaction", aim:"Study the kinetics of the reaction between sodium thiosulphate and hydrochloric acid and determine the order of reaction.", ready:true, href:"labs/class12/chemistry/kinetics.html" },
+  { id:"P-C11-16", cls:11, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Doppler Effect — Moving Source and Observer", aim:"Study the Doppler effect by varying the source and observer positions and measure the observed frequency shift.", ready:true, href:"labs/class11/physics/doppler_effect.html" },
+  { id:"P-C11-17", cls:11, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Sonometer — Standing Waves and Frequency", aim:"Verify the law of vibrating strings by varying tension and length and measure the fundamental frequency.", ready:true, href:"labs/class11/physics/sonometer_standing_waves.html" },
+  { id:"P-C11-18", cls:11, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Beats Frequency — Two Close Tones", aim:"Produce beats by sounding two nearly equal frequencies and measure the amplitude modulation period.", ready:true, href:"labs/class11/physics/beats_frequency.html" },
+  { id:"P-C11-19", cls:11, subject:"physics", archetype:"OPTICS_RAIL", title:"Resonance Column — Air Column Length", aim:"Determine the velocity of sound in air by varying the air column length and finding resonance positions.", ready:true, href:"labs/class11/physics/resonance_column.html" },
+  { id:"P-C11-20", cls:11, subject:"physics", archetype:"CHEMICAL_FSM", title:"Seebeck Effect — Thermoelectric Voltage", aim:"Measure the thermoelectric voltage developed across a junctions of two different metals for a given temperature difference.", ready:true, href:"labs/class11/physics/seebeck_effect.html" },
+  { id:"P-C09-11", cls:9, subject:"biology", archetype:"VOLUMETRIC_GLASSWARE", title:"Osmosis by Potato Osmometer", aim:"Determine the phenomenon of osmosis using a potato osmometer and study the movement of water through a semi-permeable membrane.", ready:true, href:"labs/class9/biology/osmosis_osmometer.html" },
+  { id:"P-C09-12", cls:9, subject:"biology", archetype:"CHEMICAL_FSM", title:"Plasmolysis in Onion Peel", aim:"Study the phenomenon of plasmolysis and deplasmolysis in epidermal peel of onion using hypertonic and hypotonic solutions.", ready:true, href:"labs/class9/biology/plasmolysis_onion.html" },
+  { id:"P-C09-13", cls:9, subject:"biology", archetype:"CHEMICAL_FSM", title:"Binary Fission in Amoeba", aim:"Study the stages of binary fission in Amoeba using prepared slides and chart the sequence of nuclear and cytoplasmic division.", ready:true, href:"labs/class9/biology/binary_fission_amoeba.html" },
+  { id:"P-C09-14", cls:9, subject:"biology", archetype:"VOLUMETRIC_GLASSWARE", title:"Seed Germination", aim:"Study the conditions necessary for seed germination and observe the emergence of the radicle and plumule.", ready:true, href:"labs/class9/biology/seed_germination.html" },
+  { id:"P-C12-16", cls:12, subject:"physics", archetype:"1D_BRIDGE", title:"Photoelectric Effect", aim:"Study the photoelectric effect, verify Einstein photoelectric equation and determine the work function and threshold frequency of the cathode material.", ready:true, href:"labs/class12/physics/photoelectric_effect.html" },
+  { id:"P-C12-17", cls:12, subject:"physics", archetype:"1D_BRIDGE", title:"Half-Wave Rectifier", aim:"Draw the input and output waveforms of a half-wave rectifier using a P-N junction diode and determine its ripple characteristics.", ready:true, href:"labs/class12/physics/halfwave_rectifier.html" },
+  { id:"P-C12-18", cls:12, subject:"physics", archetype:"OPTICS_RAIL", title:"Bohr Model of the Hydrogen Atom", aim:"Study the Bohr model of the hydrogen atom and compute the radii of permitted orbits and the energies of stationary states.", ready:true, href:"labs/class12/physics/bohr_model.html" },
+  { id:"P-C12-19", cls:12, subject:"physics", archetype:"HARMONIC_OSCILLATOR", title:"Radioactive Decay and Half-life", aim:"Study the law of radioactive decay, plot the decay curve and determine the half-life of a given radioactive element using a simulated source.", ready:true, href:"labs/class12/physics/radioactive_decay.html" },
+  { id:"P-C12-20", cls:12, subject:"physics", archetype:"OPTICS_RAIL", title:"Compound Microscope", aim:"Study the construction and working of a compound microscope and determine its magnifying power for different objective-eyepiece combinations.", ready:true, href:"labs/class12/physics/compound_microscope.html" },
+  { id:"P-C12-21", cls:12, subject:"physics", archetype:"OPTICS_RAIL", title:"Resolving Power of a Telescope", aim:"Determine the resolving power of a telescope and study its variation with aperture of the objective.", ready:true, href:"labs/class12/physics/resolving_power.html" },
+  { id:"P-C12-22", cls:12, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Oxidation of Ethanol", aim:"Study the oxidation of ethanol with alkaline potassium permanganate and identify the products of partial and complete oxidation.", ready:true, href:"labs/class12/chemistry/ethanol_oxidation.html" },
+  { id:"P-C12-23", cls:12, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Esterification Reaction", aim:"Prepare an ester from a carboxylic acid and an alcohol and study the esterification reaction.", ready:true, href:"labs/class12/chemistry/esterification.html" },
+  { id:"P-C12-24", cls:12, subject:"chemistry", archetype:"CHEMICAL_FSM", title:"Iodine Clock Reaction", aim:"Study the kinetics of the iodine clock reaction and determine the effect of concentration on the time of appearance of the blue colour.", ready:true, href:"labs/class12/chemistry/iodine_clock.html" },
+  { id:"P-C12-25", cls:12, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"Solubility Product of Calcium Hydroxide", aim:"Determine the solubility product of calcium hydroxide by titrating its saturated solution against standard hydrochloric acid.", ready:true, href:"labs/class12/chemistry/solubility_product.html" },
+  { id:"P-C12-26", cls:12, subject:"chemistry", archetype:"VOLUMETRIC_GLASSWARE", title:"Buffer Solutions", aim:"Prepare acidic and basic buffer solutions and study the change in pH on addition of small amounts of acid or base.", ready:true, href:"labs/class12/chemistry/buffer_solutions.html" },
+  { id:"P-C11-21", cls:11, subject:"biology", archetype:"HARMONIC_OSCILLATOR", title:"Study of Pollen Germination in Flowers", aim:"Study pollen germination in flowers by preparing a temporary mount and observing germination and pollen tube growth.", ready:true, href:"labs/class11/biology/pollen_germination.html" },
+  { id:"P-C11-22", cls:11, subject:"biology", archetype:"VOLUMETRIC_GLASSWARE", title:"Rate of Transpiration in Plants", aim:"Study the rate of transpiration in plants using a Ganong potometer and compare water uptake under different conditions.", ready:true, href:"labs/class11/biology/transpiration_rate.html" },
+  { id:"P-C11-23", cls:11, subject:"biology", archetype:"VOLUMETRIC_GLASSWARE", title:"Evolution of Oxygen during Photosynthesis", aim:"Demonstrate the evolution of oxygen gas during photosynthesis in an aquatic plant and measure the volume evolved.", ready:true, href:"labs/class11/biology/photosynthesis_oxygen.html" },
+  { id:"P-C11-24", cls:11, subject:"biology",archetype:"CHEMICAL_FSM", title:"Release of CO2 during Respiration", aim:"Demonstrate the release of carbon dioxide during respiration in germinating seeds using lime water.", ready:true, href:"labs/class11/biology/respiration_co2.html" },
+  { id:"P-C12-27", cls:12, subject:"biology", archetype:"OPTICS_RAIL", title:"Mitosis in Onion Root Tip", aim:"Study the stages of mitosis in onion root tip cells using a prepared slide and identify prophase, metaphase, anaphase and telophase.", ready:true, href:"labs/class12/biology/mitosis_onion.html" },
+  { id:"P-C12-28", cls:12, subject:"biology", archetype:"CHEMICAL_FSM", title:"Adaptations of Plants to Environment", aim:"Study adaptations of plants to dry and aquatic environments using specimens and identify xerophytic and hydrophytic characters.", ready:true, href:"labs/class12/biology/adaptations_plants.html" },
+  { id:"P-C12-29", cls:12, subject:"biology", archetype:"OPTICS_RAIL", title:"Homologous and Analogous Organs", aim:"Study homologous and analogous organs in plants and animals using specimens and identify evidence of divergent and convergent evolution.", ready:true, href:"labs/class12/biology/homologous_organs.html" },
+  { id:"P-C12-30", cls:12, subject:"biology", archetype:"VOLUMETRIC_GLASSWARE", title:"Population Density by Quadrat Method", aim:"Determine population density of plant species in a given area using the quadrat method and compute frequency and abundance.", ready:true, href:"labs/class12/biology/quadrat_ecology.html" },
+];
+
+/* Verify the inline cabinet against manifests/catalog.json when served over http(s). */
+(function () {
+  try {
+    if (window.fetch && /^https?:/.test(window.location.protocol)) {
+      fetch("manifests/catalog.json").then(function (r) {
+        if (!r.ok) return null;
+        return r.json();
+      }).then(function (m) {
+        if (!m || !m.length) return;
+        var idsA = CATALOG.map(function (e) { return e.id; }).sort().join(",");
+        var idsB = m.map(function (e) { return e.id; }).sort().join(",");
+        if (idsA !== idsB) {
+          console.warn("[OnlineDeploy] inline catalog differs from manifests/catalog.json",
+            "inline=" + CATALOG.length, "manifest=" + m.length);
+        } else {
+          console.info("[OnlineDeploy] catalog verified: " + m.length + " labs match the manifest.");
+        }
+        var cc = document.getElementById("colophonCount");
+        if (cc) cc.textContent = "CATALOG " + m.length;
+      }).catch(function () {});
+    }
+  } catch (e) {}
+})();
+
+/* --------------------------------------------------------------------------
+   Notification helper
+   -------------------------------------------------------------------------- */
+function setStorageNote(text) {
+  const el = document.getElementById("storageNote");
+  if (el) el.textContent = text;
+}
+
+/* --------------------------------------------------------------------------
+   Rendering, filtering, search (palette-navigable)
+   -------------------------------------------------------------------------- */
+const state = { cls: "all", subject: "all", query: "", onlyStarred: false };
+let paletteIdx = -1;
+
+function badgeClass(n) { return "class" + n; }
+
+function isStarred(id) {
+  try { if (window.OSBookmarks) return window.OSBookmarks.has(id); } catch (e) {}
+  return false;
+}
+
+function T(k) {
+  try { if (window.OS_I18N) return window.OS_I18N.t(k); } catch (e) {}
+  var en = {
+    "results.experiments": "experiments",
+    "results.empty": "No experiments match your filters.",
+    "cards.launch": "Launch Lab →",
+    "cards.planned": "Planned",
+    "filters.classPrefix": "Class ",
+    "filters.physics": "Physics",
+    "filters.chemistry": "Chemistry",
+    "filters.biology": "Biology",
+    "bookmarks.starred": "starred",
+    "bookmarks.only": "Starred only",
+    "mistakes.title": "Mistakes Notebook",
+    "mastery.xp": "XP",
+    "mastery.streak": "-day streak",
+    "topbar.notebook": "Notebook:",
+    "storage.persisted": "Trials persist in browser IndexedDB (OpenSchool_NCERT_DB).",
+    "storage.memory": "In-memory notebook active (IndexedDB unavailable).",
+    "storage.unavailable": "Notebook storage could not initialise."
+  };
+  return en[k] != null ? en[k] : k;
+}
+
+function hiEntry(id) {
+  try {
+    if (window.OS_I18N && window.OS_I18N.getLang() === "hi" &&
+        window.OS_CATALOG_HI && window.OS_CATALOG_HI[id]) return window.OS_CATALOG_HI[id];
+  } catch (e) {}
+  return null;
+}
+
+function subjectName(s) {
+  var v = T("filters." + s);
+  return v.indexOf("filters.") === 0 ? s : v;
+}
+
+var OS_FEATURED = ["P-C12-20", "P-C12-16"];
+var OS_FEATURED_DEK = {
+  "P-C12-20": "Optics at full aperture — the instrument every board examiner loves.",
+  "P-C12-16": "Quantum dawn — Einstein's equation on a breadboard."
+};
+
+function escHTML(s) {
+  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function skeletonHTML(n) {
+  var out = "";
+  for (var i = 0; i < (n || 6); i++) {
+    out += '<article class="os-card os-skel" aria-hidden="true"><div class="sk sk-line sk-w40"></div>' +
+      '<div class="sk sk-title"></div><div class="sk sk-line sk-w90"></div>' +
+      '<div class="sk sk-line sk-w60"></div><div class="sk sk-cta"></div></article>';
+  }
+  return out;
+}
+
+function emptyHTML() {
+  return '<div class="os-empty" role="status"><div class="os-empty__icon" aria-hidden="true">◌</div>' +
+    "<h3>" + T("results.empty") + "</h3>" +
+    "<p>Try a shorter keyword, a different class, or clear the starred filter — or jump straight to a lab with Ctrl+K.</p>" +
+    '<button class="os-btn primary sm" type="button" data-os-reset>Show all 78 experiments</button></div>';
+}
+
+function prefersReducedMotion() {
+  try { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
+  catch (e) { return false; }
+}
+
+/* Scroll-reveal: GSAP CDN when present (ScrollTrigger batch), CSS .os-enter fallback. */
+function revealCards(host) {
+  var cards = host.querySelectorAll(".os-card:not(.os-skel), .spread:not(.os-skel)");
+  if (!cards.length) return;
+  if (prefersReducedMotion()) {
+    Array.prototype.forEach.call(cards, function (c) { c.classList.remove("os-enter"); });
+    return;
+  }
+  if (window.gsap && typeof window.gsap.fromTo === "function") {
+    try {
+      Array.prototype.forEach.call(cards, function (c) { c.classList.remove("os-enter"); });
+      window.gsap.fromTo(cards,
+        { y: 14, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.45, stagger: 0.035, ease: "power2.out", overwrite: true, clearProps: "transform" });
+      return;
+    } catch (e) {}
+  }
+  Array.prototype.forEach.call(cards, function (c) { c.classList.add("os-enter"); });
+  try {
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.08 });
+      Array.prototype.forEach.call(cards, function (c) { io.observe(c); });
+      setTimeout(function () {
+        Array.prototype.forEach.call(cards, function (c) { c.classList.add("is-in"); });
+        try { io.disconnect(); } catch (e2) {}
+      }, 1200);
+    } else if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          Array.prototype.forEach.call(cards, function (c) { c.classList.add("is-in"); });
+        });
+      });
+    } else {
+      Array.prototype.forEach.call(cards, function (c) { c.classList.add("is-in"); });
+    }
+  } catch (e) {
+    Array.prototype.forEach.call(cards, function (c) { c.classList.add("is-in"); });
+  }
+}
+
+function launchHTML(e) {
+  return (e.ready && e.href)
+    ? '<a class="os-btn primary sm" data-os-launch href="' + e.href + '">' + T("cards.launch") + "</a>"
+    : '<span class="os-chip">' + T("cards.planned") + "</span>";
+}
+
+function starHTML(e) {
+  var on = isStarred(e.id);
+  return '<button class="os-btn sm ghost' + (on ? " active" : "") + '" type="button" data-os-card-star="' + e.id +
+    '" aria-pressed="' + (on ? "true" : "false") + '" aria-label="Bookmark ' + e.id + '" title="Bookmark this lab">' +
+    (on ? "★" : "☆") + "</button>";
+}
+
+function ringHTML(e) {
+  try {
+    if (window.OSMastery && typeof window.OSMastery.getRing === "function") {
+      const r = window.OSMastery.getRing(e.id);
+      const deg = Math.max(0, Math.min(100, r.pct)) * 3.6;
+      return '<span class="os-chip" title="' + r.xp + ' XP · ' + r.level + '" style="gap:6px">' +
+        '<span aria-hidden="true" style="display:inline-block;width:14px;height:14px;border-radius:50%;' +
+        'background:conic-gradient(var(--os-accent, #4da3ff) ' + deg + 'deg, rgba(127,127,127,.25) 0deg)"></span>' +
+        "<b>" + r.xp + "</b>&nbsp;XP · " + r.level + "</span>";
+    }
+  } catch (err) {}
+  return "";
+}
+
+/* Featured spreads: large editorial spreads with 3D tilt + glare. */
+function buildSpreads(host, isDefault) {
+  host.innerHTML = "";
+  if (!isDefault) { host.style.display = "none"; return; }
+  host.style.display = "";
+  OS_FEATURED.forEach(function (fid, i) {
+    var e = null;
+    for (var k = 0; k < CATALOG.length; k++) { if (CATALOG[k].id === fid) { e = CATALOG[k]; break; } }
+    if (!e) return;
+    var he = hiEntry(e.id);
+    var title = (he && he.title_hi) ? he.title_hi : e.title;
+    var aim = (he && he.aim_hi) ? he.aim_hi : e.aim;
+    var dek = OS_FEATURED_DEK[e.id] || e.archetype;
+    var art = document.createElement("article");
+    art.className = "spread os-enter" + (i % 2 === 1 ? " flip" : "");
+    art.setAttribute("data-featured", "true");
+    art.setAttribute("data-tilt", "true");
+    art.innerHTML =
+      '<div class="glare" aria-hidden="true"></div>' +
+      '<div class="folio-num" aria-hidden="true">' + (i + 1 < 10 ? "0" + (i + 1) : "" + (i + 1)) + "</div>" +
+      "<div><div class=\"ed-kicker\">Featured · Nº " + (i + 1) + " — " + escHTML(dek) + "</div>" +
+      "<h3>" + escHTML(title) + "</h3>" +
+      '<p class="aim">' + escHTML(aim) + "</p>" +
+      '<div class="meta"><span class="os-badge ' + badgeClass(e.cls) + '">' + T("filters.classPrefix") + e.cls + "</span>" +
+      '<span class="os-badge ' + e.subject + '">' + subjectName(e.subject) + "</span>" + ringHTML(e) + "</div>" +
+      '<svg width="220" height="14" viewBox="0 0 220 14" aria-hidden="true"><path d="M0 7 Q 28 0 55 7 T 110 7 T 165 7 T 220 7" fill="none" stroke="#e8b34b" stroke-width="1.6" opacity="0.7"/></svg>' +
+      "</div>" +
+      '<div class="go"><span class="os-mono os-dim" style="font-size:11px">' + e.id + "</span>" +
+      starHTML(e) + launchHTML(e) + "</div>" +
+      '<span class="ghost-num">' + e.archetype + "</span>";
+    host.appendChild(art);
+  });
+  wireTilt(host);
+  host.querySelectorAll("[data-os-card-star]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const id = btn.getAttribute("data-os-card-star");
+      try {
+        if (window.OSBookmarks) {
+          const on = window.OSBookmarks.toggle(id);
+          btn.textContent = on ? "★" : "☆";
+          btn.setAttribute("aria-pressed", on ? "true" : "false");
+          btn.classList.toggle("active", on);
+          syncBookmarkCount();
+          if (state.onlyStarred && !on) render();
+        }
+      } catch (err) {}
+    });
+  });
+}
+
+/* 3D tilt: pointer-driven rotateX/Y + glare tracking on featured spreads.
+   Skipped on reduced-motion and coarse pointers. */
+function wireTilt(scope) {
+  try {
+    if (prefersReducedMotion()) return;
+    if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return;
+    var els = (scope || document).querySelectorAll('[data-tilt="true"]');
+    Array.prototype.forEach.call(els, function (el) {
+      if (el.__tiltWired) return;
+      el.__tiltWired = true;
+      el.addEventListener("pointermove", function (ev) {
+        try {
+          var r = el.getBoundingClientRect();
+          var px = (ev.clientX - r.left) / Math.max(1, r.width);
+          var py = (ev.clientY - r.top) / Math.max(1, r.height);
+          var rx = (0.5 - py) * 7, ry = (px - 0.5) * 9;
+          if (window.gsap && typeof window.gsap.to === "function") {
+            window.gsap.to(el, { rotateX: rx, rotateY: ry, transformPerspective: 1100, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+          } else {
+            el.style.transform = "perspective(1100px) rotateX(" + rx + "deg) rotateY(" + ry + "deg)";
+          }
+          el.classList.add("tilting");
+          el.style.setProperty("--gx", Math.round(px * 100) + "%");
+          el.style.setProperty("--gy", Math.round(py * 100) + "%");
+        } catch (e) {}
+      });
+      el.addEventListener("pointerleave", function () {
+        try {
+          el.classList.remove("tilting");
+          if (window.gsap && typeof window.gsap.to === "function") {
+            window.gsap.to(el, { rotateX: 0, rotateY: 0, duration: 0.6, ease: "elastic.out(1,.6)", overwrite: "auto", clearProps: "transform" });
+          } else { el.style.transform = ""; }
+        } catch (e) {}
+      });
+    });
+  } catch (e) {}
+}
+
+function buildCards(host, list) {
+  host.innerHTML = "";
+  paletteIdx = -1;
+  if (!list.length) {
+    host.innerHTML = emptyHTML();
+    var rb = host.querySelector("[data-os-reset]");
+    if (rb) rb.addEventListener("click", function () {
+      state.cls = "all"; state.subject = "all"; state.query = ""; state.onlyStarred = false;
+      try {
+        var si = document.getElementById("search"); if (si) si.value = "";
+        [["classFilters", "all", "class"], ["subjectFilters", "all", "subject"]].forEach(function (g) {
+          var grp = document.getElementById(g[0]);
+          if (!grp) return;
+          Array.prototype.forEach.call(grp.querySelectorAll(".os-filter-pill"), function (b) {
+            var on = (g[2] === "class" ? b.dataset.class : b.dataset.subject) === "all";
+            b.classList.toggle("active", on);
+            b.setAttribute("aria-pressed", on ? "true" : "false");
+          });
+        });
+        var sb = document.getElementById("starredFilter");
+        if (sb) { sb.classList.remove("active"); sb.setAttribute("aria-pressed", "false"); }
+        syncStarredFilter();
+      } catch (e) {}
+      render();
+    });
+    return;
+  }
+  var isDefault = (state.cls === "all" && state.subject === "all" && !state.query.trim() && !state.onlyStarred);
+  var ordered = list.slice();
+  var featHost = document.getElementById("featured");
+  if (isDefault && featHost) {
+    ordered.sort(function (a, b) {
+      var ai = OS_FEATURED.indexOf(a.id), bi = OS_FEATURED.indexOf(b.id);
+      if (ai === -1 && bi === -1) return 0;
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+    var rest = ordered.filter(function (x) { return OS_FEATURED.indexOf(x.id) === -1; });
+    buildSpreads(featHost, true);
+    buildSpreads._rest = rest;
+    ordered = rest;
+  } else if (featHost) {
+    buildSpreads(featHost, false);
+  }
+  ordered.forEach(function (e) {
+    const card = document.createElement("article");
+    card.className = "os-card os-enter";
+    card.setAttribute("tabindex", "-1");
+    const he = hiEntry(e.id);
+    const dispTitle = (he && he.title_hi) ? he.title_hi : e.title;
+    const dispAim = (he && he.aim_hi) ? he.aim_hi : e.aim;
+    card.innerHTML =
+      '<div class="tags">' +
+        '<span class="os-badge ' + badgeClass(e.cls) + '">' + T("filters.classPrefix") + e.cls + "</span>" +
+        '<span class="os-badge ' + e.subject + '">' + subjectName(e.subject) + "</span>" +
+        ringHTML(e) +
+      "</div>" +
+      "<h3>" + escHTML(dispTitle) + "</h3>" +
+      '<p class="aim">' + escHTML(dispAim) + "</p>" +
+      '<div class="launch"><span class="os-mono os-dim" style="font-size:11px">' + e.id + "</span>" +
+      starHTML(e) + launchHTML(e) + "</div>";
+    host.appendChild(card);
+  });
+  host.querySelectorAll("[data-os-card-star]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const id = btn.getAttribute("data-os-card-star");
+      try {
+        if (window.OSBookmarks) {
+          const on = window.OSBookmarks.toggle(id);
+          btn.textContent = on ? "★" : "☆";
+          btn.setAttribute("aria-pressed", on ? "true" : "false");
+          btn.classList.toggle("active", on);
+          syncBookmarkCount();
+          if (state.onlyStarred && !on) render();
+        }
+      } catch (err) {}
+    });
+  });
+  document.getElementById("resultCount").innerHTML = "<b>" + list.length + "</b> " + T("results.experiments");
+  revealCards(host);
+  var fh = document.getElementById("featured");
+  if (fh && fh.style.display !== "none") revealCards(fh);
+}
+
+function filteredList() {
+  var q = state.query.trim().toLowerCase();
+  return CATALOG.filter(function (e) {
+    if (state.cls !== "all" && String(e.cls) !== state.cls) return false;
+    if (state.subject !== "all" && e.subject !== state.subject) return false;
+    if (state.onlyStarred && !isStarred(e.id)) return false;
+    if (q) {
+      var he2 = hiEntry(e.id);
+      var hay = (e.id + " " + e.title + " " + e.aim + " " + e.archetype +
+        (he2 ? (" " + (he2.title_hi || "") + " " + (he2.aim_hi || "")) : "")).toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+}
+
+function render() {
+  var host = document.getElementById("cards");
+  if (!host) return;
+  var list = filteredList();
+  /* Skeleton first so first paint / filter changes never flash empty. */
+  host.innerHTML = skeletonHTML(Math.min(Math.max(list.length, 1), 8));
+  var build = function () { buildCards(host, list); };
+  try {
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(function () {
+        try { setTimeout(build, 16); } catch (e) { build(); }
+      });
+    } else { setTimeout(build, 16); }
+  } catch (e) { build(); }
+}
+
+/* Palette navigation: ArrowUp/Down over visible cards+spreads, Enter launches. */
+function paletteItems() {
+  var out = [];
+  var fh = document.getElementById("featured");
+  if (fh && fh.style.display !== "none") {
+    Array.prototype.forEach.call(fh.querySelectorAll(".spread"), function (s) { out.push(s); });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#cards .os-card:not(.os-skel)"), function (c) { out.push(c); });
+  return out;
+}
+function paletteMove(d) {
+  var items = paletteItems();
+  if (!items.length) return;
+  paletteIdx = (paletteIdx + d + items.length) % items.length;
+  items.forEach(function (c, i) { c.classList.toggle("is-active", i === paletteIdx); });
+  try { items[paletteIdx].scrollIntoView({ block: "nearest", behavior: prefersReducedMotion() ? "auto" : "smooth" }); } catch (e) {}
+}
+function paletteOpen() {
+  var items = paletteItems();
+  if (paletteIdx < 0 || paletteIdx >= items.length) return;
+  var a = items[paletteIdx].querySelector("[data-os-launch]");
+  if (a) { try { a.click(); } catch (e) { window.location.href = a.getAttribute("href"); } }
+}
+
+function syncBookmarkCount() {
+  try {
+    const el = document.getElementById("bookmarkCount");
+    if (!el) return;
+    const n = (window.OSBookmarks && typeof window.OSBookmarks.list === "function")
+      ? window.OSBookmarks.list().length : 0;
+    el.innerHTML = "<b>" + n + "</b> " + T("bookmarks.starred");
+  } catch (e) {}
+}
+
+function syncStarredFilter() {
+  try {
+    const starBtn = document.getElementById("starredFilter");
+    if (!starBtn) return;
+    starBtn.textContent = (state.onlyStarred ? "★ " : "☆ ") + T("bookmarks.only");
+  } catch (e) {}
+}
+
+function wireFilters(groupId, key) {
+  const group = document.getElementById(groupId);
+  group.addEventListener("click", function (ev) {
+    const btn = ev.target.closest(".os-filter-pill");
+    if (!btn) return;
+    Array.prototype.forEach.call(group.querySelectorAll(".os-filter-pill"), function (b) {
+      b.classList.remove("active");
+      b.setAttribute("aria-pressed", "false");
+    });
+    btn.classList.add("active");
+    btn.setAttribute("aria-pressed", "true");
+    if (key === "class") state.cls = btn.dataset.class;
+    else if (key === "subject") state.subject = btn.dataset.subject;
+    render();
+  });
+}
+
+wireFilters("classFilters", "class");
+wireFilters("subjectFilters", "subject");
+(function () {
+  var si = document.getElementById("search");
+  si.addEventListener("input", function (e) {
+    state.query = e.target.value;
+    render();
+  });
+  si.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown") { e.preventDefault(); paletteMove(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); paletteMove(-1); }
+    else if (e.key === "Enter") {
+      var items = paletteItems();
+      if (paletteIdx >= 0 && items.length) { e.preventDefault(); paletteOpen(); }
+    } else if (e.key === "Escape") { e.target.value = ""; state.query = ""; paletteIdx = -1; render(); e.target.blur(); }
+  });
+  document.addEventListener("keydown", function (e) {
+    var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+    var mod = e.ctrlKey || e.metaKey;
+    if (mod && (e.key === "k" || e.key === "K")) { e.preventDefault(); openCmdk(); return; }
+    if (e.key === "/" && tag !== "input" && tag !== "textarea") { e.preventDefault(); si.focus(); }
+    else if (e.key === "Escape" && (tag === "input" || tag === "textarea")) { /* input handler clears */ }
+  });
+})();
+document.addEventListener("os-lang-change", function () { render(); syncBookmarkCount(); syncStarredFilter(); paintCounters(true); paintTicker(); italicizeHero(); });
+render();
+
+/* Keep the editorial italic accent: OS_I18N.apply() sets textContent, so
+   re-wrap "STEM" in <em> after every apply (EN + HI strings both contain it). */
+function italicizeHero() {
+  try {
+    var h = document.querySelector(".display");
+    if (!h || h.querySelector("em")) return;
+    var txt = h.textContent;
+    var i = txt.indexOf("STEM");
+    if (i === -1) return;
+    h.innerHTML = "";
+    h.appendChild(document.createTextNode(txt.slice(0, i)));
+    var em = document.createElement("em");
+    em.textContent = "STEM";
+    h.appendChild(em);
+    h.appendChild(document.createTextNode(txt.slice(i + 4)));
+  } catch (e) {}
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", italicizeHero);
+else italicizeHero();
+
+/* --------------------------------------------------------------------------
+   Live counters: counted from CATALOG, animated via rAF (skipped on RM).
+   -------------------------------------------------------------------------- */
+function paintCounters(instant) {
+  try {
+    var total = CATALOG.length;
+    var phys = CATALOG.filter(function (e) { return e.subject === "physics"; }).length;
+    var chem = CATALOG.filter(function (e) { return e.subject === "chemistry"; }).length;
+    var bio = CATALOG.filter(function (e) { return e.subject === "biology"; }).length;
+    var classes = {};
+    CATALOG.forEach(function (e) { classes[e.cls] = 1; });
+    var nCls = Object.keys(classes).length;
+    var map = { total: total, phys: phys, chem: chem, bio: bio, bio2: bio, classes: nCls, labs: total, offline: 100 };
+    var rm = prefersReducedMotion();
+    Object.keys(map).forEach(function (k) {
+      Array.prototype.forEach.call(document.querySelectorAll('[data-count="' + k + '"]'), function (el) {
+        var target = map[k];
+        if (rm || instant) { el.textContent = target; return; }
+        var t0 = null, from = 0, dur = 900;
+        function step(ts) {
+          if (!t0) t0 = ts;
+          var p = Math.min(1, (ts - t0) / dur);
+          var e2 = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(from + (target - from) * e2);
+          if (p < 1) { try { requestAnimationFrame(step); } catch (e3) { el.textContent = target; } }
+        }
+        try { requestAnimationFrame(step); } catch (e4) { el.textContent = target; }
+      });
+    });
+    var bp = document.getElementById("barPhys"); if (bp) bp.style.width = Math.round(phys / total * 100) + "%";
+    var bc = document.getElementById("barChem"); if (bc) bc.style.width = Math.round(chem / total * 100) + "%";
+    var bb = document.getElementById("barBio"); if (bb) bb.style.width = Math.round(bio / total * 100) + "%";
+    var cc = document.getElementById("colophonCount");
+    if (cc) cc.textContent = "CATALOG " + total + " · " + phys + "P/" + chem + "C/" + bio + "B";
+  } catch (e) {}
+}
+paintCounters(false);
+
+/* Marquee ticker: rotating lab names, duplicated for a seamless loop. */
+function paintTicker() {
+  try {
+    var lane = document.getElementById("tickerLane");
+    if (!lane) return;
+    var picks = CATALOG.filter(function (_, i) { return i % 6 === 0; }).slice(0, 13);
+    var html = picks.map(function (e) {
+      var he = hiEntry(e.id);
+      var t = (he && he.title_hi) ? he.title_hi : e.title;
+      return "<span><b>" + e.id + "</b> · " + escHTML(t) + "</span>";
+    }).join("<span aria-hidden='true'>✦</span>");
+    lane.innerHTML = html + "<span aria-hidden='true'>✦</span>" + html + "<span aria-hidden='true'>✦</span>";
+  } catch (e) {}
+}
+paintTicker();
+
+/* --------------------------------------------------------------------------
+   Command palette (Ctrl+K): fuzzy-ish substring search over the 78-lab
+   cabinet, keyboard navigable, Enter launches the lab page.
+   -------------------------------------------------------------------------- */
+var cmdkIdx = -1, cmdkHits = [];
+function cmdkScore(e, q) {
+  var he = hiEntry(e.id);
+  var hay = (e.id + " " + e.title + " " + e.aim + " " + e.subject + " class" + e.cls +
+    (he ? (" " + (he.title_hi || "") + " " + (he.aim_hi || "")) : "")).toLowerCase();
+  var qi = 0, score = 0, last = -1;
+  for (var i = 0; i < q.length; i++) {
+    var at = hay.indexOf(q[i], last + 1);
+    if (at === -1) return -1;
+    if (last !== -1) score += (at - last - 1);
+    if (at === 0 || hay[at - 1] === " " || hay[at - 1] === "-") score -= 3;
+    last = at; qi++;
+  }
+  if (e.title.toLowerCase().indexOf(q) !== -1) score -= 12;
+  if (e.id.toLowerCase() === q) score -= 25;
+  return score;
+}
+function openCmdk() {
+  var bd = document.getElementById("cmdkBackdrop");
+  var inp = document.getElementById("cmdkInput");
+  if (!bd || !inp) return;
+  bd.classList.add("open");
+  inp.value = "";
+  paintCmdk("");
+  setTimeout(function () { try { inp.focus(); } catch (e) {} }, 30);
+}
+function closeCmdk() {
+  var bd = document.getElementById("cmdkBackdrop");
+  if (bd) bd.classList.remove("open");
+  cmdkIdx = -1;
+}
+function paintCmdk(q) {
+  var list = document.getElementById("cmdkList");
+  var cnt = document.getElementById("cmdkCount");
+  if (!list) return;
+  q = (q || "").trim().toLowerCase();
+  var scored = [];
+  if (!q) {
+    scored = CATALOG.slice(0, 9).map(function (e) { return { e: e, s: 0 }; });
+  } else {
+    CATALOG.forEach(function (e) {
+      var s = cmdkScore(e, q);
+      if (s >= 0 || (e.id + " " + e.title + " " + e.aim).toLowerCase().indexOf(q) !== -1) {
+        scored.push({ e: e, s: s < 0 ? 999 : s });
+      }
+    });
+    scored.sort(function (a, b) { return a.s - b.s; });
+    scored = scored.slice(0, 9);
+  }
+  cmdkHits = scored.map(function (x) { return x.e; });
+  cmdkIdx = cmdkHits.length ? 0 : -1;
+  list.innerHTML = "";
+  cmdkHits.forEach(function (e, i) {
+    var he = hiEntry(e.id);
+    var t = (he && he.title_hi) ? he.title_hi : e.title;
+    var li = document.createElement("li");
+    li.setAttribute("role", "option");
+    if (i === cmdkIdx) li.className = "sel";
+    li.innerHTML = '<span class="k">' + e.id + '</span><span><b>' + escHTML(t) + "</b> · Class " + e.cls +
+      " · " + subjectName(e.subject) + "</span>";
+    li.addEventListener("click", function () { window.location.href = e.href; });
+    li.addEventListener("mousemove", function () {
+      cmdkIdx = i;
+      Array.prototype.forEach.call(list.children, function (c, j) { c.classList.toggle("sel", j === i); });
+    });
+    list.appendChild(li);
+  });
+  if (!cmdkHits.length) {
+    var li0 = document.createElement("li");
+    li0.textContent = "No labs match — try a shorter keyword.";
+    list.appendChild(li0);
+  }
+  if (cnt) cnt.textContent = cmdkHits.length + " / " + CATALOG.length + " labs";
+}
+(function () {
+  var inp = document.getElementById("cmdkInput");
+  var bd = document.getElementById("cmdkBackdrop");
+  if (!inp || !bd) return;
+  inp.addEventListener("input", function () { paintCmdk(inp.value); });
+  inp.addEventListener("keydown", function (e) {
+    var list = document.getElementById("cmdkList");
+    if (e.key === "ArrowDown") { e.preventDefault(); if (cmdkHits.length) { cmdkIdx = (cmdkIdx + 1) % cmdkHits.length; } }
+    else if (e.key === "ArrowUp") { e.preventDefault(); if (cmdkHits.length) { cmdkIdx = (cmdkIdx - 1 + cmdkHits.length) % cmdkHits.length; } }
+    else if (e.key === "Enter") {
+      e.preventDefault();
+      if (cmdkIdx >= 0 && cmdkHits[cmdkIdx]) window.location.href = cmdkHits[cmdkIdx].href;
+      return;
+    }
+    else if (e.key === "Escape") { e.preventDefault(); closeCmdk(); return; }
+    else return;
+    Array.prototype.forEach.call(list.children, function (c, j) { c.classList.toggle("sel", j === cmdkIdx); });
+    try {
+      var sel = list.children[cmdkIdx];
+      if (sel) sel.scrollIntoView({ block: "nearest" });
+    } catch (err) {}
+  });
+  bd.addEventListener("click", function (e) { if (e.target === bd) closeCmdk(); });
+  var opener = document.getElementById("cmdkOpen");
+  if (opener) opener.addEventListener("click", openCmdk);
+})();
+
+/* --------------------------------------------------------------------------
+   Cinematic entrance: GSAP hero timeline + ScrollTrigger spread parallax.
+   Fully guarded — the hub is complete without it.
+   -------------------------------------------------------------------------- */
+(function () {
+  try {
+    if (prefersReducedMotion() || !window.gsap) return;
+    window.gsap.from(".os-hero-cine .hero-inner > div:first-child > *",
+      { y: 26, opacity: 0, duration: 0.7, stagger: 0.07, ease: "power3.out", clearProps: "all" });
+    window.gsap.from(".folio", { y: 20, opacity: 0, duration: 0.7, delay: 0.25, ease: "power3.out", clearProps: "all" });
+    if (window.ScrollTrigger) {
+      try {
+        window.gsap.utils.toArray(".spread").forEach(function (sp) {
+          window.gsap.from(sp, {
+            y: 30, opacity: 0, duration: 0.6, ease: "power2.out",
+            scrollTrigger: { trigger: sp, start: "top 88%" }
+          });
+        });
+      } catch (e) {}
+    }
+  } catch (e) {}
+})();
+
+/* --------------------------------------------------------------------------
+   Ambient hero canvas: slow brass/teal waves + rising bubbles. Tiny rAF loop,
+   paused on reduced-motion (one static frame) and when the tab is hidden.
+   -------------------------------------------------------------------------- */
+(function () {
+  try {
+    var cv = document.getElementById("heroArt");
+    if (!cv || !cv.getContext) return;
+    var ctx = cv.getContext("2d");
+    var W = 0, H = 0, t = 0, bubbles = [], raf = null;
+    var RM = prefersReducedMotion();
+    function size() {
+      var r = cv.parentElement.getBoundingClientRect();
+      var dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      W = Math.max(320, Math.floor(r.width)); H = Math.max(200, Math.floor(r.height));
+      cv.width = Math.floor(W * dpr); cv.height = Math.floor(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function seed() {
+      bubbles = [];
+      for (var i = 0; i < 34; i++) {
+        bubbles.push({ x: Math.random() * W, y: Math.random() * H, r: 1 + Math.random() * 3.2,
+          s: 0.15 + Math.random() * 0.5, o: 0.08 + Math.random() * 0.22, w: Math.random() * 6.28 });
+      }
+    }
+    function frame() {
+      t += 0.008;
+      ctx.clearRect(0, 0, W, H);
+      var layers = [
+        { amp: 16, y: 0.72, col: "rgba(232,179,75,0.20)", w: 0.006, sp: 1.0 },
+        { amp: 22, y: 0.80, col: "rgba(64,150,160,0.16)", w: 0.004, sp: -0.7 },
+        { amp: 12, y: 0.88, col: "rgba(232,179,75,0.10)", w: 0.009, sp: 1.4 }
+      ];
+      layers.forEach(function (L) {
+        ctx.beginPath();
+        ctx.moveTo(0, H);
+        for (var x = 0; x <= W; x += 6) {
+          var y = H * L.y + Math.sin(x * L.w + t * 2 * L.sp) * L.amp + Math.sin(x * L.w * 2.7 + t * L.sp) * L.amp * 0.3;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(W, H); ctx.closePath();
+        ctx.fillStyle = L.col; ctx.fill();
+      });
+      bubbles.forEach(function (b) {
+        b.y -= b.s; b.w += 0.01;
+        b.x += Math.sin(b.w) * 0.2;
+        if (b.y < -6) { b.y = H + 6; b.x = Math.random() * W; }
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, 6.283);
+        ctx.strokeStyle = "rgba(232,179,75," + b.o + ")"; ctx.lineWidth = 1; ctx.stroke();
+      });
+      if (!RM && !document.hidden) raf = requestAnimationFrame(frame);
+      else raf = null;
+    }
+    function start() { if (raf == null && !RM && !document.hidden) raf = requestAnimationFrame(frame); }
+    function stop() { if (raf != null) { try { cancelAnimationFrame(raf); } catch (e) {} raf = null; } }
+    size(); seed(); frame(); stop(); // one static frame always
+    if (!RM) {
+      start();
+      document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else { frame(); start(); } });
+      window.addEventListener("resize", function () { size(); seed(); if (raf == null) frame(); });
+    }
+  } catch (e) {}
+})();
+
+/* --------------------------------------------------------------------------
+   IndexedDB status
+   -------------------------------------------------------------------------- */
+(async function () {
+  const chip = document.getElementById("dbStatus");
+  function chipHtml(status) {
+    return '<span data-i18n="topbar.notebook">' + T("topbar.notebook") + "</span> <b>" + status + "</b>";
+  }
+  try {
+    const db = new window.LabNotebookDB();
+    await db.open();
+    if (db.isFallback()) {
+      chip.innerHTML = chipHtml("memory");
+      setStorageNote(db._error || T("storage.memory"));
+    } else {
+      chip.innerHTML = chipHtml("IndexedDB");
+      setStorageNote(T("storage.persisted"));
+    }
+  } catch (err) {
+    chip.innerHTML = chipHtml("unavailable");
+    setStorageNote(T("storage.unavailable"));
+  }
+})();
+
+/* --------------------------------------------------------------------------
+   Planner widget + bookmark view wiring (guarded, hub-only; lite online).
+   -------------------------------------------------------------------------- */
+(function () {
+  try {
+    const starBtn = document.getElementById("starredFilter");
+    if (starBtn) {
+      starBtn.addEventListener("click", function () {
+        state.onlyStarred = !state.onlyStarred;
+        starBtn.classList.toggle("active", state.onlyStarred);
+        starBtn.setAttribute("aria-pressed", state.onlyStarred ? "true" : "false");
+        syncStarredFilter();
+        render();
+      });
+    }
+    document.addEventListener("os-bookmark-change", function () {
+      syncBookmarkCount();
+      if (state.onlyStarred) render();
+    });
+    syncBookmarkCount();
+    syncStarredFilter();
+  } catch (e) {}
+
+  (async function () {
+    const host = document.getElementById("plannerWidget");
+    if (!host) return;
+    function fallback(msg) {
+      try {
+        if (window.OSPlanner) window.OSPlanner.renderHubWidget(host, CATALOG, [], { limit: 5 });
+        else host.innerHTML = '<p class="os-dim" style="margin:0">' + msg + "</p>";
+      } catch (e) {
+        host.innerHTML = '<p class="os-dim" style="margin:0">' + msg + "</p>";
+      }
+    }
+    try {
+      if (!window.OSPlanner) return fallback("Revision planner unavailable.");
+      let stats = [];
+      try {
+        if (window.LabNotebookDB) {
+          const db = new window.LabNotebookDB();
+          if (typeof db.getUsageStats === "function") stats = await db.getUsageStats();
+        } else if (window.LabNotebook && typeof window.LabNotebook.getUsageStats === "function") {
+          stats = await window.LabNotebook.getUsageStats();
+        }
+      } catch (e) { stats = []; }
+      var items = window.OSPlanner.renderHubWidget(host, CATALOG, stats, { limit: 5 });
+      try {
+        var qm = document.getElementById("osQueueMini");
+        if (qm) qm.innerHTML = "Today's revision: <b>" + (items ? items.length : 0) + "</b> due";
+      } catch (e2) {}
+    } catch (e) { fallback("Revision planner unavailable."); }
+  })();
+})();
+</script>
+<script>
+/* OS-HUB-WIDGET: mastery totals + mistakes count + dial ring (guarded, zero-dep). */
+(function () {
+  function paint() {
+    try {
+      if (window.OSMastery && typeof window.OSMastery.getTotals === "function") {
+        var t = window.OSMastery.getTotals();
+        var xp = document.getElementById("osXpChip");
+        var lv = document.getElementById("osLevelChip");
+        var st = document.getElementById("osStreakChip");
+        if (xp) xp.innerHTML = "<b>" + t.xp + "</b>&nbsp;" + T("mastery.xp");
+        if (lv) lv.textContent = t.next ? (t.level + " → " + t.next.name + " @" + t.next.min) : ("🏆 " + t.level);
+        if (st) st.textContent = t.streak + T("mastery.streak");
+        try {
+          var CIRC = 150.8, pct = 0;
+          if (t.next) {
+            var base = levelMin(t.level);
+            pct = t.next.min > base ? Math.max(0, Math.min(1, (t.xp - base) / (t.next.min - base))) : 1;
+          } else pct = 1;
+          var fg = document.getElementById("osRingFg");
+          var pc = document.getElementById("osRingPct");
+          if (fg) fg.style.strokeDashoffset = String(CIRC * (1 - pct));
+          if (pc) pc.textContent = Math.round(pct * 100) + "%";
+        } catch (e2) {}
+      }
+    } catch (e) {}
+    try {
+      var n = (window.OSMistakes && typeof window.OSMistakes.count === "function") ? window.OSMistakes.count() : 0;
+      var chip = document.getElementById("osMistakesChip");
+      if (chip) chip.innerHTML = "📝 " + T("mistakes.title") + ": <b>" + n + "</b> → review";
+    } catch (e) {}
+  }
+  function levelMin(name) {
+    try {
+      var Ls = window.OSMastery.LEVELS || [];
+      for (var i = 0; i < Ls.length; i++) if (Ls[i].name === name) return Ls[i].min;
+    } catch (e) {}
+    return 0;
+  }
+  try { document.addEventListener("os-mistakes-change", paint); } catch (e) {}
+  try { document.addEventListener("os-lang-change", paint); } catch (e) {}
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+})();
+</script>
+</body>
+</html>

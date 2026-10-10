@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool — P-C12-23 Esterification</title>
+<link rel="stylesheet" href="../../../assets/css/lab-theme.css" />
+<!-- OS-ONLINE: premium shell — Google Fonts + GSAP CDN + ScrollTrigger + three importmap -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+/* OS-ONLINE-PREMIUM: font system + hero topbar + 3D stage + morph indicator. */
+:root{--os-font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--os-display:"Space Grotesk","Inter",system-ui,sans-serif;--os-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--os-font)}
+.os-brand,.os-kicker,h1,h2,h3,.os-control-title{font-family:var(--os-display)}
+.os-mono,.os-readout b,.os-digital,.os-stat b{font-family:var(--os-mono);font-variant-numeric:tabular-nums}
+.os-topbar.os-bench{background:linear-gradient(120deg,#0d1b2a 0%,#123524 55%,#0d1b2a 100%)}
+.os-3d-wrap{margin-top:0;margin-bottom:10px}
+#apparatus3d.os-3d{position:relative;overflow:hidden;min-height:420px;height:420px;border-radius:12px;background:radial-gradient(120% 100% at 50% 0%,#12263f 0%,#0d1b2a 70%)}
+#apparatus3d.os-3d canvas{width:100%!important;height:420px!important;display:block}
+.os-viewbar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.os-viewbar .os-filter-pill[aria-pressed="true"]{outline:2px solid #4fd6ff}
+.os-3d-capline{font-size:11px;opacity:.75;padding:6px 2px 0}
+.os-file-notice{margin-top:8px}
+#apparatus3d .os-3d-cap{position:absolute;left:10px;bottom:8px;font-size:11px;opacity:.75}
+.os-tabs{position:relative}
+.os-tab-indicator{transition:left .28s cubic-bezier(.2,.7,.3,1),width .28s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.os-tab-indicator{transition:none}}
+</style>
+</head>
+<body>
+<a class="os-skip-link" href="#main-content">Skip to main content</a>
+<div class="os-app">
+
+  <header class="os-topbar os-bench">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>Esterification<small id="labCrumb">P-C12-23 · Class 12 Chemistry · Esterification of carboxylic acids</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-chip"><span data-i18n="topbar.notebook">Notebook:</span> <b id="dbChip">…</b></span>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi">हिं</button>
+    </span>
+    <a class="os-btn ghost sm" href="../../../index.html" data-i18n="lab.back">← Curriculum Hub</a>
+  </header>
+
+  <main id="main-content" class="os-wrap">
+    <div class="os-lab-grid">
+
+      <!-- ============================ LEFT PANE ============================ -->
+      <section class="os-panel os-apparatus">
+        <header>
+          <span class="os-kicker" data-i18n="lab.apparatus">Apparatus</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="engineChip" data-i18n="lab.engineReady">Engine ready</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-stage os-spotlight">
+            <div class="os-viewbar" data-os-viewbar role="group" aria-label="Apparatus view">
+              <button type="button" class="os-filter-pill" data-os-view="3d">3D Apparatus</button>
+              <button type="button" class="os-filter-pill" data-os-view="2d">2D Board</button>
+            </div>
+            <div class="os-3d-wrap os-3d-hero" data-os-3d-wrap>
+              <div id="apparatus3d" data-apparatus="burette" aria-label="3D apparatus viewer"></div>
+              <div class="os-3d-capline" data-os-3d-caption>3D apparatus hero — drag to orbit. Switch to 2D Board for the measurement canvas.</div>
+              <div class="os-callout warn os-file-notice" data-os-file-notice hidden>3D needs a local server or GitHub Pages (ES modules + import maps do not run over file://); the 2D board works everywhere.</div>
+            </div>
+            <canvas data-os-2d="1" role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="stage" width="720" height="440"></canvas>
+
+            <div class="os-readout os-instrument" id="readout">
+              <div class="row"><span>yield</span><b id="roX" data-os-rolling class="os-rolling">0.00 %</b></div>
+              <div class="row"><span>smell</span><b id="roY" data-os-rolling class="os-rolling">—</b></div>
+            </div>
+          </div>
+
+          <div class="os-control-block os-fader">
+            <div class="os-control-title">Reaction Mixture (FSM state)</div>
+            <div class="os-grid-3">
+              <div class="os-field"><label for="acidSel">Carboxylic acid</label>
+                <select class="os-select" id="acidSel">
+                  <option value="acetic">Acetic acid</option>
+                  <option value="salicylic">Salicylic acid</option>
+                </select></div>
+              <div class="os-field"><label for="alcSel">Alcohol</label>
+                <select class="os-select" id="alcSel">
+                  <option value="ethanol">Ethanol</option>
+                  <option value="methanol">Methanol</option>
+                </select></div>
+              <div class="os-field"><label>Smell flag</label>
+                <div class="os-chip" id="smellChip">—</div></div>
+            </div>
+            <div class="os-field">
+              <label for="catRange">Conc. H2SO4 drops — <span class="os-mono" id="catVal">4</span></label>
+              <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="catRange" min="0" max="10" step="1" value="4" /><span class="os-ticks" aria-hidden="true"></span></div>
+            </div>
+            <div class="os-field">
+              <label for="refluxRange">Reflux time (min) — <span class="os-mono" id="refluxVal">30</span></label>
+              <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="refluxRange" min="5" max="90" step="1" value="30" /><span class="os-ticks" aria-hidden="true"></span></div>
+            </div>
+            <div class="os-row">
+              <label class="os-toggle"><input type="checkbox" id="faultToggle" /> Moisture present (water contamination)</label>
+            </div>
+          </div>
+
+          <div class="os-row">
+            <button class="os-btn primary" id="btnRecord" data-i18n="btn.record">Record Reading</button>
+            <button class="os-btn" id="btnReset" data-i18n="btn.reset">Reset Apparatus</button>
+          </div>
+
+          <div class="os-callout" id="faultMsg">
+            <h4>Live status</h4>
+            <span>Adjust the mixture and press <b>Record Reading</b> to populate the observation table.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ RIGHT PANE =========================== -->
+      <section class="os-panel">
+        <header>
+          <span class="os-kicker" data-i18n="lab.observation">Observation Table</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="trialCount">0 trials</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-table-wrap os-obs" data-os-ledger>
+            <table class="os-table" id="obsTable">
+              <thead>
+                <tr><th>#</th><th>Acid + Alcohol</th><th>H2SO4 (drops)</th><th>Reflux (min)</th><th>Yield %</th><th>Smell</th><th></th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="os-stat-grid">
+            <div class="os-stat"><span>Mean yield %</span><b id="statMean">0.000</b></div>
+            <div class="os-stat"><span data-i18n="stats.stderr">Std. Error</span><b id="statErr">0.000</b></div>
+            <div class="os-stat"><span data-i18n="stats.trials">Trials</span><b id="statN">0</b></div>
+          </div>
+
+          <div class="os-row">
+            <button class="os-btn success" id="btnSave" data-i18n="btn.save">Save to Notebook</button>
+            <button class="os-btn" id="btnExport" data-i18n="btn.export">Export CBSE Sheet</button>
+            <button class="os-btn" id="btnReport" data-i18n="btn.report">Print Report</button>
+            <button class="os-btn danger" id="btnClear" data-i18n="btn.clear">Clear Trials</button>
+          </div>
+          <div class="os-callout ok" id="saveMsg" style="display:none"></div>
+        </div>
+      </section>
+    </div>
+
+    
+    <!-- OS-ACTIONBAR: sticky mobile quick actions (proxies, no duplicate ids) -->
+    <div class="os-actionbar" data-os-actionbar role="toolbar" aria-label="Quick actions">
+      <button class="os-btn primary" type="button" data-os-proxy="btnRecord">Record Reading</button>
+      <button class="os-btn success" type="button" data-os-proxy="btnSave">Save to Notebook</button>
+      <button class="os-btn" type="button" data-os-proxy="btnReport">Print Report</button>
+    </div>
+
+<!-- ============================ BOTTOM TABS ============================ -->
+    <section class="os-panel" style="margin-top:18px">
+      <div class="os-tabs os-tabs-anim" role="tablist" aria-label="Lab information tabs" id="tabs" data-os-tablist>
+        <button class="os-tab active" data-tab="theory" role="tab" aria-selected="true" data-i18n="tabs.theory" tabindex="0" aria-controls="panel-theory" id="tab-theory">Theory &amp; Diagram</button>
+        <button class="os-tab" data-tab="errors" role="tab" aria-selected="false" data-i18n="tabs.errors" tabindex="-1" aria-controls="panel-errors" id="tab-errors">Precautions &amp; Errors</button>
+        <button class="os-tab" data-tab="viva" role="tab" aria-selected="false" data-i18n="tabs.viva" tabindex="-1" aria-controls="panel-viva" id="tab-viva">Viva-Voce Arena</button>
+        <button class="os-tab" data-tab="procedure" role="tab" aria-selected="false" data-i18n="tabs.procedure" aria-controls="panel-procedure" id="tab-procedure" tabindex="-1">Procedure</button>
+        <button class="os-tab" data-tab="quiz" role="tab" aria-selected="false" data-i18n="tabs.quiz" aria-controls="panel-quiz" id="tab-quiz" tabindex="-1">Quiz</button>
+      
+        <span class="os-tab-indicator" id="tabIndicator" aria-hidden="true"></span>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel active" data-panel="theory" data-os-collapsible id="panel-theory" aria-labelledby="tab-theory">
+        <h3>Theory</h3>
+        <button class="os-btn sm ghost" type="button" data-os-tts-btn data-os-tts-label="Theory">🔊 Read aloud</button>
+        <p class="os-muted">Esterification: a carboxylic acid reacts with an alcohol in the presence of concentrated
+          sulphuric acid to form an ester and water. It is a reversible, acid-catalysed nucleophilic acyl substitution.</p>
+        <div class="os-eq">R–COOH + R′–OH ⇌ R–COOR′ + H2O &nbsp;(conc. H2SO4, reflux)</div>
+        <p class="os-muted">Example: CH3COOH + C2H5OH ⇌ CH3COOC2H5 (ethyl ethanoate, fruity smell) + H2O.
+          Salicylic acid + methanol gives methyl salicylate (oil of wintergreen). Yield rises with catalyst amount
+          and reflux time, and falls when water is present (hydrolysis shifts equilibrium back).</p>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="errors" id="panel-errors" aria-labelledby="tab-errors">
+        <h3>Precautions &amp; Standard Errors</h3>
+        <ul class="os-muted">
+          <li>Add concentrated H2SO4 dropwise with cooling — it is corrosive and the mixing is exothermic.</li>
+          <li>Reflux gently with a water condenser; never heat a closed vessel.</li>
+          <li>Keep the apparatus dry — water hydrolyses the ester and lowers the yield.</li>
+          <li>Confirm the ester by its characteristic fruity smell; do not inhale vapours directly (waft).</li>
+        </ul>
+        <div class="os-callout warn" id="triageBox"><h4>Triage</h4><span>Tick “Moisture present” to observe the hydrolysis penalty on yield and smell.</span></div>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="viva" id="panel-viva" aria-labelledby="tab-viva">
+        <div class="os-row between">
+          <h3 style="margin:0">Viva-Voce Arena</h3>
+          <div class="os-row">
+            <button class="os-filter-pill active" id="modeOffline" data-i18n="viva.offline">Offline Viva</button>
+            <button class="os-filter-pill" id="modeAI" data-i18n="viva.ai">AI Examiner</button>
+          </div>
+        </div>
+        <div id="offlineViva">
+          <div class="os-callout" id="vivaProgress">Offline viva: 0 / 0 questions answered.</div>
+          <div id="vivaQA"></div>
+          <div class="os-row" style="margin-top:10px">
+            <button class="os-btn primary" id="vivaStart" data-i18n="viva.startOffline">Start Offline Viva</button>
+          </div>
+        </div>
+        <div id="aiViva" style="display:none">
+          <div class="os-grid-3">
+            <div class="os-field"><label for="aiProvider">Provider</label>
+              <select class="os-select" id="aiProvider">
+                <option value="ollama">Local Ollama</option>
+                <option value="openai">OpenAI (key)</option>
+                <option value="anthropic">Anthropic (key)</option>
+              </select></div>
+            <div class="os-field"><label for="aiEndpoint">Endpoint (optional)</label>
+              <input aria-label="http://localhost:11434" class="os-input" id="aiEndpoint" placeholder="http://localhost:11434" /></div>
+            <div class="os-field"><label for="aiModel">Model</label>
+              <input aria-label="llama3.1" class="os-input" id="aiModel" placeholder="llama3.1" /></div>
+          </div>
+          <div class="os-field" style="margin-top:8px"><label for="aiKey">API key (only for cloud providers — supplied by you)</label>
+            <input aria-label="sk-… (never stored)" class="os-input" id="aiKey" type="password" placeholder="sk-… (never stored)" /></div>
+          <div class="os-row" style="margin-top:10px">
+            <button class="os-btn primary" id="aiStart" data-i18n="viva.startAI">Start AI Viva</button>
+          </div>
+          <div id="aiTranscript" class="os-control-block os-fader" style="margin-top:12px;max-height:300px;overflow:auto"></div>
+          <div class="os-row" style="margin-top:8px">
+            <input aria-label="Type your answer…" class="os-input" id="aiReply" placeholder="Type your answer…" data-i18n-ph="viva.answerPh">
+            <button class="os-btn success" id="aiSend" data-i18n="viva.send">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="os-tabpanel" data-panel="procedure" role="tabpanel" tabindex="0" aria-label="Procedure" id="panel-procedure" aria-labelledby="tab-procedure">
+        <h3>Procedure</h3>
+        <div data-os-procedure></div>
+      </div>
+      <div class="os-tabpanel" data-panel="quiz" role="tabpanel" tabindex="0" aria-label="Quiz" id="panel-quiz" aria-labelledby="tab-quiz">
+        <h3>Quiz</h3>
+        <button class="os-btn sm ghost" type="button" data-os-bookmark-btn aria-pressed="false">☆ Bookmark</button>
+        <div data-os-quiz></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../../../assets/js/storage.js"></script>
+<script src="../../../assets/js/report.js"></script>
+<script src="../../../assets/js/graph.js"></script>
+<script src="../../../assets/js/quiz-bank-1.js"></script>
+<script src="../../../assets/js/quiz-bank-2.js"></script>
+<script src="../../../assets/js/quiz-bank-3.js"></script>
+<script src="../../../assets/js/quiz-bank-4.js"></script>
+<script src="../../../assets/js/quiz-bank-5.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-1.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-2.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-3.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-4.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-5.js"></script>
+<script src="../../../assets/js/quiz-bank.js"></script>
+<script src="../../../assets/js/quiz.js"></script>
+<script src="../../../assets/js/tts.js"></script>
+<script src="../../../assets/js/bookmarks.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/procedure.js"></script>
+<script src="../../../assets/js/procedure-bank.js"></script>
+<script src="../../../assets/js/procedure-bank-hi.js"></script>
+<script>
+/* OS-STORAGE-GUARD: local-only fallback notice. If storage.js failed to load
+   (e.g. this file was copied out of the project tree standalone), show a
+   .os-callout warning with the path fix. No CDN, no downloads -- local only. */
+(function () {
+  function showGuard() {
+    if (window.LabNotebook || window.LabNotebookDB) return;
+    if (document.querySelector("[data-os-storage-guard]")) return;
+    var d = document.createElement("div");
+    d.className = "os-callout warn";
+    d.setAttribute("data-os-storage-guard", "1");
+    d.innerHTML = "<h4>Notebook storage missing</h4><span>" +
+      "Could not load <b>../../../assets/js/storage.js</b>, so Save / Export are disabled. " +
+      "Keep this file inside the project tree (<b>OnlineDeploy/labs/class12/chemistry/esterification.html</b>) " +
+      "so the relative path resolves -- do not open it as a standalone copy and do not " +
+      "fetch anything from a CDN; this lab is fully local.</span>";
+    var host = document.querySelector(".os-wrap") || document.querySelector(".os-app") || document.body;
+    host.insertBefore(d, host.firstChild);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showGuard);
+  else showGuard();
+})();
+</script>
+<script src="../../../assets/js/ai-examiner.js"></script>
+<script src="../../../assets/js/viva-bank-hi.js"></script>
+<script src="../../../assets/js/viva-hi.js"></script>
+<!-- OS-MOTION: vendored GSAP + guarded motion helper (offline, no CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- OS-MOTION: CDN GSAP above, vendored fallback below (offline copy) -->
+<script src="../../../assets/vendor/gsap/gsap.min.js"></script>
+<script src="../../../assets/js/motion.js"></script>
+<script src="../../../assets/js/perf.js"></script>
+<script>
+/* Esterification FSM engine — deterministic, no randomness. */
+const CONFIG = {
+  experimentId: "P-C12-23",
+  experimentTitle: "Esterification",
+  subject: "chemistry",
+  classLevel: 12
+};
+
+/* FSM states: acid x alcohol x catalyst x reflux x moisture -> yield */
+const ENGINE = {
+  acid: "acetic",
+  alcohol: "ethanol",
+  drops: 4,
+  refluxMin: 30,
+  water: false,
+  computeYield: function () {
+    var acidTerm = (this.acid === "salicylic") ? -6 : 0;
+    var alcTerm = (this.alcohol === "methanol") ? 4 : 0;
+    var d = this.drops;
+    var catalystTerm = 3.2 * d - 0.22 * d * d; /* peaks near ~7 drops */
+    var t = this.refluxMin;
+    var refluxTerm = 25 * (1 - Math.exp(-t / 25));
+    var waterPenalty = this.water ? 8 : 0;
+    var y = 40 + acidTerm + alcTerm + catalystTerm + refluxTerm - waterPenalty;
+    if (y < 0) y = 0;
+    if (y > 96) y = 96;
+    return Math.round(y * 100) / 100;
+  },
+  fruity: function () {
+    var y = this.computeYield();
+    return (y >= 60 && !this.water) ? "fruity" : (y >= 45 ? "faint" : "none");
+  }
+};
+
+const VIVA_BANK = [
+  { question: "Write the general equation for esterification of a carboxylic acid with an alcohol.",
+    answer: "R-COOH + R'-OH ⇌ R-COOR' + H2O, heated under reflux in the presence of concentrated sulphuric acid." },
+  { question: "What is the role of concentrated H2SO4 in esterification?",
+    answer: "It acts as a catalyst (protonates the carbonyl group) and as a dehydrating agent that removes water, shifting the equilibrium toward the ester." },
+  { question: "Why is esterification called a reversible equilibrium reaction, and how is the yield improved?",
+    answer: "The forward esterification and reverse hydrolysis occur simultaneously; excess of one reactant, removal of water, and refluxing with catalyst shift equilibrium toward the ester per Le Chatelier's principle." },
+  { question: "How is ester formation identified by the fruity smell test?",
+    answer: "Esters have a characteristic sweet fruity smell; after pouring the reaction mixture into sodium carbonate solution / cold water, a fruity odour confirms ester formation. Moisture or low conversion gives a faint or absent smell." }
+];
+
+const trials = [];
+
+/* ---- Canvas rendering: flask + yield curve ---- */
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+
+function draw() {
+  const w = canvas.width, h = canvas.height;
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, "#0d1b2a"); grad.addColorStop(1, "#0d1b2a");
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "rgba(79,214,255,.12)"; ctx.lineWidth = 1;
+  for (let gx = 0; gx <= w; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
+  for (let gy = 0; gy <= h; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
+
+  const y = ENGINE.computeYield();
+  const smell = ENGINE.fruity();
+
+  /* --- left: reflux flask --- */
+  const fx = 150, fy = 120;
+  ctx.strokeStyle = "#7d94bd"; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(fx - 18, fy - 70); ctx.lineTo(fx - 18, fy - 20); ctx.lineTo(fx - 70, fy + 70); ctx.lineTo(fx + 70, fy + 70); ctx.lineTo(fx + 18, fy - 20); ctx.lineTo(fx + 18, fy - 70); ctx.stroke();
+  /* condenser */
+  ctx.strokeStyle = "#f4f1e3"; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.moveTo(fx - 18, fy - 70); ctx.lineTo(fx - 18, fy - 105); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(fx + 18, fy - 70); ctx.lineTo(fx + 18, fy - 105); ctx.stroke();
+  /* liquid: level/colour keyed to yield */
+  const frac = y / 100;
+  const lh = 20 + frac * 55;
+  const hue = 25 + frac * 120;
+  ctx.fillStyle = "hsla(" + hue.toFixed(0) + ",70%,55%,.85)";
+  ctx.fillRect(fx - 62, fy + 70 - lh, 124, lh);
+  /* bubbles keyed to reflux time */
+  ctx.fillStyle = "rgba(255,255,255,.5)";
+  const nb = 3 + Math.floor(ENGINE.refluxMin / 15);
+  for (let i = 0; i < nb; i++) {
+    const bx = fx - 45 + ((i * 37) % 90);
+    const by = fy + 60 - ((i * 23 + ENGINE.refluxMin) % Math.max(10, lh - 8));
+    ctx.beginPath(); ctx.arc(bx, by, 3 + (i % 3), 0, Math.PI * 2); ctx.fill();
+  }
+  /* smell waves */
+  if (smell === "fruity") {
+    ctx.strokeStyle = "#4fd6ff"; ctx.lineWidth = 2;
+    for (let k = 0; k < 3; k++) {
+      ctx.beginPath();
+      ctx.arc(fx + 90, fy - 40, 14 + k * 14, -0.9, 0.9);
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#4fd6ff"; ctx.font = "13px system-ui";
+    ctx.fillText("fruity smell", fx + 40, fy - 95);
+  } else if (smell === "faint") {
+    ctx.strokeStyle = "#8a93a8"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(fx + 90, fy - 40, 16, -0.9, 0.9); ctx.stroke();
+    ctx.fillStyle = "#8a93a8"; ctx.font = "13px system-ui";
+    ctx.fillText("faint smell", fx + 40, fy - 95);
+  }
+  ctx.fillStyle = "#cfe0ff"; ctx.font = "13px system-ui";
+  ctx.fillText(ENGINE.acid + " + " + ENGINE.alcohol, fx - 70, fy + 100);
+  ctx.fillStyle = "#8a93a8"; ctx.font = "12px system-ui";
+  ctx.fillText("H2SO4 " + ENGINE.drops + " drops · " + ENGINE.refluxMin + " min reflux", fx - 80, fy + 118);
+
+  /* --- right: yield vs reflux curve --- */
+  const ox = 380, oy = h - 60, aw = w - ox - 50, ah = h - 130;
+  ctx.strokeStyle = "#f4f1e3"; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(ox, oy - ah); ctx.lineTo(ox, oy); ctx.lineTo(ox + aw, oy); ctx.stroke();
+  ctx.fillStyle = "#8a93a8"; ctx.font = "12px system-ui";
+  ctx.fillText("yield % vs reflux (min)", ox + 10, oy - ah - 12);
+  ctx.fillText("5", ox - 4, oy + 16); ctx.fillText("90", ox + aw - 12, oy + 16);
+  ctx.fillText("96", ox - 24, oy - ah + 10);
+  const savedT = ENGINE.refluxMin;
+  ctx.strokeStyle = "#4fd6ff"; ctx.lineWidth = 2.5; ctx.beginPath();
+  for (let i = 0; i <= 90; i += 2) {
+    ENGINE.refluxMin = 5 + (i / 90) * 85;
+    const yv = ENGINE.computeYield();
+    const px = ox + (i / 90) * aw;
+    const py = oy - (yv / 100) * ah;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ENGINE.refluxMin = savedT;
+  const px = ox + ((savedT - 5) / 85) * aw;
+  const py = oy - (y / 100) * ah;
+  ctx.fillStyle = "#4fd6ff";
+  ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "rgba(79,214,255,.25)";
+  ctx.beginPath(); ctx.arc(px, py, 14, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#fff"; ctx.font = "bold 14px system-ui";
+  ctx.fillText(y.toFixed(1) + "%", px - 20, py - 20);
+
+  document.getElementById("roX").textContent = y.toFixed(2) + " %";
+  document.getElementById("roY").textContent = smell;
+  const chip = document.getElementById("smellChip");
+  chip.textContent = smell + (ENGINE.water ? " (wet)" : "");
+}
+
+/* ---- Observation table arithmetic ---- */
+function recompute() {
+  const vals = trials.map(function (t) { return t.y; });
+  const n = vals.length;
+  const mean = n ? vals.reduce(function (a, b) { return a + b; }, 0) / n : 0;
+  let stderr = 0;
+  if (n > 1) {
+    const variance = vals.reduce(function (a, b) { return a + (b - mean) * (b - mean); }, 0) / (n - 1);
+    stderr = Math.sqrt(variance) / Math.sqrt(n);
+  }
+  document.getElementById("statMean").textContent = mean.toFixed(3);
+  document.getElementById("statErr").textContent = stderr.toFixed(3);
+  document.getElementById("statN").textContent = String(n);
+  document.getElementById("trialCount").textContent = n + " " + ((window.OS_I18N&&window.OS_I18N.t)?window.OS_I18N.t("trials.unit"):"trials");
+}
+
+function renderTable() {
+  const tbody = document.querySelector("#obsTable tbody");
+  tbody.innerHTML = "";
+  trials.forEach(function (t, i) {
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + (i + 1) + "</td>" +
+      '<td>' + t.acid + " + " + t.alcohol + "</td>" +
+      '<td class="num">' + t.drops + "</td>" +
+      '<td class="num">' + t.reflux + "</td>" +
+      '<td class="num">' + t.y.toFixed(2) + "</td>" +
+      "<td>" + t.smell + "</td>" +
+      '<td><button class="os-btn danger sm" data-row="' + i + '">×</button></td>';
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll("button[data-row]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      trials.splice(parseInt(btn.dataset.row, 10), 1);
+      renderTable(); recompute();
+    });
+  });
+  recompute();
+}
+
+/* ---- Controls ---- */
+function syncEngine() {
+  ENGINE.acid = document.getElementById("acidSel").value;
+  ENGINE.alcohol = document.getElementById("alcSel").value;
+  ENGINE.drops = parseInt(document.getElementById("catRange").value, 10);
+  ENGINE.refluxMin = parseInt(document.getElementById("refluxRange").value, 10);
+  ENGINE.water = document.getElementById("faultToggle").checked;
+  document.getElementById("catVal").textContent = String(ENGINE.drops);
+  document.getElementById("refluxVal").textContent = String(ENGINE.refluxMin);
+  draw();
+}
+["acidSel", "alcSel"].forEach(function (id) {
+  document.getElementById(id).addEventListener("change", syncEngine);
+});
+document.getElementById("catRange").addEventListener("input", syncEngine);
+document.getElementById("refluxRange").addEventListener("input", syncEngine);
+document.getElementById("faultToggle").addEventListener("change", function () {
+  syncEngine();
+  const box = document.getElementById("faultMsg");
+  if (ENGINE.water) {
+    box.className = "os-callout danger";
+    box.innerHTML = "<h4>Moisture present</h4><span>Water hydrolyses the ester — yield drops by 8 points and the fruity smell is suppressed.</span>";
+  } else {
+    box.className = "os-callout";
+    box.innerHTML = "<h4>Live status</h4><span>Apparatus operating dry. Increase drops / reflux time to raise the yield.</span>";
+  }
+});
+document.getElementById("btnRecord").addEventListener("click", function () {
+  trials.push({ acid: ENGINE.acid, alcohol: ENGINE.alcohol, drops: ENGINE.drops, reflux: ENGINE.refluxMin, y: ENGINE.computeYield(), smell: ENGINE.fruity() });
+  renderTable();
+});
+document.getElementById("btnReset").addEventListener("click", function () {
+  document.getElementById("acidSel").value = "acetic";
+  document.getElementById("alcSel").value = "ethanol";
+  document.getElementById("catRange").value = 4;
+  document.getElementById("refluxRange").value = 30;
+  document.getElementById("faultToggle").checked = false;
+  syncEngine();
+});
+document.getElementById("btnClear").addEventListener("click", function () {
+  trials.length = 0; renderTable();
+});
+
+/* ---- Notebook persistence ---- */
+function flash(msg, ok) {
+  const el = document.getElementById("saveMsg");
+  el.style.display = "block";
+  el.className = "os-callout " + (ok === false ? "danger" : "ok");
+  el.textContent = msg;
+  setTimeout(function () { el.style.display = "none"; }, 4000);
+}
+
+document.getElementById("btnSave").addEventListener("click", async function () {
+  if (!trials.length) return flash("Record at least one reading first.", false);
+  await window.LabNotebook.open();
+  await window.LabNotebook.saveTrial(CONFIG.experimentId, {
+    class_level: CONFIG.classLevel, subject: CONFIG.subject, title: CONFIG.experimentTitle,
+    readings: trials.map(function (t) { return { "Mixture": t.acid + "+" + t.alcohol, "H2SO4 drops": t.drops, "Reflux min": t.reflux, "Yield %": t.y.toFixed(2), "Smell": t.smell }; }),
+    results: { "Mean yield %": document.getElementById("statMean").textContent, "Std. Error": document.getElementById("statErr").textContent }
+  });
+  flash("Trial saved to the IndexedDB notebook.", true);
+});
+
+document.getElementById("btnExport").addEventListener("click", async function () {
+  await window.LabNotebook.open();
+  const html = await window.LabNotebook.exportToCBSEFormat(CONFIG.experimentId);
+  const w = window.open("", "_blank");
+  if (w) { w.document.write(html); w.document.close(); }
+  else flash("Allow pop-ups to view the exported CBSE sheet.", false);
+});
+
+/* ---- Tab switching ---- */
+document.getElementById("tabs").addEventListener("click", function (ev) {
+  const tab = ev.target.closest(".os-tab"); if (!tab) return;
+  document.querySelectorAll(".os-tab").forEach(function (t) { t.classList.remove("active"); });
+  document.querySelectorAll(".os-tabpanel").forEach(function (p) { p.classList.remove("active"); });
+  tab.classList.add("active");
+  document.querySelector('.os-tabpanel[data-panel="' + tab.dataset.tab + '"]').classList.add("active");
+});
+
+/* ---- Viva engine ---- */
+const examiner = new window.AIExaminer({
+  experimentId: CONFIG.experimentId,
+  experimentTitle: CONFIG.experimentTitle,
+  subject: CONFIG.subject,
+  classLevel: CONFIG.classLevel,
+  vivaBank: VIVA_BANK,
+  getObservations: function () {
+    return trials.map(function (t) { return { "mixture": t.acid + "+" + t.alcohol, "drops": t.drops, "reflux": t.reflux, "yield": t.y.toFixed(2), "smell": t.smell }; });
+  },
+  onToken: function (_chunk, full) { appendAI("examiner", full, true); },
+  onMessage: function (text) { appendAI("examiner", text, false); },
+  onError: function (e) { appendAI("system", "Error: " + (e.message || e), false); }
+});
+
+function appendAI(role, text, replaceLast) {
+  const host = document.getElementById("aiTranscript");
+  if (replaceLast) {
+    let last = host.querySelector('[data-stream="1"]');
+    if (!last) { last = document.createElement("div"); last.dataset.stream = "1"; last.className = "os-callout"; host.appendChild(last); }
+    last.textContent = text;
+  } else {
+    const d = document.createElement("div");
+    d.className = "os-callout " + (role === "student" ? "ok" : "warn");
+    d.textContent = (role === "student" ? "You: " : role === "examiner" ? "Examiner: " : "") + text;
+    host.appendChild(d);
+  }
+  host.scrollTop = host.scrollHeight;
+}
+
+function renderOffline() {
+  const q = examiner.offlineQuestion();
+  const host = document.getElementById("vivaQA");
+  host.innerHTML = "";
+  document.getElementById("vivaProgress").textContent =
+    "Offline viva: " + examiner.offline.index + " / " + VIVA_BANK.length + " questions answered — score " +
+    examiner.offline.score + "/" + examiner.offline.total + ".";
+  if (!q) {
+    host.innerHTML = '<div class="os-callout ok"><h4>Viva complete</h4><span>Final score ' +
+      examiner.offline.score + "/" + examiner.offline.total + ". Review the model answers below.</span></div>";
+    examiner.offline.answers.forEach(function (a) {
+      const d = document.createElement("div");
+      d.className = "os-viva-item open";
+      d.innerHTML = '<div class="os-viva-q"><span class="qmark">Q</span><span>' + a.question + ' <span class="os-chip">' + a.mark + '/2</span></span></div>' +
+        '<div class="os-viva-a"><b>Your answer:</b> ' + (a.answer || "<em>blank</em>") + "<br><b>Model answer:</b> " + a.model + "</div>";
+      host.appendChild(d);
+    });
+    return;
+  }
+  const wrap = document.createElement("div");
+  wrap.className = "os-callout";
+  wrap.innerHTML = "<h4>Question " + (q.index + 1) + "</h4><span>" + q.question + "</span>";
+  const input = document.createElement("textarea");
+  input.className = "os-input"; input.rows = 3; input.placeholder = "Type your answer…";
+  const btn = document.createElement("button");
+  btn.className = "os-btn primary"; btn.textContent = "Submit Answer";
+  btn.style.marginTop = "8px";
+  btn.addEventListener("click", function () {
+    examiner.offlineSubmit(input.value);
+    renderOffline();
+  });
+  host.appendChild(wrap); host.appendChild(input); host.appendChild(btn);
+}
+
+document.getElementById("vivaStart").addEventListener("click", function () {
+  examiner.offlineStart(); renderOffline();
+});
+document.getElementById("modeOffline").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeAI").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "block";
+  document.getElementById("aiViva").style.display = "none";
+});
+document.getElementById("modeAI").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeOffline").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "none";
+  document.getElementById("aiViva").style.display = "block";
+});
+document.getElementById("aiStart").addEventListener("click", function () {
+  examiner.configure({
+    provider: document.getElementById("aiProvider").value,
+    model: document.getElementById("aiModel").value.trim(),
+    endpoint: document.getElementById("aiEndpoint").value.trim(),
+    apiKey: document.getElementById("aiKey").value.trim()
+  });
+  document.getElementById("aiTranscript").innerHTML = "";
+  examiner.aiStart();
+});
+document.getElementById("aiSend").addEventListener("click", function () {
+  const box = document.getElementById("aiReply");
+  if (!box.value.trim()) return;
+  appendAI("student", box.value, false);
+  const text = box.value; box.value = "";
+  examiner.aiSend(text);
+});
+
+/* ---- Boot ---- */
+(async function () {
+  syncEngine();
+  renderTable();
+  try {
+    await window.LabNotebook.open();
+    document.getElementById("dbChip").textContent = window.LabNotebook.isFallback() ? "memory" : "IndexedDB";
+  } catch (e) { document.getElementById("dbChip").textContent = "unavailable"; }
+})();
+</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{var el=document.querySelector("[data-os-quiz]");if(el&&window.OSQuiz&&!el.getAttribute("data-os-quiz-done")){var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:"";window.OSQuiz.renderInto(el,id);}}catch(e){}});</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{if(window.OSProcedure&&window.OSProcedure.initFromBank)window.OSProcedure.initFromBank();}catch(e){}});</script>
+<script>/* OS-REPORT-WIRING: generic printable-report hook (idempotent). */
+window.addEventListener("DOMContentLoaded",function(){
+  var b=document.getElementById("btnReport");
+  if(!b||b.getAttribute("data-os-report-done"))return;
+  b.setAttribute("data-os-report-done","1");
+  b.addEventListener("click",function(){
+    try{
+      if(!window.OSReport){alert("Report helper (assets/js/report.js) failed to load.");return;}
+      var T=(typeof trials!=="undefined"&&Array.isArray(trials))?trials:[];
+      if(!T.length){alert("Record at least one reading first.");return;}
+      var cfg=(typeof CONFIG!=="undefined"&&CONFIG)?CONFIG:{};
+      var th=document.querySelector('[data-panel="theory"]');
+      var mEl=document.getElementById("statMean"),eEl=document.getElementById("statErr"),
+          nEl=document.getElementById("statN"),gEl=document.getElementById("statG");
+      window.OSReport.printLabReport({
+        experimentId:cfg.experimentId||document.title,
+        title:cfg.experimentTitle||document.title,
+        readings:T,
+        stats:{
+          mean:mEl?mEl.textContent:(gEl?gEl.textContent:""),
+          stderr:eEl?eEl.textContent:"",
+          n:nEl?nEl.textContent:T.length
+        },
+        canvasEl:document.getElementById("stage"),
+        theory:th?th.innerText.slice(0,600):""
+      });
+    }catch(err){alert("Report failed: "+(err&&err.message||err));}
+  });
+});</script>
+<script>/* OS-I18N-CHROME: re-render dynamic chrome on language toggle (guarded, idempotent). */
+(function(){function rr(){try{if(typeof renderHead==="function"&&document.getElementById("obsHead"))renderHead();}catch(e){}try{if(typeof renderTable==="function"&&document.getElementById("obsTable"))renderTable();}catch(e){}try{if(typeof recompute==="function")recompute();}catch(e){}}if(window.__osI18nChromeWired)return;window.__osI18nChromeWired=true;document.addEventListener("os-lang-change",rr);})();</script>
+
+<!-- OS-FLUID-SHELL hooks: toast stack + alert routing + proxy/fader/indicator targets.
+     CSS lives in lab-theme.css; motion.js sibling drives animation. Idempotent. -->
+<div class="os-toasts os-toast-stack" id="osToasts" role="status" aria-live="polite" aria-atomic="false"></div>
+<script>/* OS-TOAST: toast system replacing window.alert (guarded, idempotent). */
+(function(){
+  if(window.OSToast&&window.OSToast.__osFluid)return;
+  function host(){
+    var h=document.getElementById("osToasts");
+    if(h)return h;
+    h=document.createElement("div");
+    h.className="os-toasts os-toast-stack";h.id="osToasts";
+    h.setAttribute("role","status");h.setAttribute("aria-live","polite");h.setAttribute("aria-atomic","false");
+    document.body.appendChild(h);return h;
+  }
+  function show(msg,type){
+    try{
+      var h=host();
+      var t=document.createElement("div");
+      var kind=(type==="ok"||type==="success")?"ok":(type==="danger"||type==="error")?"danger":(type==="warn"?"warn":"");
+      t.className=("os-toast "+kind).trim();
+      var dot=document.createElement("span");dot.className="os-toast-dot";dot.setAttribute("aria-hidden","true");
+      var m=document.createElement("span");m.className="os-toast-msg";m.textContent=String(msg==null?"":msg);
+      var x=document.createElement("button");x.className="os-toast-close";x.type="button";x.textContent="×";x.setAttribute("aria-label","Dismiss");
+      x.addEventListener("click",function(){dismiss(t);});
+      t.appendChild(dot);t.appendChild(m);t.appendChild(x);
+      h.appendChild(t);
+      while(h.children.length>4)h.removeChild(h.firstChild);
+      setTimeout(function(){dismiss(t);},4200);
+      return t;
+    }catch(e){try{window.__osNativeAlert(String(msg));}catch(_){}return null;}
+  }
+  function dismiss(t){
+    if(!t||!t.parentNode||t.classList.contains("is-leaving"))return;
+    try{
+      t.classList.add("is-leaving");
+      setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},200);
+    }catch(e){if(t.parentNode)t.parentNode.removeChild(t);}
+  }
+  window.OSToast={show:show,dismiss:dismiss,__osFluid:true};
+  if(!window.__osNativeAlert){
+    try{window.__osNativeAlert=window.alert;}catch(e){}
+    try{window.alert=function(m){return show(m,"warn");};}catch(e){}
+  }
+  /* Sticky action-bar proxies: [data-os-proxy] clicks forward to #id buttons. */
+  document.addEventListener("click",function(ev){
+    var p=ev.target&&ev.target.closest?ev.target.closest("[data-os-proxy]"):null;
+    if(!p)return;
+    var target=document.getElementById(p.getAttribute("data-os-proxy"));
+    if(target&&target!==p&&typeof target.click==="function"){ev.preventDefault();target.click();}
+  });
+})();</script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="../../../assets/js/apparatus3d.js"></script>
+<script>/* OS-VIEW-TOGGLE: 2D/3D hero toggle (per-lab persist) + file:// 3D notice. Idempotent. */
+(function(){
+  if(window.__osViewToggle)return;window.__osViewToggle=true;
+  function labKey(){
+    try{
+      var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:location.pathname;
+      return "os-view:"+id;
+    }catch(e){return "os-view:lab";}
+  }
+  function apply(mode){
+    var show3D=(mode!=="2d");
+    var wrap=document.querySelector("[data-os-3d-wrap]");
+    if(wrap)wrap.style.display=show3D?"":"none";
+    var cvs=document.querySelectorAll("canvas[data-os-2d]");
+    for(var i=0;i<cvs.length;i++){cvs[i].style.display=show3D?"none":"";}
+    var pills=document.querySelectorAll("[data-os-view]");
+    for(var j=0;j<pills.length;j++){
+      var on=pills[j].getAttribute("data-os-view")===(show3D?"3d":"2d");
+      pills[j].classList.toggle("active",on);
+      pills[j].setAttribute("aria-pressed",on?"true":"false");
+    }
+  }
+  document.addEventListener("click",function(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest("[data-os-view]"):null;
+    if(!b)return;
+    var m=b.getAttribute("data-os-view");
+    try{localStorage.setItem(labKey(),m);}catch(e){}
+    apply(m);
+  });
+  function init(){
+    var m=null;
+    try{m=localStorage.getItem(labKey());}catch(e){}
+    apply(m==="2d"?"2d":"3d");
+    try{
+      if(location.protocol==="file:"){
+        var ns=document.querySelectorAll("[data-os-file-notice]");
+        for(var k=0;k<ns.length;k++){ns[k].hidden=false;}
+      }
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+<script>/* OS-ONLINE-SHELL: tab morph indicator + ScrollTrigger reveals + premium flag. Idempotent. */
+(function(){
+  if(window.__osOnlineShell)return;window.__osOnlineShell=true;
+  window.OSOnline={premium:true};
+  /* Tab morph indicator: glide #tabIndicator under the active tab. */
+  function moveIndicator(tabsEl){
+    try{
+      var ind=tabsEl.querySelector(".os-tab-indicator")||document.getElementById("tabIndicator");
+      var tab=tabsEl.querySelector(".os-tab.active");
+      if(!ind||!tab)return;
+      var tr=tabsEl.getBoundingClientRect(),r=tab.getBoundingClientRect();
+      ind.style.left=(r.left-tr.left)+"px";
+      ind.style.width=r.width+"px";
+      tabsEl.setAttribute("data-os-indicator-ready","1");
+    }catch(e){}
+  }
+  function wireTabs(){
+    document.querySelectorAll(".os-tabs").forEach(function(tabsEl){
+      moveIndicator(tabsEl);
+      ["click","keydown"].forEach(function(ev){
+        tabsEl.addEventListener(ev,function(){setTimeout(function(){moveIndicator(tabsEl);},0);});
+      });
+    });
+    window.addEventListener("resize",function(){
+      document.querySelectorAll(".os-tabs").forEach(moveIndicator);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireTabs);
+  else wireTabs();
+  /* ScrollTrigger reveals: one-shot panel entrances (motion.js guards reduced motion). */
+  function reveals(){
+    try{
+      if(!(window.gsap&&window.ScrollTrigger))return;
+      window.gsap.registerPlugin(window.ScrollTrigger);
+      window.gsap.utils.toArray(".os-panel").forEach(function(p){
+        window.gsap.fromTo(p,{y:14,opacity:0},{y:0,opacity:1,duration:.45,ease:"power2.out",
+          scrollTrigger:{trigger:p,start:"top 92%",once:true},clearProps:"transform,opacity"});
+      });
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",reveals);
+  else reveals();
+})();</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+/* ==========================================================================
+   OpenSchool NCERT — Design Tokens (offline-safe, zero-dep)
+   assets/css/tokens.css
+   Variables only. No selectors with declarations except :root / html theme.
+   Loaded BEFORE lab-theme.css. lab-theme.css maps its --os-* vars onto these.
+   Dark is default (:root == html[data-theme="dark"]).
+   ========================================================================== */
+
+:root {
+  /* ---- Font stacks (system only, no external fetch; character via
+     humanist prioritisation + serif display pairing) ---- */
+  --font-sans: "Avenir Next", "Segoe UI", "Noto Sans", "Ubuntu", "Cantarell",
+    system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+    "Times New Roman", serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Consolas,
+    "Liberation Mono", Menlo, monospace;
+
+  /* Data figures: enable tabular numbers wherever mono/data font applies */
+  --font-feature-data: "tnum" 1, "lnum" 1, "zero" 1;
+  --data-nums: tabular-nums lining-nums;
+
+  /* Headline handling */
+  --tracking-display: -0.02em;
+  --tracking-label: 0.04em;
+  --wrap-display: balance;
+  --wrap-body: pretty;
+  --measure-body: 65ch;
+
+  /* ---- Single accent: lab-bench teal (sat ~55%, <80%)
+     Amber reserved ONLY for meter faces, not UI chrome ---- */
+  --accent: #2fa08c;
+  --accent-strong: #37b39e;
+  --accent-ink: #06231d;
+  --accent-ghost: rgba(47, 160, 140, 0.12);
+  --accent-line: rgba(47, 160, 140, 0.42);
+  --accent-focus: rgba(47, 160, 140, 0.22);
+
+  /* Functional hues (desaturated, sat <60%, never gradients) */
+  --ok: #3aa67e;
+  --warn: #b98a2f;
+  --danger: #c25a63;
+
+  /* ---- Tinted-slate neutrals (single teal-slate family, no warm/cool mix) ---- */
+  --bg-0: #0c1413;
+  --bg-1: #111c1b;
+  --bg-2: #162625;
+  --bg-3: #1d3230;
+  --panel: #13211f;
+  --panel-2: #1a2c2a;
+  --line: #294140;
+  --line-soft: #1f3332;
+  --text: #e9f1ee;
+  --text-muted: #bfcfcb;
+  --text-dim: #93aaa5;
+
+  /* Meter / paper skins (warm paper kept for instrument realism only) */
+  --meter-face: #f4f1e3;
+  --meter-ink: #1a1a1a;
+
+  /* ---- Tinted shadows (teal-black, single downward light source) ---- */
+  --shadow-lg: 0 18px 50px rgba(4, 18, 16, 0.55);
+  --shadow-md: 0 8px 24px rgba(4, 18, 16, 0.42);
+  --shadow-sm: 0 2px 8px rgba(4, 18, 16, 0.4);
+  --shadow-accent: 0 6px 18px rgba(47, 160, 140, 0.28);
+
+  /* ---- Radius scale (container 20 / inner 10) ---- */
+  --radius-container: 20px;
+  --radius-inner: 10px;
+  --radius-sm: 6px;
+  --radius-pill: 999px; /* reserved: progress fills + status dots only */
+
+  /* ---- Z-index scale (no arbitrary values) ---- */
+  --z-below: -1;
+  --z-base: 1;
+  --z-raised: 10;
+  --z-sticky: 50;
+  --z-overlay: 100;
+  --z-skip: 200;
+  --z-toast: 300;
+
+  /* ---- Motion ---- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-med: 250ms;
+
+  color-scheme: dark;
+}
+
+/* Explicit dark (index.html ships data-theme="dark"): same as :root */
+html[data-theme="dark"] {
+  --font-sans: "Avenir Next", "Segoe UI", "Noto Sans", "Ubuntu", "Cantarell",
+    system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+    "Times New Roman", serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Consolas,
+    "Liberation Mono", Menlo, monospace;
+  --font-feature-data: "tnum" 1, "lnum" 1, "zero" 1;
+  --data-nums: tabular-nums lining-nums;
+  --tracking-display: -0.02em;
+  --tracking-label: 0.04em;
+  --wrap-display: balance;
+  --wrap-body: pretty;
+  --measure-body: 65ch;
+  --accent: #2fa08c;
+  --accent-strong: #37b39e;
+  --accent-ink: #06231d;
+  --accent-ghost: rgba(47, 160, 140, 0.12);
+  --accent-line: rgba(47, 160, 140, 0.42);
+  --accent-focus: rgba(47, 160, 140, 0.22);
+  --ok: #3aa67e;
+  --warn: #b98a2f;
+  --danger: #c25a63;
+  --bg-0: #0c1413;
+  --bg-1: #111c1b;
+  --bg-2: #162625;
+  --bg-3: #1d3230;
+  --panel: #13211f;
+  --panel-2: #1a2c2a;
+  --line: #294140;
+  --line-soft: #1f3332;
+  --text: #e9f1ee;
+  --text-muted: #bfcfcb;
+  --text-dim: #93aaa5;
+  --meter-face: #f4f1e3;
+  --meter-ink: #1a1a1a;
+  --shadow-lg: 0 18px 50px rgba(4, 18, 16, 0.55);
+  --shadow-md: 0 8px 24px rgba(4, 18, 16, 0.42);
+  --shadow-sm: 0 2px 8px rgba(4, 18, 16, 0.4);
+  --shadow-accent: 0 6px 18px rgba(47, 160, 140, 0.28);
+  --radius-container: 20px;
+  --radius-inner: 10px;
+  --radius-sm: 6px;
+  --radius-pill: 999px;
+  --z-below: -1;
+  --z-base: 1;
+  --z-raised: 10;
+  --z-sticky: 50;
+  --z-overlay: 100;
+  --z-skip: 200;
+  --z-toast: 300;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-med: 250ms;
+
+  color-scheme: dark;
+}
+
+/* Light theme: same teal accent, paper-tinted slate */
+html[data-theme="light"] {
+  --accent: #1f7f6e;
+  --accent-strong: #189181;
+  --accent-ink: #ffffff;
+  --accent-ghost: rgba(31, 127, 110, 0.1);
+  --accent-line: rgba(31, 127, 110, 0.45);
+  --accent-focus: rgba(31, 127, 110, 0.18);
+  --ok: #2c7d5f;
+  --warn: #8f6a1f;
+  --danger: #a44a52;
+  --bg-0: #eef3f1;
+  --bg-1: #ffffff;
+  --bg-2: #e4ecea;
+  --bg-3: #d7e2df;
+  --panel: #ffffff;
+  --panel-2: #e9f0ee;
+  --line: #bccdc9;
+  --line-soft: #d2dedb;
+  --text: #0e1d1b;
+  --text-muted: #3c5450;
+  --text-dim: #647d79;
+  --shadow-lg: 0 18px 50px rgba(14, 45, 41, 0.14);
+  --shadow-md: 0 8px 24px rgba(14, 45, 41, 0.12);
+  --shadow-sm: 0 2px 8px rgba(14, 45, 41, 0.1);
+  --shadow-accent: 0 6px 18px rgba(31, 127, 110, 0.22);
+
+  color-scheme: light;
+}

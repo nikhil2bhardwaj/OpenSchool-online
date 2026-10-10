@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool — Meter Bridge (Resistance &amp; Resistivity)</title>
+<link rel="stylesheet" href="../../../assets/css/lab-theme.css" />
+<!-- OS-ONLINE: premium shell — Google Fonts + GSAP CDN + ScrollTrigger + three importmap -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+/* OS-ONLINE-PREMIUM: font system + hero topbar + 3D stage + morph indicator. */
+:root{--os-font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--os-display:"Space Grotesk","Inter",system-ui,sans-serif;--os-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--os-font)}
+.os-brand,.os-kicker,h1,h2,h3,.os-control-title{font-family:var(--os-display)}
+.os-mono,.os-readout b,.os-digital,.os-stat b{font-family:var(--os-mono);font-variant-numeric:tabular-nums}
+.os-topbar.os-bench{background:linear-gradient(120deg,#0d1b2a 0%,#123524 55%,#0d1b2a 100%)}
+.os-3d-wrap{margin-top:0;margin-bottom:10px}
+#apparatus3d.os-3d{position:relative;overflow:hidden;min-height:420px;height:420px;border-radius:12px;background:radial-gradient(120% 100% at 50% 0%,#12263f 0%,#0d1b2a 70%)}
+#apparatus3d.os-3d canvas{width:100%!important;height:420px!important;display:block}
+.os-viewbar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.os-viewbar .os-filter-pill[aria-pressed="true"]{outline:2px solid #4fd6ff}
+.os-3d-capline{font-size:11px;opacity:.75;padding:6px 2px 0}
+.os-file-notice{margin-top:8px}
+#apparatus3d .os-3d-cap{position:absolute;left:10px;bottom:8px;font-size:11px;opacity:.75}
+.os-tabs{position:relative}
+.os-tab-indicator{transition:left .28s cubic-bezier(.2,.7,.3,1),width .28s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.os-tab-indicator{transition:none}}
+</style>
+</head>
+<body>
+<a class="os-skip-link" href="#main-content">Skip to main content</a>
+<div class="os-app">
+  <header class="os-topbar os-bench">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>Meter Bridge<small>P-01 · CLASS 12 PHYSICS · RESISTANCE &amp; RESISTIVITY</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-chip"><span data-i18n="topbar.notebook">Notebook:</span> <b id="dbChip">…</b></span>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi">हिं</button>
+    </span>
+    <a class="os-btn ghost sm" href="../../../index.html" data-i18n="lab.back">← Curriculum Hub</a>
+  </header>
+
+  <main id="main-content" class="os-wrap">
+    <div class="os-lab-grid">
+      <section class="os-panel os-apparatus">
+        <header>
+          <span class="os-kicker" data-i18n="lab.apparatus">Apparatus</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="nullChip">Galvanometer: <b>—</b></span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-stage os-spotlight">
+            <div class="os-viewbar" data-os-viewbar role="group" aria-label="Apparatus view">
+              <button type="button" class="os-filter-pill" data-os-view="3d">3D Apparatus</button>
+              <button type="button" class="os-filter-pill" data-os-view="2d">2D Board</button>
+            </div>
+            <div class="os-3d-wrap os-3d-hero" data-os-3d-wrap>
+              <div id="apparatus3d" data-apparatus="optical-bench" aria-label="3D apparatus viewer"></div>
+              <div class="os-3d-capline" data-os-3d-caption>3D apparatus hero — drag to orbit. Switch to 2D Board for the measurement canvas.</div>
+              <div class="os-callout warn os-file-notice" data-os-file-notice hidden>3D needs a local server or GitHub Pages (ES modules + import maps do not run over file://); the 2D board works everywhere.</div>
+            </div>
+            <canvas data-os-2d="1" role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="stage" width="780" height="470"></canvas>
+
+            <div class="os-readout os-instrument">
+              <div class="row"><span>Balancing length L</span><b id="roL" data-os-rolling class="os-rolling">50.0 cm</b></div>
+              <div class="row"><span>Unknown X</span><b id="roX" data-os-rolling class="os-rolling">—</b></div>
+            </div>
+          </div>
+
+          <div class="os-grid-2">
+            <div class="os-control-block os-fader">
+              <div class="os-control-title">Known Resistance Box R</div>
+              <div class="os-field">
+                <label>R = <span class="os-mono" id="rVal">5.50</span> Ω</label>
+                <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="rRange" min="0.5" max="15" step="0.05" value="5.5" /><span class="os-ticks" aria-hidden="true"></span></div>
+              </div>
+            </div>
+            <div class="os-control-block os-fader">
+              <div class="os-control-title">Jockey Position</div>
+              <div class="os-field">
+                <label>L = <span class="os-mono" id="lVal">50.0</span> cm <span class="os-dim">(drag the brass jockey too)</span></label>
+                <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="lRange" min="0" max="100" step="0.1" value="50" /><span class="os-ticks" aria-hidden="true"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="os-row">
+            <button class="os-btn primary" id="btnRecord" data-i18n="btn.record">Record Reading</button>
+            <button class="os-btn" id="btnAutoNull">Auto-approach Null</button>
+            <label class="os-toggle"><input type="checkbox" id="faultToggle" /> Fault: scraped wire (40–60 cm)</label>
+          </div>
+          <div class="os-callout" id="statusBox"><h4>Galvanometer</h4><span>Move the jockey until the needle reads zero (null deflection).</span></div>
+
+          <div class="os-control-block os-fader">
+            <div class="os-control-title">Screw Gauge — Unknown Wire Diameter</div>
+            <div class="os-row">
+              <div class="os-field" style="flex:1"><label for="sgMain">Main scale (mm)</label><input class="os-input" id="sgMain" type="number" step="0.5" value="0.5" /></div>
+              <div class="os-field" style="flex:1"><label for="sgCirc">Circular division</label><input class="os-input" id="sgCirc" type="number" step="1" min="0" max="50" value="24" /></div>
+              <div class="os-field" style="flex:1"><label for="sgZero">Zero error (mm)</label><input class="os-input" id="sgZero" type="number" step="0.01" value="0" /></div>
+              <div class="os-field" style="flex:1"><label for="coilLen">Coil length (cm)</label><input class="os-input" id="coilLen" type="number" step="1" value="50" /></div>
+            </div>
+            <div class="os-dim os-mono" style="font-size:12px;margin-top:6px" id="sgOut">Diameter = 0.740 mm · least count 0.01 mm</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="os-panel">
+        <header>
+          <span class="os-kicker" data-i18n="lab.observation">Observation Table</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="trialCount">0 trials</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-table-wrap os-obs" data-os-ledger>
+            <table class="os-table" id="obsTable">
+              <thead><tr><th>#</th><th>R (Ω)</th><th>L (cm)</th><th>100−L (cm)</th><th>X (Ω)</th><th>ρ (Ω·m)</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="os-stat-grid">
+            <div class="os-stat"><span>Mean X</span><b id="statMeanX">—</b></div>
+            <div class="os-stat"><span>True X</span><b>5.50</b></div>
+            <div class="os-stat"><span>Mean ρ</span><b id="statRho">—</b></div>
+          </div>
+          <div class="os-row">
+            <button class="os-btn success" id="btnSave" data-i18n="btn.save">Save to Notebook</button>
+            <button class="os-btn" id="btnExport" data-i18n="btn.export">Export CBSE Sheet</button>
+            <button class="os-btn" id="btnReport" data-i18n="btn.report">Print Report</button>
+            <button class="os-btn danger" id="btnClear" data-i18n="btn.clear">Clear</button>
+          </div>
+          <div class="os-callout ok" id="saveMsg" style="display:none"></div>
+        </div>
+      </section>
+    </div>
+
+    
+    <!-- OS-ACTIONBAR: sticky mobile quick actions (proxies, no duplicate ids) -->
+    <div class="os-actionbar" data-os-actionbar role="toolbar" aria-label="Quick actions">
+      <button class="os-btn primary" type="button" data-os-proxy="btnRecord">Record Reading</button>
+      <button class="os-btn success" type="button" data-os-proxy="btnSave">Save to Notebook</button>
+      <button class="os-btn" type="button" data-os-proxy="btnReport">Print Report</button>
+    </div>
+
+<section class="os-panel" style="margin-top:18px">
+      <div class="os-tabs os-tabs-anim" role="tablist" aria-label="Lab information tabs" id="tabs" data-os-tablist>
+        <button class="os-tab active" data-tab="theory" role="tab" aria-selected="true" data-i18n="tabs.theory" tabindex="0" aria-controls="panel-theory" id="tab-theory">Theory &amp; Circuit</button>
+        <button class="os-tab" data-tab="errors" role="tab" aria-selected="false" data-i18n="tabs.errors" tabindex="-1" aria-controls="panel-errors" id="tab-errors">Precautions &amp; Errors</button>
+        <button class="os-tab" data-tab="viva" role="tab" aria-selected="false" data-i18n="tabs.viva" tabindex="-1" aria-controls="panel-viva" id="tab-viva">Viva-Voce Arena</button>
+        <button class="os-tab" data-tab="procedure" role="tab" aria-selected="false" data-i18n="tabs.procedure" aria-controls="panel-procedure" id="tab-procedure" tabindex="-1">Procedure</button>
+        <button class="os-tab" data-tab="quiz" role="tab" aria-selected="false" data-i18n="tabs.quiz" aria-controls="panel-quiz" id="tab-quiz" tabindex="-1">Quiz</button>
+      
+        <span class="os-tab-indicator" id="tabIndicator" aria-hidden="true"></span>
+      </div>
+      <div role="tabpanel" tabindex="0" class="os-tabpanel active" data-panel="theory" data-os-collapsible id="panel-theory" aria-labelledby="tab-theory">
+        <h3>Theory</h3>
+        <button class="os-btn sm ghost" type="button" data-os-tts-btn data-os-tts-label="Theory">🔊 Read aloud</button>
+        <p class="os-muted">A meter bridge is a practical form of the Wheatstone bridge. At the null point the bridge is balanced and</p>
+        <div class="os-eq">X / R = (100 − L) / L&nbsp;&nbsp;⟹&nbsp;&nbsp;X = R · (100 − L) / L</div>
+        <p class="os-muted">The unknown wire resistance X, its length ℓ and measured diameter d give the resistivity:</p>
+        <div class="os-eq">ρ = X · A / ℓ = X · π(d/2)² / ℓ</div>
+      </div>
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="errors" id="panel-errors" aria-labelledby="tab-errors">
+        <h3>Precautions &amp; Standard Errors</h3>
+        <ul class="os-muted">
+          <li>All connections must be tight and the wire uniform; clean the ends with sandpaper.</li>
+          <li>Make the null point fall near the middle of the wire (30–70 cm) for best accuracy.</li>
+          <li>Do not press the jockey hard; measure length from the same end each time.</li>
+          <li>Account for end resistances at both ends (left +0.05 cm, right +0.08 cm).</li>
+          <li>Insert the key only momentarily while testing for the null to avoid heating.</li>
+        </ul>
+        <div class="os-callout warn"><h4>End corrections applied</h4><span>Left end +0.05 cm · Right end +0.08 cm are folded into the simulated bridge.</span></div>
+      </div>
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="viva" id="panel-viva" aria-labelledby="tab-viva">
+        <div class="os-row between">
+          <h3 style="margin:0">Viva-Voce Arena</h3>
+          <div class="os-row">
+            <button class="os-filter-pill active" id="modeOffline" data-i18n="viva.offline">Offline Viva</button>
+            <button class="os-filter-pill" id="modeAI" data-i18n="viva.ai">AI Examiner</button>
+          </div>
+        </div>
+        <div id="offlineViva">
+          <div class="os-callout" id="vivaProgress">Offline viva: 0 / 0 answered.</div>
+          <div id="vivaQA"></div>
+          <div class="os-row" style="margin-top:10px"><button class="os-btn primary" id="vivaStart" data-i18n="viva.startOffline">Start Offline Viva</button></div>
+        </div>
+        <div id="aiViva" style="display:none">
+          <div class="os-grid-3">
+            <div class="os-field"><label for="aiProvider">Provider</label><select class="os-select" id="aiProvider"><option value="ollama">Local Ollama</option><option value="openai">OpenAI (key)</option><option value="anthropic">Anthropic (key)</option></select></div>
+            <div class="os-field"><label for="aiEndpoint">Endpoint</label><input aria-label="http://localhost:11434" class="os-input" id="aiEndpoint" placeholder="http://localhost:11434" /></div>
+            <div class="os-field"><label for="aiModel">Model</label><input aria-label="llama3.1" class="os-input" id="aiModel" placeholder="llama3.1" /></div>
+          </div>
+          <div class="os-field" style="margin-top:8px"><label for="aiKey">API key (cloud only — supplied by you, never stored)</label><input class="os-input" id="aiKey" type="password" /></div>
+          <div class="os-row" style="margin-top:10px"><button class="os-btn primary" id="aiStart" data-i18n="viva.startAI">Start AI Viva</button></div>
+          <div id="aiTranscript" class="os-control-block os-fader" style="margin-top:12px;max-height:300px;overflow:auto"></div>
+          <div class="os-row" style="margin-top:8px"><input aria-label="Type your answer…" class="os-input" id="aiReply" placeholder="Type your answer…" data-i18n-ph="viva.answerPh"><button class="os-btn success" id="aiSend" data-i18n="viva.send">Send</button></div>
+        </div>
+      </div>
+
+      <div class="os-tabpanel" data-panel="procedure" role="tabpanel" tabindex="0" aria-label="Procedure" id="panel-procedure" aria-labelledby="tab-procedure">
+        <h3>Procedure</h3>
+        <div data-os-procedure></div>
+      </div>
+      <div class="os-tabpanel" data-panel="quiz" role="tabpanel" tabindex="0" aria-label="Quiz" id="panel-quiz" aria-labelledby="tab-quiz">
+        <h3>Quiz</h3>
+        <button class="os-btn sm ghost" type="button" data-os-bookmark-btn aria-pressed="false">☆ Bookmark</button>
+        <div data-os-quiz></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../../../assets/js/storage.js"></script>
+<script src="../../../assets/js/report.js"></script>
+<script src="../../../assets/js/graph.js"></script>
+<script src="../../../assets/js/quiz-bank-1.js"></script>
+<script src="../../../assets/js/quiz-bank-2.js"></script>
+<script src="../../../assets/js/quiz-bank-3.js"></script>
+<script src="../../../assets/js/quiz-bank-4.js"></script>
+<script src="../../../assets/js/quiz-bank-5.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-1.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-2.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-3.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-4.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-5.js"></script>
+<script src="../../../assets/js/quiz-bank.js"></script>
+<script src="../../../assets/js/quiz.js"></script>
+<script src="../../../assets/js/tts.js"></script>
+<script src="../../../assets/js/bookmarks.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/procedure.js"></script>
+<script src="../../../assets/js/procedure-bank.js"></script>
+<script src="../../../assets/js/procedure-bank-hi.js"></script>
+<script>
+/* OS-STORAGE-GUARD: local-only fallback notice. If storage.js failed to load
+   (e.g. this file was copied out of the project tree standalone), show a
+   .os-callout warning with the path fix. No CDN, no downloads -- local only. */
+(function () {
+  function showGuard() {
+    if (window.LabNotebook || window.LabNotebookDB) return;
+    if (document.querySelector("[data-os-storage-guard]")) return;
+    var d = document.createElement("div");
+    d.className = "os-callout warn";
+    d.setAttribute("data-os-storage-guard", "1");
+    d.innerHTML = "<h4>Notebook storage missing</h4><span>" +
+      "Could not load <b>../../../assets/js/storage.js</b>, so Save / Export are disabled. " +
+      "Keep this file inside the project tree (<b>OnlineDeploy/labs/class12/physics/meter_bridge.html</b>) " +
+      "so the relative path resolves -- do not open it as a standalone copy and do not " +
+      "fetch anything from a CDN; this lab is fully local.</span>";
+    var host = document.querySelector(".os-wrap") || document.querySelector(".os-app") || document.body;
+    host.insertBefore(d, host.firstChild);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showGuard);
+  else showGuard();
+})();
+</script>
+<script src="../../../assets/js/ai-examiner.js"></script>
+<script src="../../../assets/js/viva-bank-hi.js"></script>
+<script src="../../../assets/js/viva-hi.js"></script>
+<!-- OS-MOTION: vendored GSAP + guarded motion helper (offline, no CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- OS-MOTION: CDN GSAP above, vendored fallback below (offline copy) -->
+<script src="../../../assets/vendor/gsap/gsap.min.js"></script>
+<script src="../../../assets/js/motion.js"></script>
+<script src="../../../assets/js/perf.js"></script>
+<script>
+/* ==========================================================================
+   Meter Bridge deterministic simulation engine
+   ========================================================================== */
+const WIRE_RESISTANCE = 3.20;   // Ω for the 100 cm manganin bridge wire
+const UNKNOWN_TRUE = 5.50;      // Ω true value of the unknown coil X
+const CELL_V = 2.0;             // V primary cell
+const GALV_R = 50;              // Ω galvanometer internal resistance
+const GALV_FS = 30;             // µA full-scale deflection
+const END_L = 0.05;             // cm left end-resistance correction
+const END_R = 0.08;             // cm right end-resistance correction
+
+const state = { L: 50, R: 5.5, fault: false, needle: 0, target: 0 };
+
+function wireSegments(L) {
+  // Effective fractional resistances including end corrections
+  let r1 = WIRE_RESISTANCE * (L / 100) + WIRE_RESISTANCE * (END_L / 100);        // A -> jockey
+  let r2 = WIRE_RESISTANCE * ((100 - L) / 100) + WIRE_RESISTANCE * (END_R / 100); // jockey -> C
+  if (state.fault && L >= 40 && L <= 60) {
+    // Scraped / non-uniform cross-section between 40 and 60 cm
+    r1 += 0.14 * Math.sin(((L - 40) / 20) * Math.PI);
+  }
+  return { r1: r1, r2: r2 };
+}
+
+function galvanometerCurrentU( L, R, X ) {
+  const seg = wireSegments(L);
+  // Potentials (cell E across A -> C, C = 0)
+  const vB = CELL_V * (R / (X + R));                       // node between X and R
+  const vD = CELL_V * (seg.r2 / (seg.r1 + seg.r2));        // jockey node
+  const vth = vB - vD;                                     // Thevenin voltage
+  const rth = (X * R) / (X + R) + (seg.r1 * seg.r2) / (seg.r1 + seg.r2);
+  const i = vth / (rth + GALV_R);                          // Amperes
+  return i * 1e6;                                          // µA
+}
+
+function computeX(L, R) {
+  const seg = wireSegments(L);
+  return R * (seg.r1 / seg.r2);
+}
+
+function trueCurrentU() {
+  return galvanometerCurrentU(state.L, state.R, UNKNOWN_TRUE);
+}
+
+/* ---- Canvas rendering ---------------------------------------------------- */
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+const WIRE_X0 = 90, WIRE_X1 = 710, WIRE_Y = 250;
+const cmToPx = function (cm) { return WIRE_X0 + (cm / 100) * (WIRE_X1 - WIRE_X0); };
+const pxToCm = function (px) { return Math.max(0, Math.min(100, ((px - WIRE_X0) / (WIRE_X1 - WIRE_X0)) * 100)); };
+
+function drawBoard() {
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  // wooden base
+  const wood = ctx.createLinearGradient(0, 300, 0, h);
+  wood.addColorStop(0, "#5b3a1e"); wood.addColorStop(1, "#3a2411");
+  roundRect(60, 300, 660, 130, 12); ctx.fillStyle = wood; ctx.fill();
+  ctx.fillStyle = "#7a5228";
+  ctx.fillRect(70, 210, 640, 16);
+  ctx.fillStyle = "#2a1608";
+  ctx.fillRect(70, 292, 640, 8);
+
+  // scale graduations
+  for (let cm = 0; cm <= 100; cm++) {
+    const px = cmToPx(cm);
+    const major = cm % 10 === 0;
+    ctx.strokeStyle = major ? "#e8eefc" : "rgba(232,238,252,.55)";
+    ctx.lineWidth = major ? 1.6 : 1;
+    ctx.beginPath(); ctx.moveTo(px, 292); ctx.lineTo(px, major ? 274 : 282); ctx.stroke();
+    if (major) {
+      ctx.fillStyle = "#e8eefc"; ctx.font = "12px Segoe UI, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(cm, px, 270);
+    }
+  }
+
+  // bridge wire
+  ctx.strokeStyle = state.fault ? "#c98a5a" : "#d9c39a";
+  ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(WIRE_X0, WIRE_Y); ctx.lineTo(WIRE_X1, WIRE_Y); ctx.stroke();
+  if (state.fault) {
+    ctx.strokeStyle = "rgba(201,138,90,.6)"; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.moveTo(cmToPx(40), WIRE_Y); ctx.lineTo(cmToPx(60), WIRE_Y); ctx.stroke();
+    ctx.fillStyle = "rgba(255,93,108,.85)"; ctx.font = "12px Segoe UI"; ctx.textAlign = "center";
+    ctx.fillText("scraped region", cmToPx(50), WIRE_Y - 16);
+  }
+  // end terminals
+  drawTerminal(WIRE_X0, WIRE_Y, "A");
+  drawTerminal(WIRE_X1, WIRE_Y, "C");
+
+  // junctions: unknown X (A->B) and known R (B->C)
+  drawResistor(150, 150, 90, 26, "#c9b6ff", "X (unknown)");
+  drawResistor(520, 150, 90, 26, "#7fd5ff", "R box = " + state.R.toFixed(2) + " Ω");
+  ctx.strokeStyle = "#8fa9d6"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(WIRE_X0, WIRE_Y); ctx.lineTo(WIRE_X0, 163); ctx.lineTo(105, 163); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(240, 163); ctx.lineTo(430, 163); ctx.moveTo(430, 163); ctx.lineTo(475, 163); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(610, 163); ctx.lineTo(WIRE_X1, 163); ctx.lineTo(WIRE_X1, WIRE_Y); ctx.stroke();
+  // node B
+  ctx.fillStyle = "#e8eefc"; ctx.beginPath(); ctx.arc(430, 163, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#9fb0d0"; ctx.font = "12px Segoe UI"; ctx.textAlign = "left"; ctx.fillText("B", 436, 159);
+
+  // galvanometer between B and jockey
+  const jx = cmToPx(state.L);
+  ctx.strokeStyle = "#8fa9d6"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(430, 163); ctx.lineTo(430, 90); ctx.lineTo(300, 90); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(jx, WIRE_Y); ctx.lineTo(jx, 120); ctx.lineTo(360, 120); ctx.lineTo(360, 90); ctx.stroke();
+  drawGalvanometer(150, 30, 120, 60);
+
+  // cell + key on left
+  drawCell(30, 330);
+
+  // jockey (brass)
+  drawJockey(jx, WIRE_Y);
+  ctx.fillStyle = "#ffd777"; ctx.font = "bold 12px Segoe UI"; ctx.textAlign = "center";
+  ctx.fillText("L = " + state.L.toFixed(1) + " cm", jx, WIRE_Y + 34);
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function drawTerminal(x, y, label) {
+  ctx.fillStyle = "#c98a5a"; ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#e8eefc"; ctx.font = "bold 12px Segoe UI"; ctx.textAlign = "center"; ctx.fillText(label, x, y + 22);
+}
+function drawResistor(x, y, w, h, color, label) {
+  ctx.fillStyle = "#1a2947"; ctx.strokeStyle = color; ctx.lineWidth = 2;
+  roundRect(x, y, w, h, 6); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = color; ctx.font = "11px Segoe UI"; ctx.textAlign = "center"; ctx.fillText(label, x + w / 2, y + h + 15);
+}
+function drawGalvanometer(x, y, w, h) {
+  ctx.fillStyle = "#f4f1e3"; ctx.strokeStyle = "#cfc7a8"; ctx.lineWidth = 3;
+  roundRect(x, y, w, h, 8); ctx.fill(); ctx.stroke();
+  const cx = x + w / 2, cy = y + h - 10, rad = Math.min(w, h) - 22;
+  ctx.strokeStyle = "#8a8266"; ctx.lineWidth = 1;
+  for (let a = -50; a <= 50; a += 10) {
+    const ang = (a - 90) * Math.PI / 180;
+    ctx.beginPath(); ctx.moveTo(cx + Math.cos(ang) * (rad - 4), cy + Math.sin(ang) * (rad - 4));
+    ctx.lineTo(cx + Math.cos(ang) * rad, cy + Math.sin(ang) * rad); ctx.stroke();
+  }
+  const defl = Math.max(-1, Math.min(1, state.needle / GALV_FS));
+  const ang = (defl * 50 - 90) * Math.PI / 180;
+  ctx.strokeStyle = "#c0392b"; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(ang) * (rad - 6), cy + Math.sin(ang) * (rad - 6)); ctx.stroke();
+  ctx.fillStyle = "#1a1a1a"; ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#4a4636"; ctx.font = "9px Consolas, monospace"; ctx.textAlign = "center";
+  ctx.fillText("−30", x + 12, cy + 4); ctx.fillText("0", cx, y + 14); ctx.fillText("+30", x + w - 12, cy + 4);
+  ctx.fillStyle = "#1a1a1a"; ctx.font = "10px Segoe UI"; ctx.fillText("Galvanometer", cx, y + h - 2);
+}
+function drawCell(x, y) {
+  ctx.fillStyle = "#16233d"; ctx.strokeStyle = "#7fd5ff"; ctx.lineWidth = 2;
+  roundRect(x, y, 70, 46, 6); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#7fd5ff"; ctx.font = "11px Segoe UI"; ctx.textAlign = "center";
+  ctx.fillText("2.0 V", x + 35, y + 20); ctx.fillText("cell + key", x + 35, y + 36);
+}
+function drawJockey(x, y) {
+  ctx.fillStyle = "#d4a24a";
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 12, y - 46); ctx.lineTo(x + 12, y - 46); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#8a6a24"; ctx.fillRect(x - 14, y - 52, 28, 8);
+  ctx.strokeStyle = "#8fa9d6"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x - 14, y - 48); ctx.lineTo(x - 60, y - 90); ctx.stroke();
+}
+
+function animate() {
+  const t = trueCurrentU();
+  state.target = Math.max(-GALV_FS * 1.25, Math.min(GALV_FS * 1.25, t));
+  state.needle += (state.target - state.needle) * 0.18;
+  drawBoard();
+  const near = Math.abs(state.needle) < 0.6;
+  const chip = document.getElementById("nullChip");
+  chip.innerHTML = "Galvanometer: <b>" + state.needle.toFixed(1) + " µA</b>" + (near ? " · NULL" : "");
+  chip.style.borderColor = near ? "var(--os-ok)" : "";
+  document.getElementById("roL").textContent = state.L.toFixed(1) + " cm";
+  document.getElementById("roX").textContent = near ? computeX(state.L, state.R).toFixed(3) + " Ω" : "—";
+  const box = document.getElementById("statusBox");
+  if (near) { box.className = "os-callout ok"; box.innerHTML = "<h4>Null point found</h4><span>Galvanometer reads zero. Record this reading — X = R·(100−L)/L.</span>"; }
+  else if (state.fault && state.L >= 40 && state.L <= 60) { box.className = "os-callout danger"; box.innerHTML = "<h4>Scraped wire region</h4><span>The non-uniform cross-section makes the bridge non-linear here; no clean null exists.</span>"; }
+  else { box.className = "os-callout"; box.innerHTML = "<h4>Galvanometer deflected</h4><span>Move the jockey toward the balancing point until the needle reads zero.</span>"; }
+  requestAnimationFrame(animate);
+}
+
+/* ---- Interaction --------------------------------------------------------- */
+let dragging = false;
+canvas.addEventListener("mousedown", function (e) {
+  const rect = canvas.getBoundingClientRect();
+  const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+  if (Math.abs(sx - cmToPx(state.L)) < 26 && sy > 130 && sy < WIRE_Y + 30) dragging = true;
+});
+canvas.addEventListener("mousemove", function (e) {
+  if (!dragging) return;
+  const rect = canvas.getBoundingClientRect();
+  const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const cm = pxToCm(sx);
+  state.L = Math.round(cm * 10) / 10;
+  document.getElementById("lRange").value = state.L;
+  document.getElementById("lVal").textContent = state.L.toFixed(1);
+});
+window.addEventListener("mouseup", function () { dragging = false; });
+
+document.getElementById("lRange").addEventListener("input", function (e) {
+  state.L = parseFloat(e.target.value);
+  document.getElementById("lVal").textContent = state.L.toFixed(1);
+});
+document.getElementById("rRange").addEventListener("input", function (e) {
+  state.R = parseFloat(e.target.value);
+  document.getElementById("rVal").textContent = state.R.toFixed(2);
+});
+document.getElementById("faultToggle").addEventListener("change", function (e) { state.fault = e.target.checked; });
+document.getElementById("btnAutoNull").addEventListener("click", function () {
+  // Newton-style search for the null length given current R
+  let best = state.L, bestI = Math.abs(galvanometerCurrentU(state.L, state.R, UNKNOWN_TRUE));
+  for (let L = 0; L <= 100; L += 0.1) {
+    const i = Math.abs(galvanometerCurrentU(L, state.R, UNKNOWN_TRUE));
+    if (i < bestI) { bestI = i; best = L; }
+  }
+  state.L = Math.round(best * 10) / 10;
+  document.getElementById("lRange").value = state.L;
+  document.getElementById("lVal").textContent = state.L.toFixed(1);
+});
+
+/* ---- Screw gauge --------------------------------------------------------- */
+function screwGauge() {
+  const LC = 0.01;
+  const main = parseFloat(document.getElementById("sgMain").value) || 0;
+  const circ = parseFloat(document.getElementById("sgCirc").value) || 0;
+  const zero = parseFloat(document.getElementById("sgZero").value) || 0;
+  const reading = main + circ * LC - zero;
+  document.getElementById("sgOut").textContent =
+    "Diameter = " + reading.toFixed(3) + " mm · least count " + LC.toFixed(2) + " mm";
+  return reading;
+}
+["sgMain", "sgCirc", "sgZero"].forEach(function (id) {
+  document.getElementById(id).addEventListener("input", updateLive);
+});
+document.getElementById("coilLen").addEventListener("input", updateLive);
+
+function resistivity(X) {
+  const dMM = screwGauge();
+  const dM = dMM / 1000;
+  const lenM = (parseFloat(document.getElementById("coilLen").value) || 50) / 100;
+  const A = Math.PI * Math.pow(dM / 2, 2);
+  return X * A / lenM;
+}
+function updateLive() {
+  screwGauge();
+}
+
+/* ---- Observation table --------------------------------------------------- */
+const trials = [];
+function renderTable() {
+  const tbody = document.querySelector("#obsTable tbody");
+  tbody.innerHTML = "";
+  trials.forEach(function (t, i) {
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + (i + 1) + "</td>" +
+      '<td class="num">' + t.R.toFixed(2) + "</td>" +
+      '<td class="num">' + t.L.toFixed(1) + "</td>" +
+      '<td class="num">' + (100 - t.L).toFixed(1) + "</td>" +
+      '<td class="num">' + t.X.toFixed(3) + "</td>" +
+      '<td class="num">' + (t.rho != null ? t.rho.toExponential(3) : "—") + "</td>" +
+      '<td><button class="os-btn danger sm" data-row="' + i + '">×</button></td>';
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll("button[data-row]").forEach(function (b) {
+    b.addEventListener("click", function () { trials.splice(parseInt(b.dataset.row, 10), 1); renderTable(); });
+  });
+  const xs = trials.map(function (t) { return t.X; });
+  const rhos = trials.filter(function (t) { return t.rho != null; }).map(function (t) { return t.rho; });
+  document.getElementById("statMeanX").textContent = xs.length ? (xs.reduce(function (a, b) { return a + b; }, 0) / xs.length).toFixed(3) + " Ω" : "—";
+  document.getElementById("statRho").textContent = rhos.length ? (rhos.reduce(function (a, b) { return a + b; }, 0) / rhos.length).toExponential(3) + " Ω·m" : "—";
+  document.getElementById("trialCount").textContent = trials.length + " " + ((window.OS_I18N&&window.OS_I18N.t)?window.OS_I18N.t("trials.unit"):"trials");
+}
+
+document.getElementById("btnRecord").addEventListener("click", function () {
+  const near = Math.abs(state.needle) < 0.6;
+  const X = near ? computeX(state.L, state.R) : computeX(state.L, state.R);
+  trials.push({ R: state.R, L: state.L, X: X, rho: resistivity(X), null: near });
+  renderTable();
+});
+document.getElementById("btnClear").addEventListener("click", function () { trials.length = 0; renderTable(); });
+
+function flash(msg, ok) {
+  const el = document.getElementById("saveMsg");
+  el.style.display = "block"; el.className = "os-callout " + (ok === false ? "danger" : "ok");
+  el.textContent = msg; setTimeout(function () { el.style.display = "none"; }, 4000);
+}
+document.getElementById("btnSave").addEventListener("click", async function () {
+  if (!trials.length) return flash("Record at least one reading first.", false);
+  await window.LabNotebook.open();
+  await window.LabNotebook.saveTrial("P-C12-01_METER_BRIDGE", {
+    class_level: 12, subject: "physics", title: "Resistance & Resistivity — Meter Bridge",
+    readings: trials.map(function (t) { return { "R (Ω)": t.R.toFixed(2), "L (cm)": t.L.toFixed(1), "100−L (cm)": (100 - t.L).toFixed(1), "X (Ω)": t.X.toFixed(3), "ρ (Ω·m)": t.rho.toExponential(3) }; }),
+    results: { "Mean X": document.getElementById("statMeanX").textContent, "Mean ρ": document.getElementById("statRho").textContent }
+  });
+  flash("Trial saved to the IndexedDB notebook.", true);
+});
+document.getElementById("btnExport").addEventListener("click", async function () {
+  await window.LabNotebook.open();
+  const html = await window.LabNotebook.exportToCBSEFormat("P-C12-01_METER_BRIDGE");
+  const w = window.open("", "_blank"); if (w) { w.document.write(html); w.document.close(); } else flash("Allow pop-ups to export.", false);
+});
+
+/* ---- Tabs & viva --------------------------------------------------------- */
+document.getElementById("tabs").addEventListener("click", function (ev) {
+  const tab = ev.target.closest(".os-tab"); if (!tab) return;
+  document.querySelectorAll(".os-tab").forEach(function (t) { t.classList.remove("active"); });
+  document.querySelectorAll(".os-tabpanel").forEach(function (p) { p.classList.remove("active"); });
+  tab.classList.add("active");
+  document.querySelector('.os-tabpanel[data-panel="' + tab.dataset.tab + '"]').classList.add("active");
+});
+
+const VIVA_BANK = [
+  { question: "Why is a meter bridge called a practical form of the Wheatstone bridge?",
+    answer: "Because the two ratio arms of the Wheatstone bridge are replaced by the two portions of a uniform resistance wire whose ratio equals the ratio of their lengths, so balance gives X/R = length ratio." },
+  { question: "Why do we prefer the null point near the middle of the wire?",
+    answer: "Near the middle the percentage errors in measuring both lengths are minimum and the sensitivity of the bridge is highest, giving the most accurate value of the unknown resistance." },
+  { question: "What are end resistances and how are they corrected?",
+    answer: "End resistances are due to the contact and connecting strips at the two ends of the bridge wire. They are corrected by applying end corrections, adding small lengths at each end so the effective length ratio is accurate." },
+  { question: "Why is manganin used for the bridge wire?",
+    answer: "Manganin has a high resistivity and a very low temperature coefficient of resistance, so its resistance does not change appreciably with the small heating caused by the current, keeping the bridge ratio constant." },
+  { question: "On what factors does the resistivity of the wire depend?",
+    answer: "Resistivity depends on the material of the wire and its temperature; it does not depend on the length or thickness of the wire. It is calculated as ρ = X·A/ℓ using the measured resistance, area and length." }
+];
+
+const examiner = new window.AIExaminer({
+  experimentId: "P-C12-01_METER_BRIDGE",
+  experimentTitle: "Resistance & Resistivity — Meter Bridge",
+  subject: "physics", classLevel: 12, vivaBank: VIVA_BANK,
+  getObservations: function () { return trials.map(function (t) { return { R: t.R, L: t.L, X: t.X.toFixed(3) }; }); },
+  onToken: function (_c, full) { appendAI("examiner", full, true); },
+  onMessage: function (text) { appendAI("examiner", text, false); },
+  onError: function (e) { appendAI("system", "Error: " + (e.message || e), false); }
+});
+function appendAI(role, text, replaceLast) {
+  const host = document.getElementById("aiTranscript");
+  if (replaceLast) {
+    let last = host.querySelector('[data-stream="1"]');
+    if (!last) { last = document.createElement("div"); last.dataset.stream = "1"; last.className = "os-callout"; host.appendChild(last); }
+    last.textContent = text;
+  } else {
+    const d = document.createElement("div"); d.className = "os-callout " + (role === "student" ? "ok" : "warn");
+    d.textContent = (role === "student" ? "You: " : role === "examiner" ? "Examiner: " : "") + text; host.appendChild(d);
+  }
+  host.scrollTop = host.scrollHeight;
+}
+function renderOffline() {
+  const q = examiner.offlineQuestion();
+  const host = document.getElementById("vivaQA"); host.innerHTML = "";
+  document.getElementById("vivaProgress").textContent = "Offline viva: " + examiner.offline.index + " / " + VIVA_BANK.length + " answered — score " + examiner.offline.score + "/" + examiner.offline.total + ".";
+  if (!q) {
+    host.innerHTML = '<div class="os-callout ok"><h4>Viva complete</h4><span>Final score ' + examiner.offline.score + "/" + examiner.offline.total + ".</span></div>";
+    examiner.offline.answers.forEach(function (a) {
+      const d = document.createElement("div"); d.className = "os-viva-item open";
+      d.innerHTML = '<div class="os-viva-q"><span class="qmark">Q</span><span>' + a.question + ' <span class="os-chip">' + a.mark + '/2</span></span></div><div class="os-viva-a"><b>Your answer:</b> ' + (a.answer || "<em>blank</em>") + "<br><b>Model answer:</b> " + a.model + "</div>";
+      host.appendChild(d);
+    });
+    return;
+  }
+  const wrap = document.createElement("div"); wrap.className = "os-callout";
+  wrap.innerHTML = "<h4>Question " + (q.index + 1) + "</h4><span>" + q.question + "</span>";
+  const input = document.createElement("textarea"); input.className = "os-input"; input.rows = 3; input.placeholder = "Type your answer…";
+  const btn = document.createElement("button"); btn.className = "os-btn primary"; btn.textContent = "Submit Answer"; btn.style.marginTop = "8px";
+  btn.addEventListener("click", function () { examiner.offlineSubmit(input.value); renderOffline(); });
+  host.appendChild(wrap); host.appendChild(input); host.appendChild(btn);
+}
+document.getElementById("vivaStart").addEventListener("click", function () { examiner.offlineStart(); renderOffline(); });
+document.getElementById("modeOffline").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeAI").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "block"; document.getElementById("aiViva").style.display = "none";
+});
+document.getElementById("modeAI").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeOffline").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "none"; document.getElementById("aiViva").style.display = "block";
+});
+document.getElementById("aiStart").addEventListener("click", function () {
+  examiner.configure({ provider: document.getElementById("aiProvider").value, model: document.getElementById("aiModel").value.trim(), endpoint: document.getElementById("aiEndpoint").value.trim(), apiKey: document.getElementById("aiKey").value.trim() });
+  document.getElementById("aiTranscript").innerHTML = ""; examiner.aiStart();
+});
+document.getElementById("aiSend").addEventListener("click", function () {
+  const box = document.getElementById("aiReply"); if (!box.value.trim()) return;
+  appendAI("student", box.value, false); const t = box.value; box.value = ""; examiner.aiSend(t);
+});
+
+/* ---- Boot ---------------------------------------------------------------- */
+(async function () {
+  screwGauge(); renderTable(); animate();
+  try { await window.LabNotebook.open(); document.getElementById("dbChip").textContent = window.LabNotebook.isFallback() ? "memory" : "IndexedDB"; }
+  catch (e) { document.getElementById("dbChip").textContent = "unavailable"; }
+})();
+</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{var el=document.querySelector("[data-os-quiz]");if(el&&window.OSQuiz&&!el.getAttribute("data-os-quiz-done")){var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:"";window.OSQuiz.renderInto(el,id);}}catch(e){}});</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{if(window.OSProcedure&&window.OSProcedure.initFromBank)window.OSProcedure.initFromBank();}catch(e){}});</script>
+<script>/* OS-REPORT-WIRING: generic printable-report hook (idempotent). */
+window.addEventListener("DOMContentLoaded",function(){
+  var b=document.getElementById("btnReport");
+  if(!b||b.getAttribute("data-os-report-done"))return;
+  b.setAttribute("data-os-report-done","1");
+  b.addEventListener("click",function(){
+    try{
+      if(!window.OSReport){alert("Report helper (assets/js/report.js) failed to load.");return;}
+      var T=(typeof trials!=="undefined"&&Array.isArray(trials))?trials:[];
+      if(!T.length){alert("Record at least one reading first.");return;}
+      var cfg=(typeof CONFIG!=="undefined"&&CONFIG)?CONFIG:{};
+      var th=document.querySelector('[data-panel="theory"]');
+      var mEl=document.getElementById("statMean"),eEl=document.getElementById("statErr"),
+          nEl=document.getElementById("statN"),gEl=document.getElementById("statG");
+      window.OSReport.printLabReport({
+        experimentId:cfg.experimentId||document.title,
+        title:cfg.experimentTitle||document.title,
+        readings:T,
+        stats:{
+          mean:mEl?mEl.textContent:(gEl?gEl.textContent:""),
+          stderr:eEl?eEl.textContent:"",
+          n:nEl?nEl.textContent:T.length
+        },
+        canvasEl:document.getElementById("stage"),
+        theory:th?th.innerText.slice(0,600):""
+      });
+    }catch(err){alert("Report failed: "+(err&&err.message||err));}
+  });
+});</script>
+<script>/* OS-I18N-CHROME: re-render dynamic chrome on language toggle (guarded, idempotent). */
+(function(){function rr(){try{if(typeof renderHead==="function"&&document.getElementById("obsHead"))renderHead();}catch(e){}try{if(typeof renderTable==="function"&&document.getElementById("obsTable"))renderTable();}catch(e){}try{if(typeof recompute==="function")recompute();}catch(e){}}if(window.__osI18nChromeWired)return;window.__osI18nChromeWired=true;document.addEventListener("os-lang-change",rr);})();</script>
+
+<!-- OS-FLUID-SHELL hooks: toast stack + alert routing + proxy/fader/indicator targets.
+     CSS lives in lab-theme.css; motion.js sibling drives animation. Idempotent. -->
+<div class="os-toasts os-toast-stack" id="osToasts" role="status" aria-live="polite" aria-atomic="false"></div>
+<script>/* OS-TOAST: toast system replacing window.alert (guarded, idempotent). */
+(function(){
+  if(window.OSToast&&window.OSToast.__osFluid)return;
+  function host(){
+    var h=document.getElementById("osToasts");
+    if(h)return h;
+    h=document.createElement("div");
+    h.className="os-toasts os-toast-stack";h.id="osToasts";
+    h.setAttribute("role","status");h.setAttribute("aria-live","polite");h.setAttribute("aria-atomic","false");
+    document.body.appendChild(h);return h;
+  }
+  function show(msg,type){
+    try{
+      var h=host();
+      var t=document.createElement("div");
+      var kind=(type==="ok"||type==="success")?"ok":(type==="danger"||type==="error")?"danger":(type==="warn"?"warn":"");
+      t.className=("os-toast "+kind).trim();
+      var dot=document.createElement("span");dot.className="os-toast-dot";dot.setAttribute("aria-hidden","true");
+      var m=document.createElement("span");m.className="os-toast-msg";m.textContent=String(msg==null?"":msg);
+      var x=document.createElement("button");x.className="os-toast-close";x.type="button";x.textContent="×";x.setAttribute("aria-label","Dismiss");
+      x.addEventListener("click",function(){dismiss(t);});
+      t.appendChild(dot);t.appendChild(m);t.appendChild(x);
+      h.appendChild(t);
+      while(h.children.length>4)h.removeChild(h.firstChild);
+      setTimeout(function(){dismiss(t);},4200);
+      return t;
+    }catch(e){try{window.__osNativeAlert(String(msg));}catch(_){}return null;}
+  }
+  function dismiss(t){
+    if(!t||!t.parentNode||t.classList.contains("is-leaving"))return;
+    try{
+      t.classList.add("is-leaving");
+      setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},200);
+    }catch(e){if(t.parentNode)t.parentNode.removeChild(t);}
+  }
+  window.OSToast={show:show,dismiss:dismiss,__osFluid:true};
+  if(!window.__osNativeAlert){
+    try{window.__osNativeAlert=window.alert;}catch(e){}
+    try{window.alert=function(m){return show(m,"warn");};}catch(e){}
+  }
+  /* Sticky action-bar proxies: [data-os-proxy] clicks forward to #id buttons. */
+  document.addEventListener("click",function(ev){
+    var p=ev.target&&ev.target.closest?ev.target.closest("[data-os-proxy]"):null;
+    if(!p)return;
+    var target=document.getElementById(p.getAttribute("data-os-proxy"));
+    if(target&&target!==p&&typeof target.click==="function"){ev.preventDefault();target.click();}
+  });
+})();</script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="../../../assets/js/apparatus3d.js"></script>
+<script>/* OS-VIEW-TOGGLE: 2D/3D hero toggle (per-lab persist) + file:// 3D notice. Idempotent. */
+(function(){
+  if(window.__osViewToggle)return;window.__osViewToggle=true;
+  function labKey(){
+    try{
+      var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:location.pathname;
+      return "os-view:"+id;
+    }catch(e){return "os-view:lab";}
+  }
+  function apply(mode){
+    var show3D=(mode!=="2d");
+    var wrap=document.querySelector("[data-os-3d-wrap]");
+    if(wrap)wrap.style.display=show3D?"":"none";
+    var cvs=document.querySelectorAll("canvas[data-os-2d]");
+    for(var i=0;i<cvs.length;i++){cvs[i].style.display=show3D?"none":"";}
+    var pills=document.querySelectorAll("[data-os-view]");
+    for(var j=0;j<pills.length;j++){
+      var on=pills[j].getAttribute("data-os-view")===(show3D?"3d":"2d");
+      pills[j].classList.toggle("active",on);
+      pills[j].setAttribute("aria-pressed",on?"true":"false");
+    }
+  }
+  document.addEventListener("click",function(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest("[data-os-view]"):null;
+    if(!b)return;
+    var m=b.getAttribute("data-os-view");
+    try{localStorage.setItem(labKey(),m);}catch(e){}
+    apply(m);
+  });
+  function init(){
+    var m=null;
+    try{m=localStorage.getItem(labKey());}catch(e){}
+    apply(m==="2d"?"2d":"3d");
+    try{
+      if(location.protocol==="file:"){
+        var ns=document.querySelectorAll("[data-os-file-notice]");
+        for(var k=0;k<ns.length;k++){ns[k].hidden=false;}
+      }
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+<script>/* OS-ONLINE-SHELL: tab morph indicator + ScrollTrigger reveals + premium flag. Idempotent. */
+(function(){
+  if(window.__osOnlineShell)return;window.__osOnlineShell=true;
+  window.OSOnline={premium:true};
+  /* Tab morph indicator: glide #tabIndicator under the active tab. */
+  function moveIndicator(tabsEl){
+    try{
+      var ind=tabsEl.querySelector(".os-tab-indicator")||document.getElementById("tabIndicator");
+      var tab=tabsEl.querySelector(".os-tab.active");
+      if(!ind||!tab)return;
+      var tr=tabsEl.getBoundingClientRect(),r=tab.getBoundingClientRect();
+      ind.style.left=(r.left-tr.left)+"px";
+      ind.style.width=r.width+"px";
+      tabsEl.setAttribute("data-os-indicator-ready","1");
+    }catch(e){}
+  }
+  function wireTabs(){
+    document.querySelectorAll(".os-tabs").forEach(function(tabsEl){
+      moveIndicator(tabsEl);
+      ["click","keydown"].forEach(function(ev){
+        tabsEl.addEventListener(ev,function(){setTimeout(function(){moveIndicator(tabsEl);},0);});
+      });
+    });
+    window.addEventListener("resize",function(){
+      document.querySelectorAll(".os-tabs").forEach(moveIndicator);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireTabs);
+  else wireTabs();
+  /* ScrollTrigger reveals: one-shot panel entrances (motion.js guards reduced motion). */
+  function reveals(){
+    try{
+      if(!(window.gsap&&window.ScrollTrigger))return;
+      window.gsap.registerPlugin(window.ScrollTrigger);
+      window.gsap.utils.toArray(".os-panel").forEach(function(p){
+        window.gsap.fromTo(p,{y:14,opacity:0},{y:0,opacity:1,duration:.45,ease:"power2.out",
+          scrollTrigger:{trigger:p,start:"top 92%",once:true},clearProps:"transform,opacity"});
+      });
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",reveals);
+  else reveals();
+})();</script>
+</body>
+</html>

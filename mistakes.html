@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mistakes Notebook — OpenSchool NCERT</title>
+<link rel="stylesheet" href="assets/css/lab-theme.css" />
+</head>
+<body>
+<div class="os-app">
+  <header class="os-topbar">
+    <div class="os-brand"><div class="os-logo">OS</div><div>Mistakes<small>REVIEW NOTEBOOK</small></div></div>
+    <div class="os-spacer"></div>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en" type="button">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi" type="button">हिं</button>
+    </span>
+    <a class="os-btn sm ghost" href="index.html">← Hub</a>
+  </header>
+  <main class="os-wrap" id="main-content">
+    <section class="os-hero">
+      <span class="os-kicker">100% Offline · localStorage os-mistakes</span>
+      <h1 data-i18n="mistakes.title">Mistakes Notebook</h1>
+      <p data-i18n="mistakes.sub">Every wrong viva / MCQ answer recorded here. Review, then retry the lab quiz.</p>
+      <div class="os-row" style="margin-top:10px">
+        <span class="os-chip" id="mCount"><b>0</b> mistakes</span>
+        <button class="os-btn sm" id="mClear" type="button" data-i18n="mistakes.clear">Clear all</button>
+      </div>
+    </section>
+    <div class="os-cards" id="mList" style="grid-template-columns:1fr"></div>
+  </main>
+  <footer class="os-footer"><a href="index.html">Hub</a> · <a href="teacher-dashboard.html">Teacher Dashboard</a></footer>
+</div>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/mistakes.js"></script>
+<script>
+(function () {
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function T(k, fb) {
+    try { if (window.OS_I18N) return window.OS_I18N.t(k); } catch (e) {}
+    return fb;
+  }
+  function render() {
+    var host = document.getElementById("mList");
+    var rows = (window.OSMistakes ? window.OSMistakes.getAll() : []);
+    document.getElementById("mCount").innerHTML = "<b>" + rows.length + "</b> " + T("mistakes.mistakes", "mistakes");
+    host.innerHTML = "";
+    if (!rows.length) {
+      host.innerHTML = '<div class="os-callout ok"><h4>' + T("mistakes.empty", "No mistakes yet") + '</h4><span>' + T("mistakes.sub", "Wrong viva / MCQ answers will appear here automatically.") + "</span></div>";
+      return;
+    }
+    rows.forEach(function (r) {
+      var card = document.createElement("article");
+      card.className = "os-card";
+      card.innerHTML =
+        '<div class="tags"><span class="os-mono os-dim" style="font-size:11px">' + esc(r.experimentId) + "</span>" +
+        '<span class="os-dim" style="font-size:11px">' + esc(new Date(r.ts).toLocaleString()) + "</span></div>" +
+        "<h3>" + esc(r.q || "(no question text)") + "</h3>" +
+        '<p class="aim">You answered: <b>' + esc(r.yourAnswer || "—") + "</b><br>Correct: <b>" + esc(r.correct || "—") + "</b>" +
+        (r.explain ? "<br><span class='os-dim'>Why: " + esc(r.explain) + "</span>" : "") + "</p>";
+      host.appendChild(card);
+    });
+  }
+  document.getElementById("mClear").addEventListener("click", function () {
+    if (window.OSMistakes) window.OSMistakes.clear();
+    render();
+  });
+  document.addEventListener("os-mistakes-change", render);
+  try { document.addEventListener("os-lang-change", render); } catch (e) {}
+  render();
+})();
+</script>
+</body>
+</html>

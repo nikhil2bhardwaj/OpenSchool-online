@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Teacher Dashboard — OpenSchool NCERT</title>
+<link rel="stylesheet" href="assets/css/lab-theme.css" />
+</head>
+<body>
+<div class="os-app">
+
+  <header class="os-topbar">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>OpenSchool<small>TEACHER DASHBOARD</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-chip" id="dbStatus">Notebook: <b>checking…</b></span>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en" type="button">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi" type="button">हिं</button>
+    </span>
+    <a class="os-btn sm" href="index.html">← Back to Hub</a>
+  </header>
+
+  <main class="os-wrap">
+    <section class="os-hero" style="padding:26px 20px 10px">
+      <span class="os-kicker">Offline · Local-only · Zero-dependency</span>
+      <h1 data-i18n="dashboard.title">Teacher Dashboard</h1>
+      <p>Per-experiment usage from the browser lab notebook (IndexedDB). Nothing leaves this device.</p>
+    </section>
+
+    <div class="os-callout" style="margin:14px 0">
+      <h4>Privacy — local-only</h4>
+      <div>All trial and viva data stays in this browser (IndexedDB <span class="os-mono">OpenSchool_NCERT_DB</span>).
+      Export / Import move a JSON file you control. No upload, no network, 100% offline.</div>
+    </div>
+
+    <div class="os-stat-grid" id="totals" style="margin:14px 0">
+      <div class="os-stat"><span>Total trials</span><b id="tTrials">–</b></div>
+      <div class="os-stat"><span>Viva attempts</span><b id="tViva">–</b></div>
+      <div class="os-stat"><span>Experiments used</span><b id="tExps">–</b></div>
+      <div class="os-stat"><span>Storage</span><b id="tMode" style="font-size:13px">–</b></div>
+    </div>
+
+    <div class="os-panel">
+      <header>
+        <h2>Usage by experiment</h2>
+        <div class="os-spacer"></div>
+        <button class="os-btn sm" id="btnRefresh" type="button" data-i18n="dashboard.refresh">Refresh</button>
+      </header>
+      <div class="os-body">
+        <div class="os-row" style="margin-bottom:12px">
+          <button class="os-btn primary sm" id="btnExport" type="button" data-i18n="dashboard.export">Export JSON</button>
+          <button class="os-btn sm" id="btnImport" type="button" data-i18n="dashboard.import">Import JSON</button>
+          <input class="os-hidden" id="fileInput" type="file" accept=".json,application/json" />
+          <button class="os-btn sm" id="btnPrint" type="button" data-i18n="dashboard.print">Print</button>
+          <button class="os-btn danger sm" id="btnClear" type="button" data-i18n="dashboard.clear">Clear</button>
+          <span class="os-dim" id="status" role="status" style="font-size:12px"></span>
+        </div>
+        <div class="os-table-wrap">
+          <table class="os-table" id="statsTable">
+            <caption>One row per experiment ID. Averages computed from scored viva attempts only.</caption>
+            <thead><tr>
+              <th>Experiment</th><th>Trials</th><th>Viva attempts</th>
+              <th>Avg score</th><th>Avg %</th><th>Last activity</th>
+            </tr></thead>
+            <tbody id="statsBody">
+              <tr><td colspan="6" class="os-dim">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <footer class="os-footer">
+      OpenSchool NCERT · Teacher Dashboard · local-only, offline-first ·
+      <a href="index.html">Back to experiment hub</a>
+    </footer>
+  </main>
+</div>
+
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script>
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+  function esc(v) {
+    return String(v == null ? "" : v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function say(t) { $("status").textContent = t || ""; }
+
+  async function db() {
+    const d = (window.LabNotebook) || new window.LabNotebookDB();
+    await d.open();
+    return d;
+  }
+
+  async function refresh() {
+    say("Loading…");
+    try {
+      const d = await db();
+      const mode = d.isFallback() ? "memory" : "IndexedDB";
+      $("dbStatus").innerHTML = "Notebook: <b>" + esc(mode) + "</b>";
+      $("tMode").textContent = mode;
+      const stats = await d.getUsageStats();
+      let trials = 0, viva = 0;
+      stats.forEach(function (s) { trials += s.trials; viva += s.vivaAttempts; });
+      $("tTrials").textContent = trials;
+      $("tViva").textContent = viva;
+      $("tExps").textContent = stats.length;
+      const tb = $("statsBody");
+      tb.innerHTML = "";
+      if (!stats.length) {
+        tb.innerHTML = '<tr><td colspan="6" class="os-dim">No saved trials or viva attempts yet.</td></tr>';
+      } else {
+        stats.forEach(function (s) {
+          const tr = document.createElement("tr");
+          const last = s.lastActivity ? new Date(s.lastActivity).toLocaleString() : "–";
+          tr.innerHTML =
+            "<td class='num'>" + esc(s.experiment_id) + "</td>" +
+            "<td class='num'>" + esc(s.trials) + "</td>" +
+            "<td class='num'>" + esc(s.vivaAttempts) + "</td>" +
+            "<td class='num'>" + (s.vivaAvgScore == null ? "–" : esc(s.vivaAvgScore)) + "</td>" +
+            "<td class='num'>" + (s.vivaAvgPercent == null ? "–" : esc(s.vivaAvgPercent) + "%") + "</td>" +
+            "<td class='num'>" + esc(last) + "</td>";
+          tb.appendChild(tr);
+        });
+      }
+      say("Loaded " + stats.length + " experiment(s).");
+    } catch (e) {
+      say("Failed to load: " + (e && e.message ? e.message : e));
+    }
+  }
+
+  $("btnRefresh").addEventListener("click", refresh);
+
+  $("btnExport").addEventListener("click", async function () {
+    try {
+      const d = await db();
+      const dump = await d.exportDB();
+      const blob = new Blob([JSON.stringify(dump, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "openschool-notebook-" + new Date().toISOString().slice(0, 10) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+      say("Exported " + dump.practical_notebook.length + " trial(s), " + dump.viva_scores.length + " viva record(s).");
+    } catch (e) { say("Export failed: " + (e && e.message ? e.message : e)); }
+  });
+
+  $("btnImport").addEventListener("click", function () { $("fileInput").click(); });
+  $("fileInput").addEventListener("change", function () {
+    const f = $("fileInput").files && $("fileInput").files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = async function () {
+      try {
+        const d = await db();
+        const res = await d.importDB(String(rd.result));
+        say("Imported " + res.trials + " trial(s), " + res.viva + " viva record(s).");
+        refresh();
+      } catch (e) { say("Import failed: " + (e && e.message ? e.message : e)); }
+      $("fileInput").value = "";
+    };
+    rd.onerror = function () { say("Import failed: could not read file."); };
+    rd.readAsText(f);
+  });
+
+  $("btnPrint").addEventListener("click", function () { window.print(); });
+
+  $("btnClear").addEventListener("click", async function () {
+    if (!window.confirm("Delete ALL locally stored trials and viva scores on this device? This cannot be undone. Export a backup first.")) return;
+    try {
+      const d = await db();
+      await d.clearAll();
+      say("Cleared local notebook.");
+      refresh();
+    } catch (e) { say("Clear failed: " + (e && e.message ? e.message : e)); }
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>

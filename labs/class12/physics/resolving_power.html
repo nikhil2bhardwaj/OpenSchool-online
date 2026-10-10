@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool — Resolving Power (P-C12-21)</title>
+<link rel="stylesheet" href="../../../assets/css/lab-theme.css" />
+<!-- OS-ONLINE: premium shell — Google Fonts + GSAP CDN + ScrollTrigger + three importmap -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+/* OS-ONLINE-PREMIUM: font system + hero topbar + 3D stage + morph indicator. */
+:root{--os-font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--os-display:"Space Grotesk","Inter",system-ui,sans-serif;--os-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--os-font)}
+.os-brand,.os-kicker,h1,h2,h3,.os-control-title{font-family:var(--os-display)}
+.os-mono,.os-readout b,.os-digital,.os-stat b{font-family:var(--os-mono);font-variant-numeric:tabular-nums}
+.os-topbar.os-bench{background:linear-gradient(120deg,#0d1b2a 0%,#123524 55%,#0d1b2a 100%)}
+.os-3d-wrap{margin-top:0;margin-bottom:10px}
+#apparatus3d.os-3d{position:relative;overflow:hidden;min-height:420px;height:420px;border-radius:12px;background:radial-gradient(120% 100% at 50% 0%,#12263f 0%,#0d1b2a 70%)}
+#apparatus3d.os-3d canvas{width:100%!important;height:420px!important;display:block}
+.os-viewbar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.os-viewbar .os-filter-pill[aria-pressed="true"]{outline:2px solid #4fd6ff}
+.os-3d-capline{font-size:11px;opacity:.75;padding:6px 2px 0}
+.os-file-notice{margin-top:8px}
+#apparatus3d .os-3d-cap{position:absolute;left:10px;bottom:8px;font-size:11px;opacity:.75}
+.os-tabs{position:relative}
+.os-tab-indicator{transition:left .28s cubic-bezier(.2,.7,.3,1),width .28s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.os-tab-indicator{transition:none}}
+</style>
+</head>
+<body>
+<a class="os-skip-link" href="#main-content">Skip to main content</a>
+<div class="os-app">
+
+  <header class="os-topbar os-bench">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>Resolving Power<small id="labCrumb">P-C12-21 · physics · class 12</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-chip"><span data-i18n="topbar.notebook">Notebook:</span> <b id="dbChip">…</b></span>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi">हिं</button>
+    </span>
+    <a class="os-btn ghost sm" href="../../../index.html" data-i18n="lab.back">← Curriculum Hub</a>
+  </header>
+
+  <main id="main-content" class="os-wrap">
+    <div class="os-lab-grid">
+
+      <section class="os-panel os-apparatus">
+        <header>
+          <span class="os-kicker" data-i18n="lab.apparatus">Apparatus</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="engineChip" data-i18n="lab.engineReady">Engine ready</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-stage os-spotlight">
+            <div class="os-viewbar" data-os-viewbar role="group" aria-label="Apparatus view">
+              <button type="button" class="os-filter-pill" data-os-view="3d">3D Apparatus</button>
+              <button type="button" class="os-filter-pill" data-os-view="2d">2D Board</button>
+            </div>
+            <div class="os-3d-wrap os-3d-hero" data-os-3d-wrap>
+              <div id="apparatus3d" data-apparatus="optical-bench" aria-label="3D apparatus viewer"></div>
+              <div class="os-3d-capline" data-os-3d-caption>3D apparatus hero — drag to orbit. Switch to 2D Board for the measurement canvas.</div>
+              <div class="os-callout warn os-file-notice" data-os-file-notice hidden>3D needs a local server or GitHub Pages (ES modules + import maps do not run over file://); the 2D board works everywhere.</div>
+            </div>
+            <canvas data-os-2d="1" role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="stage" width="720" height="440"></canvas>
+
+            <div class="os-readout os-instrument" id="readout">
+              <div class="row"><span>theta (urad)</span><b id="roX" data-os-rolling class="os-rolling">0.00</b></div>
+              <div class="row"><span>theta (arcsec)</span><b id="roY" data-os-rolling class="os-rolling">0.00</b></div>
+            </div>
+          </div>
+
+          <div class="os-control-block os-fader">
+            <div class="os-control-title">Optics Controls</div>
+            <div class="os-field">
+              <label for="lambdaRange">Wavelength λ (nm) — <span class="os-mono" id="lambdaVal">550</span></label>
+              <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="lambdaRange" min="380" max="700" step="1" value="550" /><span class="os-ticks" aria-hidden="true"></span></div>
+            </div>
+            <div class="os-field">
+              <label for="dRange">Aperture D (mm) — <span class="os-mono" id="dVal">5.0</span></label>
+              <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="dRange" min="0.5" max="10" step="0.1" value="5" /><span class="os-ticks" aria-hidden="true"></span></div>
+            </div>
+            <div class="os-row">
+              <label class="os-toggle"><input type="checkbox" id="faultToggle" /> Inject experimental fault</label>
+            </div>
+          </div>
+
+          <div class="os-row">
+            <button class="os-btn primary" id="btnRecord" data-i18n="btn.record">Record Reading</button>
+            <button class="os-btn" id="btnReset" data-i18n="btn.reset">Reset Apparatus</button>
+          </div>
+
+          <div class="os-callout" id="faultMsg">
+            <h4>Live status</h4>
+            <span>Adjust λ and D and press <b>Record Reading</b> to populate the observation table.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="os-panel">
+        <header>
+          <span class="os-kicker" data-i18n="lab.observation">Observation Table</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="trialCount">0 trials</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-table-wrap os-obs" data-os-ledger>
+            <table class="os-table" id="obsTable">
+              <thead>
+                <tr><th>#</th><th>λ (nm)</th><th>D (mm)</th><th>θ (µrad)</th><th>θ (arcsec)</th><th></th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="os-stat-grid">
+            <div class="os-stat"><span>Mean θ</span><b id="statMean">0.000</b></div>
+            <div class="os-stat"><span data-i18n="stats.stderr">Std. Error</span><b id="statErr">0.000</b></div>
+            <div class="os-stat"><span data-i18n="stats.trials">Trials</span><b id="statN">0</b></div>
+          </div>
+
+          <div class="os-row">
+            <button class="os-btn success" id="btnSave" data-i18n="btn.save">Save to Notebook</button>
+            <button class="os-btn" id="btnExport" data-i18n="btn.export">Export CBSE Sheet</button>
+            <button class="os-btn" id="btnReport" data-i18n="btn.report">Print Report</button>
+            <button class="os-btn danger" id="btnClear" data-i18n="btn.clear">Clear Trials</button>
+          </div>
+          <div class="os-callout ok" id="saveMsg" style="display:none"></div>
+        </div>
+      </section>
+    </div>
+
+    
+    <!-- OS-ACTIONBAR: sticky mobile quick actions (proxies, no duplicate ids) -->
+    <div class="os-actionbar" data-os-actionbar role="toolbar" aria-label="Quick actions">
+      <button class="os-btn primary" type="button" data-os-proxy="btnRecord">Record Reading</button>
+      <button class="os-btn success" type="button" data-os-proxy="btnSave">Save to Notebook</button>
+      <button class="os-btn" type="button" data-os-proxy="btnReport">Print Report</button>
+    </div>
+
+<section class="os-panel" style="margin-top:18px">
+      <div class="os-tabs os-tabs-anim" role="tablist" aria-label="Lab information tabs" id="tabs" data-os-tablist>
+        <button class="os-tab active" data-tab="theory" role="tab" aria-selected="true" data-i18n="tabs.theory" tabindex="0" aria-controls="panel-theory" id="tab-theory">Theory &amp; Diagram</button>
+        <button class="os-tab" data-tab="errors" role="tab" aria-selected="false" data-i18n="tabs.errors" tabindex="-1" aria-controls="panel-errors" id="tab-errors">Precautions &amp; Errors</button>
+        <button class="os-tab" data-tab="viva" role="tab" aria-selected="false" data-i18n="tabs.viva" tabindex="-1" aria-controls="panel-viva" id="tab-viva">Viva-Voce Arena</button>
+        <button class="os-tab" data-tab="procedure" role="tab" aria-selected="false" data-i18n="tabs.procedure" aria-controls="panel-procedure" id="tab-procedure" tabindex="-1">Procedure</button>
+        <button class="os-tab" data-tab="quiz" role="tab" aria-selected="false" data-i18n="tabs.quiz" aria-controls="panel-quiz" id="tab-quiz" tabindex="-1">Quiz</button>
+      
+        <span class="os-tab-indicator" id="tabIndicator" aria-hidden="true"></span>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel active" data-panel="theory" data-os-collapsible id="panel-theory" aria-labelledby="tab-theory">
+        <h3>Theory</h3>
+        <button class="os-btn sm ghost" type="button" data-os-tts-btn data-os-tts-label="Theory">🔊 Read aloud</button>
+        <p class="os-muted">A circular aperture of diameter D diffracts light into an Airy disc. Two point objects are just resolved (Rayleigh criterion) when the central maximum of one falls on the first minimum of the other:</p>
+        <div class="os-eq">θ = 1.22 · λ / D &nbsp;&nbsp;(radians)</div>
+        <p class="os-muted">Smaller wavelength or larger aperture improves resolution (smaller θ). Resolving power of a telescope increases with D/λ. Convert radians to arcseconds with × 206265.</p>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="errors" id="panel-errors" aria-labelledby="tab-errors">
+        <h3>Precautions &amp; Standard Errors</h3>
+        <ul class="os-muted">
+          <li>Use consistent SI units: convert λ (nm) to metres and D (mm) to metres before dividing.</li>
+          <li>Keep the aperture clean and circular; obstruction raises the effective limit.</li>
+          <li>Record λ from a calibrated source; colour filters drift with age.</li>
+        </ul>
+        <div class="os-callout warn" id="triageBox"><h4>Triage</h4><span>Toggle “Inject experimental fault” to simulate a +8% aperture obstruction error.</span></div>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="viva" id="panel-viva" aria-labelledby="tab-viva">
+        <div class="os-row between">
+          <h3 style="margin:0">Viva-Voce Arena</h3>
+          <div class="os-row">
+            <button class="os-filter-pill active" id="modeOffline" data-i18n="viva.offline">Offline Viva</button>
+            <button class="os-filter-pill" id="modeAI" data-i18n="viva.ai">AI Examiner</button>
+          </div>
+        </div>
+        <div id="offlineViva">
+          <div class="os-callout" id="vivaProgress">Offline viva: 0 / 0 questions answered.</div>
+          <div id="vivaQA"></div>
+          <div class="os-row" style="margin-top:10px">
+            <button class="os-btn primary" id="vivaStart" data-i18n="viva.startOffline">Start Offline Viva</button>
+          </div>
+        </div>
+        <div id="aiViva" style="display:none">
+          <div class="os-grid-3">
+            <div class="os-field"><label for="aiProvider">Provider</label>
+              <select class="os-select" id="aiProvider">
+                <option value="ollama">Local Ollama</option>
+                <option value="openai">OpenAI (key)</option>
+                <option value="anthropic">Anthropic (key)</option>
+              </select></div>
+            <div class="os-field"><label for="aiEndpoint">Endpoint (optional)</label>
+              <input aria-label="http://localhost:11434" class="os-input" id="aiEndpoint" placeholder="http://localhost:11434" /></div>
+            <div class="os-field"><label for="aiModel">Model</label>
+              <input aria-label="llama3.1" class="os-input" id="aiModel" placeholder="llama3.1" /></div>
+          </div>
+          <div class="os-field" style="margin-top:8px"><label for="aiKey">API key (only for cloud providers — supplied by you)</label>
+            <input aria-label="sk-… (never stored)" class="os-input" id="aiKey" type="password" placeholder="sk-… (never stored)" /></div>
+          <div class="os-row" style="margin-top:10px">
+            <button class="os-btn primary" id="aiStart" data-i18n="viva.startAI">Start AI Viva</button>
+          </div>
+          <div id="aiTranscript" class="os-control-block os-fader" style="margin-top:12px;max-height:300px;overflow:auto"></div>
+          <div class="os-row" style="margin-top:8px">
+            <input aria-label="Type your answer…" class="os-input" id="aiReply" placeholder="Type your answer…" data-i18n-ph="viva.answerPh">
+            <button class="os-btn success" id="aiSend" data-i18n="viva.send">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="os-tabpanel" data-panel="procedure" role="tabpanel" tabindex="0" aria-label="Procedure" id="panel-procedure" aria-labelledby="tab-procedure">
+        <h3>Procedure</h3>
+        <div data-os-procedure></div>
+      </div>
+      <div class="os-tabpanel" data-panel="quiz" role="tabpanel" tabindex="0" aria-label="Quiz" id="panel-quiz" aria-labelledby="tab-quiz">
+        <h3>Quiz</h3>
+        <button class="os-btn sm ghost" type="button" data-os-bookmark-btn aria-pressed="false">☆ Bookmark</button>
+        <div data-os-quiz></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../../../assets/js/storage.js"></script>
+<script src="../../../assets/js/report.js"></script>
+<script src="../../../assets/js/graph.js"></script>
+<script src="../../../assets/js/quiz-bank-1.js"></script>
+<script src="../../../assets/js/quiz-bank-2.js"></script>
+<script src="../../../assets/js/quiz-bank-3.js"></script>
+<script src="../../../assets/js/quiz-bank-4.js"></script>
+<script src="../../../assets/js/quiz-bank-5.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-1.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-2.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-3.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-4.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-5.js"></script>
+<script src="../../../assets/js/quiz-bank.js"></script>
+<script src="../../../assets/js/quiz.js"></script>
+<script src="../../../assets/js/tts.js"></script>
+<script src="../../../assets/js/bookmarks.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/procedure.js"></script>
+<script src="../../../assets/js/procedure-bank.js"></script>
+<script src="../../../assets/js/procedure-bank-hi.js"></script>
+<script>
+/* OS-STORAGE-GUARD: local-only fallback notice. If storage.js failed to load
+   (e.g. this file was copied out of the project tree standalone), show a
+   .os-callout warning with the path fix. No CDN, no downloads -- local only. */
+(function () {
+  function showGuard() {
+    if (window.LabNotebook || window.LabNotebookDB) return;
+    if (document.querySelector("[data-os-storage-guard]")) return;
+    var d = document.createElement("div");
+    d.className = "os-callout warn";
+    d.setAttribute("data-os-storage-guard", "1");
+    d.innerHTML = "<h4>Notebook storage missing</h4><span>" +
+      "Could not load <b>../../../assets/js/storage.js</b>, so Save / Export are disabled. " +
+      "Keep this file inside the project tree (<b>OnlineDeploy/labs/class12/physics/resolving_power.html</b>) " +
+      "so the relative path resolves -- do not open it as a standalone copy and do not " +
+      "fetch anything from a CDN; this lab is fully local.</span>";
+    var host = document.querySelector(".os-wrap") || document.querySelector(".os-app") || document.body;
+    host.insertBefore(d, host.firstChild);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showGuard);
+  else showGuard();
+})();
+</script>
+<script src="../../../assets/js/ai-examiner.js"></script>
+<script src="../../../assets/js/viva-bank-hi.js"></script>
+<script src="../../../assets/js/viva-hi.js"></script>
+<!-- OS-MOTION: vendored GSAP + guarded motion helper (offline, no CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- OS-MOTION: CDN GSAP above, vendored fallback below (offline copy) -->
+<script src="../../../assets/vendor/gsap/gsap.min.js"></script>
+<script src="../../../assets/js/motion.js"></script>
+<script src="../../../assets/js/perf.js"></script>
+<script>window.scheduleDraw=(window.OSPerf&&window.OSPerf.rafThrottle)?window.OSPerf.rafThrottle(function(){try{if(typeof drawScene==="function")drawScene();}catch(e){}try{if(typeof draw==="function")draw();}catch(e){}try{if(typeof updateReadout==="function")updateReadout();}catch(e){}}):function(){try{if(typeof drawScene==="function")drawScene();}catch(e){}try{if(typeof draw==="function")draw();}catch(e){}try{if(typeof updateReadout==="function")updateReadout();}catch(e){}};</script>
+<script>
+const CONFIG = {
+  experimentId: "P-C12-21",
+  experimentTitle: "Resolving Power of Telescope",
+  subject: "physics",
+  classLevel: 12
+};
+
+const ENGINE = {
+  fault: false,
+  compute: function (lambdaNm, Dmm) {
+    var lambdaM = lambdaNm * 1e-9;
+    var Dm = Dmm * 1e-3;
+    var Deff = this.fault ? Dm * 0.92 : Dm;
+    var theta = 1.22 * lambdaM / Deff;
+    var arcsec = theta * 206265;
+    return { theta: theta, urad: theta * 1e6, arcsec: arcsec };
+  }
+};
+
+const VIVA_BANK = [
+  { question: "State the Rayleigh criterion for resolution.",
+    answer: "Two point sources are just resolved when the central maximum of one coincides with the first minimum of the other, theta = 1.22*lambda/D." },
+  { question: "How do wavelength and aperture affect resolving power?",
+    answer: "Smaller lambda or larger D gives smaller theta and finer resolution; resolving power varies as D/lambda." },
+  { question: "Why do large telescopes use big mirrors?",
+    answer: "A bigger aperture collects more light and shrinks the diffraction limit, so faint close pairs become resolvable." },
+  { question: "Convert the limit to arcseconds and give a typical value.",
+    answer: "Multiply radians by 206265. For lambda 550 nm and D 5 mm, theta is about 134 urad or 27.7 arcsec." }
+];
+
+const trials = [];
+let vivaState = null;
+
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+
+function currentInputs() {
+  return {
+    lambda: parseFloat(document.getElementById("lambdaRange").value),
+    D: parseFloat(document.getElementById("dRange").value)
+  };
+}
+
+function airy(x) {
+  if (Math.abs(x) < 1e-6) return 1;
+  var s = Math.sin(x) / x;
+  return s * s;
+}
+
+function draw() {
+  var w = canvas.width, h = canvas.height;
+  var grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, "#0d1b2a"); grad.addColorStop(1, "#0d1b2a");
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "rgba(79,214,255,.12)"; ctx.lineWidth = 1;
+  for (var gx = 0; gx <= w; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
+  for (var gy = 0; gy <= h; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
+
+  var inp = currentInputs();
+  var res = ENGINE.compute(inp.lambda, inp.D);
+
+  ctx.fillStyle = "#e8eefc"; ctx.font = "bold 13px monospace";
+  ctx.fillText("lambda=" + inp.lambda.toFixed(0) + "nm  D=" + inp.D.toFixed(1) + "mm", 60, 46);
+  ctx.fillStyle = "#9fd8ff";
+  ctx.fillText("theta=1.22*lambda/D = " + res.urad.toFixed(1) + " urad (" + res.arcsec.toFixed(1) + " arcsec)", 60, 68);
+
+  var cx1 = 200, cx2 = 200 + Math.min(220, 60 + res.urad * 0.9), cy = 170, baseR = 70;
+  var sepNorm = Math.min(2.2, Math.max(0.35, res.urad / 130));
+
+  function disc(cx, color) {
+    var g = ctx.createRadialGradient(cx, cy, 4, cx, cy, baseR);
+    g.addColorStop(0, color);
+    g.addColorStop(0.35, "rgba(80,140,255,.45)");
+    g.addColorStop(1, "rgba(80,140,255,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, baseR, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(160,190,240,.5)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(cx, cy, baseR * 0.42, 0, Math.PI * 2); ctx.stroke();
+  }
+  disc(cx1, "rgba(120,190,255,.95)");
+  disc(cx2, "rgba(120,190,255,.95)");
+
+  ctx.strokeStyle = "#ff6b81"; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+  ctx.beginPath(); ctx.moveTo(cx1, cy - baseR - 12); ctx.lineTo(cx1, cy + baseR + 12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx2, cy - baseR - 12); ctx.lineTo(cx2, cy + baseR + 12); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#ffb02e"; ctx.font = "12px monospace";
+  ctx.fillText("separation / Airy radius ~ " + sepNorm.toFixed(2), 60, 290);
+
+  var ox = 60, oy = 400, aw = w - 120, ah = 80;
+  ctx.strokeStyle = "#f4f1e3"; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(ox, oy - ah); ctx.lineTo(ox, oy); ctx.lineTo(ox + aw, oy); ctx.stroke();
+  var half = 12;
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#4fd6ff";
+  ctx.beginPath();
+  for (var i = 0; i <= 160; i++) {
+    var xv = -half + (i / 160) * half * 2;
+    var yv = airy(xv * 1.1 - sepNorm * 1.6) + airy(xv * 1.1 + sepNorm * 1.6);
+    var px = ox + (i / 160) * aw;
+    var py = oy - Math.min(1.6, yv) / 1.6 * ah;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.fillStyle = "#8fa3c8"; ctx.font = "12px monospace";
+  ctx.fillText("combined intensity (two Airy patterns)", ox + 8, oy - ah - 8);
+
+  document.getElementById("roX").textContent = res.urad.toFixed(1);
+  document.getElementById("roY").textContent = res.arcsec.toFixed(1);
+  document.getElementById("engineChip").textContent = ENGINE.fault ? "Fault: aperture -8%" : "Engine ready";
+}
+
+function recompute() {
+  var vals = trials.map(function (t) { return t.urad; });
+  var n = vals.length;
+  var mean = n ? vals.reduce(function (a, b) { return a + b; }, 0) / n : 0;
+  var stderr = 0;
+  if (n > 1) {
+    var variance = vals.reduce(function (a, b) { return a + (b - mean) * (b - mean); }, 0) / (n - 1);
+    stderr = Math.sqrt(variance) / Math.sqrt(n);
+  }
+  document.getElementById("statMean").textContent = mean.toFixed(2);
+  document.getElementById("statErr").textContent = stderr.toFixed(2);
+  document.getElementById("statN").textContent = String(n);
+  document.getElementById("trialCount").textContent = n + " " + ((window.OS_I18N&&window.OS_I18N.t)?window.OS_I18N.t("trials.unit"):"trials");
+}
+
+function renderTable() {
+  var tbody = document.querySelector("#obsTable tbody");
+  tbody.innerHTML = "";
+  trials.forEach(function (t, i) {
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + (i + 1) + "</td>" +
+      '<td class="num">' + t.lambda.toFixed(0) + "</td>" +
+      '<td class="num">' + t.D.toFixed(1) + "</td>" +
+      '<td class="num">' + t.urad.toFixed(1) + "</td>" +
+      '<td class="num">' + t.arcsec.toFixed(1) + "</td>" +
+      '<td><button class="os-btn danger sm" data-row="' + i + '">×</button></td>';
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll("button[data-row]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      trials.splice(parseInt(btn.dataset.row, 10), 1);
+      renderTable(); recompute();
+    });
+  });
+  recompute();
+}
+
+document.getElementById("lambdaRange").addEventListener("input", function (e) {
+  document.getElementById("lambdaVal").textContent = String(parseFloat(e.target.value).toFixed(0));
+  scheduleDraw();
+});
+document.getElementById("dRange").addEventListener("input", function (e) {
+  document.getElementById("dVal").textContent = parseFloat(e.target.value).toFixed(1);
+  scheduleDraw();
+});
+document.getElementById("faultToggle").addEventListener("change", function (e) {
+  ENGINE.fault = e.target.checked;
+  var box = document.getElementById("faultMsg");
+  if (ENGINE.fault) {
+    box.className = "os-callout danger";
+    box.innerHTML = "<h4>Fault injected</h4><span>Aperture obstruction shrinks effective D by 8%, raising every theta reading.</span>";
+  } else {
+    box.className = "os-callout";
+    box.innerHTML = "<h4>Live status</h4><span>Apparatus operating normally.</span>";
+  }
+  draw();
+});
+document.getElementById("btnRecord").addEventListener("click", function () {
+  var inp = currentInputs();
+  var r = ENGINE.compute(inp.lambda, inp.D);
+  trials.push({ lambda: inp.lambda, D: inp.D, urad: r.urad, arcsec: r.arcsec, theta: r.theta });
+  renderTable();
+});
+document.getElementById("btnReset").addEventListener("click", function () {
+  document.getElementById("lambdaRange").value = 550;
+  document.getElementById("dRange").value = 5;
+  document.getElementById("lambdaVal").textContent = "550";
+  document.getElementById("dVal").textContent = "5.0";
+  document.getElementById("faultToggle").checked = false;
+  ENGINE.fault = false;
+  draw();
+});
+document.getElementById("btnClear").addEventListener("click", function () {
+  trials.length = 0; renderTable();
+});
+
+function flash(msg, ok) {
+  var el = document.getElementById("saveMsg");
+  el.style.display = "block";
+  el.className = "os-callout " + (ok === false ? "danger" : "ok");
+  el.textContent = msg;
+  setTimeout(function () { el.style.display = "none"; }, 4000);
+}
+
+document.getElementById("btnSave").addEventListener("click", async function () {
+  if (!trials.length) return flash("Record at least one reading first.", false);
+  await window.LabNotebook.open();
+  await window.LabNotebook.saveTrial(CONFIG.experimentId, {
+    class_level: CONFIG.classLevel, subject: CONFIG.subject, title: CONFIG.experimentTitle,
+    readings: trials.map(function (t) { return { "lambda (nm)": t.lambda.toFixed(0), "D (mm)": t.D.toFixed(1), "theta (urad)": t.urad.toFixed(1), "theta (arcsec)": t.arcsec.toFixed(1) }; }),
+    results: { "Mean theta": document.getElementById("statMean").textContent, "Std. Error": document.getElementById("statErr").textContent }
+  });
+  flash("Trial saved to the IndexedDB notebook.", true);
+});
+
+document.getElementById("btnExport").addEventListener("click", async function () {
+  await window.LabNotebook.open();
+  var html = await window.LabNotebook.exportToCBSEFormat(CONFIG.experimentId);
+  var w = window.open("", "_blank");
+  if (w) { w.document.write(html); w.document.close(); }
+  else flash("Allow pop-ups to view the exported CBSE sheet.", false);
+});
+
+document.getElementById("tabs").addEventListener("click", function (ev) {
+  var tab = ev.target.closest(".os-tab"); if (!tab) return;
+  document.querySelectorAll(".os-tab").forEach(function (t) { t.classList.remove("active"); });
+  document.querySelectorAll(".os-tabpanel").forEach(function (p) { p.classList.remove("active"); });
+  tab.classList.add("active");
+  document.querySelector('.os-tabpanel[data-panel="' + tab.dataset.tab + '"]').classList.add("active");
+});
+
+const examiner = new window.AIExaminer({
+  experimentId: CONFIG.experimentId,
+  experimentTitle: CONFIG.experimentTitle,
+  subject: CONFIG.subject,
+  classLevel: CONFIG.classLevel,
+  vivaBank: VIVA_BANK,
+  getObservations: function () {
+    return trials.map(function (t) { return { "lambda": t.lambda.toFixed(0), "D": t.D.toFixed(1), "theta": t.urad.toFixed(1) }; });
+  },
+  onToken: function (_chunk, full) { appendAI("examiner", full, true); },
+  onMessage: function (text) { appendAI("examiner", text, false); },
+  onError: function (e) { appendAI("system", "Error: " + (e.message || e), false); }
+});
+
+function appendAI(role, text, replaceLast) {
+  var host = document.getElementById("aiTranscript");
+  if (replaceLast) {
+    var last = host.querySelector('[data-stream="1"]');
+    if (!last) { last = document.createElement("div"); last.dataset.stream = "1"; last.className = "os-callout"; host.appendChild(last); }
+    last.textContent = text;
+  } else {
+    var d = document.createElement("div");
+    d.className = "os-callout " + (role === "student" ? "ok" : "warn");
+    d.textContent = (role === "student" ? "You: " : role === "examiner" ? "Examiner: " : "") + text;
+    host.appendChild(d);
+  }
+  host.scrollTop = host.scrollHeight;
+}
+
+function renderOffline() {
+  var q = examiner.offlineQuestion();
+  var host = document.getElementById("vivaQA");
+  host.innerHTML = "";
+  document.getElementById("vivaProgress").textContent =
+    "Offline viva: " + examiner.offline.index + " / " + VIVA_BANK.length + " questions answered — score " +
+    examiner.offline.score + "/" + examiner.offline.total + ".";
+  if (!q) {
+    host.innerHTML = '<div class="os-callout ok"><h4>Viva complete</h4><span>Final score ' +
+      examiner.offline.score + "/" + examiner.offline.total + ". Review the model answers below.</span></div>";
+    examiner.offline.answers.forEach(function (a) {
+      var d = document.createElement("div");
+      d.className = "os-viva-item open";
+      d.innerHTML = '<div class="os-viva-q"><span class="qmark">Q</span><span>' + a.question + ' <span class="os-chip">' + a.mark + '/2</span></span></div>' +
+        '<div class="os-viva-a"><b>Your answer:</b> ' + (a.answer || "<em>blank</em>") + "<br><b>Model answer:</b> " + a.model + "</div>";
+      host.appendChild(d);
+    });
+    return;
+  }
+  var wrap = document.createElement("div");
+  wrap.className = "os-callout";
+  wrap.innerHTML = "<h4>Question " + (q.index + 1) + "</h4><span>" + q.question + "</span>";
+  var input = document.createElement("textarea");
+  input.className = "os-input"; input.rows = 3; input.placeholder = "Type your answer…";
+  var btn = document.createElement("button");
+  btn.className = "os-btn primary"; btn.textContent = "Submit Answer";
+  btn.style.marginTop = "8px";
+  btn.addEventListener("click", function () {
+    examiner.offlineSubmit(input.value);
+    renderOffline();
+  });
+  host.appendChild(wrap); host.appendChild(input); host.appendChild(btn);
+}
+
+document.getElementById("vivaStart").addEventListener("click", function () {
+  examiner.offlineStart(); renderOffline();
+});
+document.getElementById("modeOffline").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeAI").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "block";
+  document.getElementById("aiViva").style.display = "none";
+});
+document.getElementById("modeAI").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeOffline").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "none";
+  document.getElementById("aiViva").style.display = "block";
+});
+document.getElementById("aiStart").addEventListener("click", function () {
+  examiner.configure({
+    provider: document.getElementById("aiProvider").value,
+    model: document.getElementById("aiModel").value.trim(),
+    endpoint: document.getElementById("aiEndpoint").value.trim(),
+    apiKey: document.getElementById("aiKey").value.trim()
+  });
+  document.getElementById("aiTranscript").innerHTML = "";
+  examiner.aiStart();
+});
+document.getElementById("aiSend").addEventListener("click", function () {
+  var box = document.getElementById("aiReply");
+  if (!box.value.trim()) return;
+  appendAI("student", box.value, false);
+  var text = box.value; box.value = "";
+  examiner.aiSend(text);
+});
+
+(async function () {
+  draw();
+  renderTable();
+  try {
+    await window.LabNotebook.open();
+    document.getElementById("dbChip").textContent = window.LabNotebook.isFallback() ? "memory" : "IndexedDB";
+  } catch (e) { document.getElementById("dbChip").textContent = "unavailable"; }
+})();
+</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{var el=document.querySelector("[data-os-quiz]");if(el&&window.OSQuiz&&!el.getAttribute("data-os-quiz-done")){var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:"";window.OSQuiz.renderInto(el,id);}}catch(e){}});</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{if(window.OSProcedure&&window.OSProcedure.initFromBank)window.OSProcedure.initFromBank();}catch(e){}});</script>
+<script>/* OS-REPORT-WIRING: generic printable-report hook (idempotent). */
+window.addEventListener("DOMContentLoaded",function(){
+  var b=document.getElementById("btnReport");
+  if(!b||b.getAttribute("data-os-report-done"))return;
+  b.setAttribute("data-os-report-done","1");
+  b.addEventListener("click",function(){
+    try{
+      if(!window.OSReport){alert("Report helper (assets/js/report.js) failed to load.");return;}
+      var T=(typeof trials!=="undefined"&&Array.isArray(trials))?trials:[];
+      if(!T.length){alert("Record at least one reading first.");return;}
+      var cfg=(typeof CONFIG!=="undefined"&&CONFIG)?CONFIG:{};
+      var th=document.querySelector('[data-panel="theory"]');
+      var mEl=document.getElementById("statMean"),eEl=document.getElementById("statErr"),
+          nEl=document.getElementById("statN"),gEl=document.getElementById("statG");
+      window.OSReport.printLabReport({
+        experimentId:cfg.experimentId||document.title,
+        title:cfg.experimentTitle||document.title,
+        readings:T,
+        stats:{
+          mean:mEl?mEl.textContent:(gEl?gEl.textContent:""),
+          stderr:eEl?eEl.textContent:"",
+          n:nEl?nEl.textContent:T.length
+        },
+        canvasEl:document.getElementById("stage"),
+        theory:th?th.innerText.slice(0,600):""
+      });
+    }catch(err){alert("Report failed: "+(err&&err.message||err));}
+  });
+});</script>
+<script>/* OS-I18N-CHROME: re-render dynamic chrome on language toggle (guarded, idempotent). */
+(function(){function rr(){try{if(typeof renderHead==="function"&&document.getElementById("obsHead"))renderHead();}catch(e){}try{if(typeof renderTable==="function"&&document.getElementById("obsTable"))renderTable();}catch(e){}try{if(typeof recompute==="function")recompute();}catch(e){}}if(window.__osI18nChromeWired)return;window.__osI18nChromeWired=true;document.addEventListener("os-lang-change",rr);})();</script>
+
+<!-- OS-FLUID-SHELL hooks: toast stack + alert routing + proxy/fader/indicator targets.
+     CSS lives in lab-theme.css; motion.js sibling drives animation. Idempotent. -->
+<div class="os-toasts os-toast-stack" id="osToasts" role="status" aria-live="polite" aria-atomic="false"></div>
+<script>/* OS-TOAST: toast system replacing window.alert (guarded, idempotent). */
+(function(){
+  if(window.OSToast&&window.OSToast.__osFluid)return;
+  function host(){
+    var h=document.getElementById("osToasts");
+    if(h)return h;
+    h=document.createElement("div");
+    h.className="os-toasts os-toast-stack";h.id="osToasts";
+    h.setAttribute("role","status");h.setAttribute("aria-live","polite");h.setAttribute("aria-atomic","false");
+    document.body.appendChild(h);return h;
+  }
+  function show(msg,type){
+    try{
+      var h=host();
+      var t=document.createElement("div");
+      var kind=(type==="ok"||type==="success")?"ok":(type==="danger"||type==="error")?"danger":(type==="warn"?"warn":"");
+      t.className=("os-toast "+kind).trim();
+      var dot=document.createElement("span");dot.className="os-toast-dot";dot.setAttribute("aria-hidden","true");
+      var m=document.createElement("span");m.className="os-toast-msg";m.textContent=String(msg==null?"":msg);
+      var x=document.createElement("button");x.className="os-toast-close";x.type="button";x.textContent="×";x.setAttribute("aria-label","Dismiss");
+      x.addEventListener("click",function(){dismiss(t);});
+      t.appendChild(dot);t.appendChild(m);t.appendChild(x);
+      h.appendChild(t);
+      while(h.children.length>4)h.removeChild(h.firstChild);
+      setTimeout(function(){dismiss(t);},4200);
+      return t;
+    }catch(e){try{window.__osNativeAlert(String(msg));}catch(_){}return null;}
+  }
+  function dismiss(t){
+    if(!t||!t.parentNode||t.classList.contains("is-leaving"))return;
+    try{
+      t.classList.add("is-leaving");
+      setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},200);
+    }catch(e){if(t.parentNode)t.parentNode.removeChild(t);}
+  }
+  window.OSToast={show:show,dismiss:dismiss,__osFluid:true};
+  if(!window.__osNativeAlert){
+    try{window.__osNativeAlert=window.alert;}catch(e){}
+    try{window.alert=function(m){return show(m,"warn");};}catch(e){}
+  }
+  /* Sticky action-bar proxies: [data-os-proxy] clicks forward to #id buttons. */
+  document.addEventListener("click",function(ev){
+    var p=ev.target&&ev.target.closest?ev.target.closest("[data-os-proxy]"):null;
+    if(!p)return;
+    var target=document.getElementById(p.getAttribute("data-os-proxy"));
+    if(target&&target!==p&&typeof target.click==="function"){ev.preventDefault();target.click();}
+  });
+})();</script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="../../../assets/js/apparatus3d.js"></script>
+<script>/* OS-VIEW-TOGGLE: 2D/3D hero toggle (per-lab persist) + file:// 3D notice. Idempotent. */
+(function(){
+  if(window.__osViewToggle)return;window.__osViewToggle=true;
+  function labKey(){
+    try{
+      var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:location.pathname;
+      return "os-view:"+id;
+    }catch(e){return "os-view:lab";}
+  }
+  function apply(mode){
+    var show3D=(mode!=="2d");
+    var wrap=document.querySelector("[data-os-3d-wrap]");
+    if(wrap)wrap.style.display=show3D?"":"none";
+    var cvs=document.querySelectorAll("canvas[data-os-2d]");
+    for(var i=0;i<cvs.length;i++){cvs[i].style.display=show3D?"none":"";}
+    var pills=document.querySelectorAll("[data-os-view]");
+    for(var j=0;j<pills.length;j++){
+      var on=pills[j].getAttribute("data-os-view")===(show3D?"3d":"2d");
+      pills[j].classList.toggle("active",on);
+      pills[j].setAttribute("aria-pressed",on?"true":"false");
+    }
+  }
+  document.addEventListener("click",function(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest("[data-os-view]"):null;
+    if(!b)return;
+    var m=b.getAttribute("data-os-view");
+    try{localStorage.setItem(labKey(),m);}catch(e){}
+    apply(m);
+  });
+  function init(){
+    var m=null;
+    try{m=localStorage.getItem(labKey());}catch(e){}
+    apply(m==="2d"?"2d":"3d");
+    try{
+      if(location.protocol==="file:"){
+        var ns=document.querySelectorAll("[data-os-file-notice]");
+        for(var k=0;k<ns.length;k++){ns[k].hidden=false;}
+      }
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+<script>/* OS-ONLINE-SHELL: tab morph indicator + ScrollTrigger reveals + premium flag. Idempotent. */
+(function(){
+  if(window.__osOnlineShell)return;window.__osOnlineShell=true;
+  window.OSOnline={premium:true};
+  /* Tab morph indicator: glide #tabIndicator under the active tab. */
+  function moveIndicator(tabsEl){
+    try{
+      var ind=tabsEl.querySelector(".os-tab-indicator")||document.getElementById("tabIndicator");
+      var tab=tabsEl.querySelector(".os-tab.active");
+      if(!ind||!tab)return;
+      var tr=tabsEl.getBoundingClientRect(),r=tab.getBoundingClientRect();
+      ind.style.left=(r.left-tr.left)+"px";
+      ind.style.width=r.width+"px";
+      tabsEl.setAttribute("data-os-indicator-ready","1");
+    }catch(e){}
+  }
+  function wireTabs(){
+    document.querySelectorAll(".os-tabs").forEach(function(tabsEl){
+      moveIndicator(tabsEl);
+      ["click","keydown"].forEach(function(ev){
+        tabsEl.addEventListener(ev,function(){setTimeout(function(){moveIndicator(tabsEl);},0);});
+      });
+    });
+    window.addEventListener("resize",function(){
+      document.querySelectorAll(".os-tabs").forEach(moveIndicator);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireTabs);
+  else wireTabs();
+  /* ScrollTrigger reveals: one-shot panel entrances (motion.js guards reduced motion). */
+  function reveals(){
+    try{
+      if(!(window.gsap&&window.ScrollTrigger))return;
+      window.gsap.registerPlugin(window.ScrollTrigger);
+      window.gsap.utils.toArray(".os-panel").forEach(function(p){
+        window.gsap.fromTo(p,{y:14,opacity:0},{y:0,opacity:1,duration:.45,ease:"power2.out",
+          scrollTrigger:{trigger:p,start:"top 92%",once:true},clearProps:"transform,opacity"});
+      });
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",reveals);
+  else reveals();
+})();</script>
+</body>
+</html>

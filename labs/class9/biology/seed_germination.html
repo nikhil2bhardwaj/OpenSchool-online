@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool — Seed Germination (P-C09-14)</title>
+<link rel="stylesheet" href="../../../assets/css/lab-theme.css" />
+<!-- OS-ONLINE: premium shell — Google Fonts + GSAP CDN + ScrollTrigger + three importmap -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+/* OS-ONLINE-PREMIUM: font system + hero topbar + 3D stage + morph indicator. */
+:root{--os-font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--os-display:"Space Grotesk","Inter",system-ui,sans-serif;--os-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--os-font)}
+.os-brand,.os-kicker,h1,h2,h3,.os-control-title{font-family:var(--os-display)}
+.os-mono,.os-readout b,.os-digital,.os-stat b{font-family:var(--os-mono);font-variant-numeric:tabular-nums}
+.os-topbar.os-bench{background:linear-gradient(120deg,#0d1b2a 0%,#123524 55%,#0d1b2a 100%)}
+.os-3d-wrap{margin-top:0;margin-bottom:10px}
+#apparatus3d.os-3d{position:relative;overflow:hidden;min-height:420px;height:420px;border-radius:12px;background:radial-gradient(120% 100% at 50% 0%,#12263f 0%,#0d1b2a 70%)}
+#apparatus3d.os-3d canvas{width:100%!important;height:420px!important;display:block}
+.os-viewbar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.os-viewbar .os-filter-pill[aria-pressed="true"]{outline:2px solid #4fd6ff}
+.os-3d-capline{font-size:11px;opacity:.75;padding:6px 2px 0}
+.os-file-notice{margin-top:8px}
+#apparatus3d .os-3d-cap{position:absolute;left:10px;bottom:8px;font-size:11px;opacity:.75}
+.os-tabs{position:relative}
+.os-tab-indicator{transition:left .28s cubic-bezier(.2,.7,.3,1),width .28s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.os-tab-indicator{transition:none}}
+</style>
+</head>
+<body>
+<a class="os-skip-link" href="#main-content">Skip to main content</a>
+<div class="os-app">
+
+  <header class="os-topbar os-bench">
+    <div class="os-brand">
+      <div class="os-logo">OS</div>
+      <div>Seed Germination<small id="labCrumb">P-C09-14 · Biology 9 · Growth — germination</small></div>
+    </div>
+    <div class="os-spacer"></div>
+    <span class="os-chip"><span data-i18n="topbar.notebook">Notebook:</span> <b id="dbChip">…</b></span>
+    <span class="os-row" role="group" aria-label="Language">
+      <button class="os-filter-pill" data-os-lang-toggle="en">EN</button>
+      <button class="os-filter-pill" data-os-lang-toggle="hi">हिं</button>
+    </span>
+    <a class="os-btn ghost sm" href="../../../index.html" data-i18n="lab.back">← Curriculum Hub</a>
+  </header>
+
+  <main id="main-content" class="os-wrap">
+    <div class="os-lab-grid">
+
+      <section class="os-panel os-apparatus">
+        <header>
+          <span class="os-kicker" data-i18n="lab.apparatus">Apparatus — petri dish germination</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="engineChip" data-i18n="lab.engineReady">Engine ready</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-stage os-spotlight">
+            <div class="os-viewbar" data-os-viewbar role="group" aria-label="Apparatus view">
+              <button type="button" class="os-filter-pill" data-os-view="3d">3D Apparatus</button>
+              <button type="button" class="os-filter-pill" data-os-view="2d">2D Board</button>
+            </div>
+            <div class="os-3d-wrap os-3d-hero" data-os-3d-wrap>
+              <div id="apparatus3d" data-apparatus="burette" aria-label="3D apparatus viewer"></div>
+              <div class="os-3d-capline" data-os-3d-caption>3D apparatus hero — drag to orbit. Switch to 2D Board for the measurement canvas.</div>
+              <div class="os-callout warn os-file-notice" data-os-file-notice hidden>3D needs a local server or GitHub Pages (ES modules + import maps do not run over file://); the 2D board works everywhere.</div>
+            </div>
+            <canvas data-os-2d="1" role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="stage" width="720" height="440"></canvas>
+
+            <div class="os-readout os-instrument" id="readout">
+              <div class="row"><span>water (mL)</span><b id="roX" data-os-rolling class="os-rolling">10.00</b></div>
+              <div class="row"><span>germination %</span><b id="roY" data-os-rolling class="os-rolling">0.00</b></div>
+            </div>
+          </div>
+
+          <div class="os-control-block os-fader">
+            <div class="os-control-title">Water and temperature</div>
+            <div class="os-field">
+              <label for="xRange">Water added — <span class="os-mono" id="xVal">10</span> mL</label>
+              <div class="os-range-wrap" data-os-fader><span class="os-range-bubble" data-os-bubble aria-hidden="true"></span><input type="range" class="os-range" id="xRange" min="0" max="20" step="1" value="10" /><span class="os-ticks" aria-hidden="true"></span></div>
+            </div>
+            <div class="os-field">
+              <label for="tempSel">Incubation temperature</label>
+              <select class="os-select" id="tempSel">
+                <option value="15">15 °C</option>
+                <option value="20">20 °C</option>
+                <option value="25" selected>25 °C (optimal)</option>
+                <option value="30">30 °C</option>
+                <option value="35">35 °C</option>
+              </select>
+            </div>
+            <div class="os-row">
+              <label class="os-toggle"><input type="checkbox" id="faultToggle" /> Inject experimental fault (old seeds)</label>
+            </div>
+          </div>
+
+          <div class="os-row">
+            <button class="os-btn primary" id="btnRecord" data-i18n="btn.record">Record Reading</button>
+            <button class="os-btn" id="btnReset" data-i18n="btn.reset">Reset Apparatus</button>
+          </div>
+
+          <div class="os-callout" id="faultMsg">
+            <h4>Live status</h4>
+            <span>Adjust water and press <b>Record Reading</b> to populate the observation table.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="os-panel">
+        <header>
+          <span class="os-kicker" data-i18n="lab.observation">Observation Table</span>
+          <div class="os-spacer"></div>
+          <span class="os-chip" id="trialCount">0 trials</span>
+        </header>
+        <div class="os-body os-controls">
+          <div class="os-table-wrap os-obs" data-os-ledger>
+            <table class="os-table" id="obsTable">
+              <thead>
+                <tr><th>#</th><th>Water (mL)</th><th>Germ %</th><th>Δ vs prev</th><th></th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="os-stat-grid">
+            <div class="os-stat"><span>Mean %</span><b id="statMean">0.000</b></div>
+            <div class="os-stat"><span data-i18n="stats.stderr">Std. Error</span><b id="statErr">0.000</b></div>
+            <div class="os-stat"><span data-i18n="stats.trials">Trials</span><b id="statN">0</b></div>
+          </div>
+
+          <div class="os-row">
+            <button class="os-btn success" id="btnSave" data-i18n="btn.save">Save to Notebook</button>
+            <button class="os-btn" id="btnExport" data-i18n="btn.export">Export CBSE Sheet</button>
+            <button class="os-btn" id="btnReport" data-i18n="btn.report">Print Report</button>
+            <button class="os-btn danger" id="btnClear" data-i18n="btn.clear">Clear Trials</button>
+          </div>
+          <div class="os-callout ok" id="saveMsg" style="display:none"></div>
+        </div>
+      </section>
+    </div>
+
+    
+    <!-- OS-ACTIONBAR: sticky mobile quick actions (proxies, no duplicate ids) -->
+    <div class="os-actionbar" data-os-actionbar role="toolbar" aria-label="Quick actions">
+      <button class="os-btn primary" type="button" data-os-proxy="btnRecord">Record Reading</button>
+      <button class="os-btn success" type="button" data-os-proxy="btnSave">Save to Notebook</button>
+      <button class="os-btn" type="button" data-os-proxy="btnReport">Print Report</button>
+    </div>
+
+<section class="os-panel" style="margin-top:18px">
+      <div class="os-tabs os-tabs-anim" role="tablist" aria-label="Lab information tabs" id="tabs" data-os-tablist>
+        <button class="os-tab active" data-tab="theory" role="tab" aria-selected="true" data-i18n="tabs.theory" tabindex="0" aria-controls="panel-theory" id="tab-theory">Theory &amp; Diagram</button>
+        <button class="os-tab" data-tab="errors" role="tab" aria-selected="false" data-i18n="tabs.errors" tabindex="-1" aria-controls="panel-errors" id="tab-errors">Precautions &amp; Errors</button>
+        <button class="os-tab" data-tab="viva" role="tab" aria-selected="false" data-i18n="tabs.viva" tabindex="-1" aria-controls="panel-viva" id="tab-viva">Viva-Voce Arena</button>
+        <button class="os-tab" data-tab="procedure" role="tab" aria-selected="false" data-i18n="tabs.procedure" aria-controls="panel-procedure" id="tab-procedure" tabindex="-1">Procedure</button>
+        <button class="os-tab" data-tab="quiz" role="tab" aria-selected="false" data-i18n="tabs.quiz" aria-controls="panel-quiz" id="tab-quiz" tabindex="-1">Quiz</button>
+      
+        <span class="os-tab-indicator" id="tabIndicator" aria-hidden="true"></span>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel active" data-panel="theory" data-os-collapsible id="panel-theory" aria-labelledby="tab-theory">
+        <h3>Theory</h3>
+        <button class="os-btn sm ghost" type="button" data-os-tts-btn data-os-tts-label="Theory">🔊 Read aloud</button>
+        <p class="os-muted">Germination needs water, suitable temperature and air. Too little water prevents imbibition; excess water causes waterlogging. Germination peaks near 10 mL water and 25 °C, falling off on either side — modelled deterministically below.</p>
+        <div class="os-eq">G(w,T) = 100 · max(0, 1 − ((w−10)/9)²) · e^(−(T−25)²/72)</div>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="errors" id="panel-errors" aria-labelledby="tab-errors">
+        <h3>Precautions &amp; Standard Errors</h3>
+        <ul class="os-muted">
+          <li>Use equal-sized healthy seeds; equal seeds per dish.</li>
+          <li>Add measured water with a graduated pipette.</li>
+          <li>Keep dishes at the same light and temperature.</li>
+          <li>Count germination (radicle ≥ 2 mm) at a fixed time.</li>
+        </ul>
+        <div class="os-callout warn" id="triageBox"><h4>Triage</h4><span>Toggle “Inject experimental fault” to simulate old low-viability seeds (systematic −12 percentage points, floored at 0).</span></div>
+      </div>
+
+      <div role="tabpanel" tabindex="0" class="os-tabpanel" data-panel="viva" id="panel-viva" aria-labelledby="tab-viva">
+        <div class="os-row between">
+          <h3 style="margin:0">Viva-Voce Arena</h3>
+          <div class="os-row">
+            <button class="os-filter-pill active" id="modeOffline" data-i18n="viva.offline">Offline Viva</button>
+            <button class="os-filter-pill" id="modeAI" data-i18n="viva.ai">AI Examiner</button>
+          </div>
+        </div>
+        <div id="offlineViva">
+          <div class="os-callout" id="vivaProgress">Offline viva: 0 / 0 questions answered.</div>
+          <div id="vivaQA"></div>
+          <div class="os-row" style="margin-top:10px">
+            <button class="os-btn primary" id="vivaStart" data-i18n="viva.startOffline">Start Offline Viva</button>
+          </div>
+        </div>
+        <div id="aiViva" style="display:none">
+          <div class="os-grid-3">
+            <div class="os-field"><label for="aiProvider">Provider</label>
+              <select class="os-select" id="aiProvider">
+                <option value="ollama">Local Ollama</option>
+                <option value="openai">OpenAI (key)</option>
+                <option value="anthropic">Anthropic (key)</option>
+              </select></div>
+            <div class="os-field"><label for="aiEndpoint">Endpoint (optional)</label>
+              <input aria-label="http://localhost:11434" class="os-input" id="aiEndpoint" placeholder="http://localhost:11434" /></div>
+            <div class="os-field"><label for="aiModel">Model</label>
+              <input aria-label="llama3.1" class="os-input" id="aiModel" placeholder="llama3.1" /></div>
+          </div>
+          <div class="os-field" style="margin-top:8px"><label for="aiKey">API key (only for cloud providers — supplied by you)</label>
+            <input aria-label="sk-… (never stored)" class="os-input" id="aiKey" type="password" placeholder="sk-… (never stored)" /></div>
+          <div class="os-row" style="margin-top:10px">
+            <button class="os-btn primary" id="aiStart" data-i18n="viva.startAI">Start AI Viva</button>
+          </div>
+          <div id="aiTranscript" class="os-control-block os-fader" style="margin-top:12px;max-height:300px;overflow:auto"></div>
+          <div class="os-row" style="margin-top:8px">
+            <input aria-label="Type your answer…" class="os-input" id="aiReply" placeholder="Type your answer…" data-i18n-ph="viva.answerPh">
+            <button class="os-btn success" id="aiSend" data-i18n="viva.send">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="os-tabpanel" data-panel="procedure" role="tabpanel" tabindex="0" aria-label="Procedure" id="panel-procedure" aria-labelledby="tab-procedure">
+        <h3>Procedure</h3>
+        <div data-os-procedure></div>
+      </div>
+      <div class="os-tabpanel" data-panel="quiz" role="tabpanel" tabindex="0" aria-label="Quiz" id="panel-quiz" aria-labelledby="tab-quiz">
+        <h3>Quiz</h3>
+        <button class="os-btn sm ghost" type="button" data-os-bookmark-btn aria-pressed="false">☆ Bookmark</button>
+        <div data-os-quiz></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../../../assets/js/storage.js"></script>
+<script src="../../../assets/js/report.js"></script>
+<script src="../../../assets/js/graph.js"></script>
+<script src="../../../assets/js/quiz-bank-1.js"></script>
+<script src="../../../assets/js/quiz-bank-2.js"></script>
+<script src="../../../assets/js/quiz-bank-3.js"></script>
+<script src="../../../assets/js/quiz-bank-4.js"></script>
+<script src="../../../assets/js/quiz-bank-5.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-1.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-2.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-3.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-4.js"></script>
+<script src="../../../assets/js/quiz-bank-hi-5.js"></script>
+<script src="../../../assets/js/quiz-bank.js"></script>
+<script src="../../../assets/js/quiz.js"></script>
+<script src="../../../assets/js/tts.js"></script>
+<script src="../../../assets/js/bookmarks.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/procedure.js"></script>
+<script src="../../../assets/js/procedure-bank.js"></script>
+<script src="../../../assets/js/procedure-bank-hi.js"></script>
+<script>
+/* OS-STORAGE-GUARD: local-only fallback notice. If storage.js failed to load
+   (e.g. this file was copied out of the project tree standalone), show a
+   .os-callout warning with the path fix. No CDN, no downloads -- local only. */
+(function () {
+  function showGuard() {
+    if (window.LabNotebook || window.LabNotebookDB) return;
+    if (document.querySelector("[data-os-storage-guard]")) return;
+    var d = document.createElement("div");
+    d.className = "os-callout warn";
+    d.setAttribute("data-os-storage-guard", "1");
+    d.innerHTML = "<h4>Notebook storage missing</h4><span>" +
+      "Could not load <b>../../../assets/js/storage.js</b>, so Save / Export are disabled. " +
+      "Keep this file inside the project tree (<b>OnlineDeploy/labs/class9/biology/seed_germination.html</b>) " +
+      "so the relative path resolves -- do not open it as a standalone copy and do not " +
+      "fetch anything from a CDN; this lab is fully local.</span>";
+    var host = document.querySelector(".os-wrap") || document.querySelector(".os-app") || document.body;
+    host.insertBefore(d, host.firstChild);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showGuard);
+  else showGuard();
+})();
+</script>
+<script src="../../../assets/js/ai-examiner.js"></script>
+<script src="../../../assets/js/viva-bank-hi.js"></script>
+<script src="../../../assets/js/viva-hi.js"></script>
+<!-- OS-MOTION: vendored GSAP + guarded motion helper (offline, no CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- OS-MOTION: CDN GSAP above, vendored fallback below (offline copy) -->
+<script src="../../../assets/vendor/gsap/gsap.min.js"></script>
+<script src="../../../assets/js/motion.js"></script>
+<script src="../../../assets/js/perf.js"></script>
+<script>window.scheduleDraw=(window.OSPerf&&window.OSPerf.rafThrottle)?window.OSPerf.rafThrottle(function(){try{if(typeof drawScene==="function")drawScene();}catch(e){}try{if(typeof draw==="function")draw();}catch(e){}try{if(typeof updateReadout==="function")updateReadout();}catch(e){}}):function(){try{if(typeof drawScene==="function")drawScene();}catch(e){}try{if(typeof draw==="function")draw();}catch(e){}try{if(typeof updateReadout==="function")updateReadout();}catch(e){}};</script>
+<script>
+const CONFIG = {
+  experimentId: "P-C09-14",
+  experimentTitle: "Seed Germination",
+  subject: "biology",
+  classLevel: 9
+};
+
+const ENGINE = {
+  tempC: 25, fault: false,
+  compute: function (wIn) {
+    var w = parseFloat(wIn);
+    var wf = Math.max(0, 1 - Math.pow((w - 10) / 9, 2));
+    var tf = Math.exp(-Math.pow(this.tempC - 25, 2) / 72);
+    var g = 100 * wf * tf;
+    if (this.fault) g = Math.max(0, g - 12);
+    return Math.round(g * 10) / 10;
+  }
+};
+
+const VIVA_BANK = [
+  { question: "What are the three essential conditions for germination?",
+    answer: "Water (imbibition), suitable temperature (enzyme activity) and air/oxygen for respiration." },
+  { question: "Why does both too little and too much water reduce germination?",
+    answer: "Too little prevents imbibition; too much waterlogs, cutting oxygen supply and rotting seeds — hence a peaked curve." },
+  { question: "Why is 25 °C optimal in this model?",
+    answer: "Enzyme and metabolic rates peak near room temperature; cold slows reactions and excess heat denatures enzymes." },
+  { question: "How is germination percentage calculated?",
+    answer: "Germinated seeds divided by total seeds sown, times 100, counted at a fixed time with a fixed radicle criterion." }
+];
+
+const trials = [];
+let vivaState = null;
+
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+
+function draw() {
+  const w = canvas.width, h = canvas.height;
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, "#0d1b2a"); grad.addColorStop(1, "#0d1b2a");
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "rgba(79,214,255,.12)"; ctx.lineWidth = 1;
+  for (let gx = 0; gx <= w; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
+  for (let gy = 0; gy <= h; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
+
+  const wv = parseFloat(document.getElementById("xRange").value);
+  const g = ENGINE.compute(wv);
+
+  // response curve G vs water at current T
+  const ox = 60, oy = h - 50, aw = 280, ah = h - 110;
+  ctx.strokeStyle = "#f4f1e3"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(ox, oy - ah); ctx.lineTo(ox, oy); ctx.lineTo(ox + aw, oy); ctx.stroke();
+  ctx.strokeStyle = "#4fd6ff"; ctx.lineWidth = 2.5; ctx.beginPath();
+  for (let i = 0; i <= 100; i++) {
+    const ww = (i / 100) * 20;
+    var wf = Math.max(0, 1 - Math.pow((ww - 10) / 9, 2));
+    var tf = Math.exp(-Math.pow(ENGINE.tempC - 25, 2) / 72);
+    var gv = 100 * wf * tf;
+    if (ENGINE.fault) gv = Math.max(0, gv - 12);
+    const px = ox + (ww / 20) * aw;
+    const py = oy - (gv / 100) * ah;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.fillStyle = "#4fd6ff";
+  ctx.beginPath(); ctx.arc(ox + (wv / 20) * aw, oy - (g / 100) * ah, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#9fc4e8"; ctx.font = "12px system-ui";
+  ctx.fillText("water mL", ox + aw - 60, oy + 24);
+  ctx.fillText("G %", ox - 36, oy - ah + 10);
+
+  // petri dish with 10 seeds
+  const cx0 = 520, cy0 = 220, R = 130;
+  ctx.fillStyle = "rgba(79,214,255,.08)";
+  ctx.beginPath(); ctx.arc(cx0, cy0, R, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#8fd8ff"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx0, cy0, R, 0, Math.PI * 2); ctx.stroke();
+  // water tint depth by wv
+  ctx.fillStyle = "rgba(79,214,255," + (0.05 + (wv / 20) * 0.20).toFixed(2) + ")";
+  ctx.beginPath(); ctx.arc(cx0, cy0, R - 6, 0, Math.PI * 2); ctx.fill();
+  const nGer = Math.round((g / 100) * 10);
+  ctx.fillStyle = "#d7f5e6"; ctx.font = "13px system-ui";
+  ctx.fillText("Dish: " + nGer + "/10 germinated (" + g.toFixed(1) + "%)", cx0 - R, cy0 - R - 12);
+  ctx.fillText(ENGINE.tempC + " °C · " + wv.toFixed(0) + " mL", cx0 - R, cy0 + R + 22);
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * Math.PI * 2;
+    const rr = (i % 2 === 0) ? 55 : 95;
+    const sx = cx0 + Math.cos(a) * rr, sy = cy0 + Math.sin(a) * rr;
+    ctx.fillStyle = "#c9a06a";
+    ctx.beginPath(); ctx.ellipse(sx, sy, 12, 8, a, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#8a6238"; ctx.lineWidth = 1.5; ctx.stroke();
+    if (i < nGer) {
+      ctx.strokeStyle = "#4fd6ff"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(sx + 8, sy - 14, sx + 2, sy - 26); ctx.stroke();
+      ctx.fillStyle = "#4fd6ff";
+      ctx.beginPath(); ctx.arc(sx + 2, sy - 28, 4, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  if (ENGINE.fault) { ctx.fillStyle = "#ff9d9d"; ctx.font = "13px system-ui"; ctx.fillText("FAULT: old seeds (−12 pp)", cx0 - R, cy0 + R + 40); }
+
+  document.getElementById("roX").textContent = wv.toFixed(2);
+  document.getElementById("roY").textContent = g.toFixed(2);
+}
+
+function recompute() {
+  const vals = trials.map(function (t) { return t.y; });
+  const n = vals.length;
+  const mean = n ? vals.reduce(function (a, b) { return a + b; }, 0) / n : 0;
+  let stderr = 0;
+  if (n > 1) {
+    const variance = vals.reduce(function (a, b) { return a + (b - mean) * (b - mean); }, 0) / (n - 1);
+    stderr = Math.sqrt(variance) / Math.sqrt(n);
+  }
+  document.getElementById("statMean").textContent = mean.toFixed(3);
+  document.getElementById("statErr").textContent = stderr.toFixed(3);
+  document.getElementById("statN").textContent = String(n);
+  document.getElementById("trialCount").textContent = n + " " + ((window.OS_I18N&&window.OS_I18N.t)?window.OS_I18N.t("trials.unit"):"trials");
+}
+
+function renderTable() {
+  const tbody = document.querySelector("#obsTable tbody");
+  tbody.innerHTML = "";
+  trials.forEach(function (t, i) {
+    const d = i === 0 ? 0 : t.y - trials[i - 1].y;
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + (i + 1) + "</td>" +
+      '<td class="num">' + t.x.toFixed(0) + "</td>" +
+      '<td class="num">' + t.y.toFixed(1) + "</td>" +
+      '<td class="num">' + d.toFixed(1) + "</td>" +
+      '<td><button class="os-btn danger sm" data-row="' + i + '">×</button></td>';
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll("button[data-row]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      trials.splice(parseInt(btn.dataset.row, 10), 1);
+      renderTable(); recompute();
+    });
+  });
+  recompute();
+}
+
+document.getElementById("xRange").addEventListener("input", function (e) {
+  document.getElementById("xVal").textContent = parseFloat(e.target.value).toFixed(0);
+  scheduleDraw();
+});
+document.getElementById("tempSel").addEventListener("change", function (e) {
+  ENGINE.tempC = parseInt(e.target.value, 10);
+  draw();
+});
+document.getElementById("faultToggle").addEventListener("change", function (e) {
+  ENGINE.fault = e.target.checked;
+  const box = document.getElementById("faultMsg");
+  if (ENGINE.fault) {
+    box.className = "os-callout danger";
+    box.innerHTML = "<h4>Fault injected</h4><span>Old seeds subtract a systematic 12 percentage points from every reading.</span>";
+  } else {
+    box.className = "os-callout";
+    box.innerHTML = "<h4>Live status</h4><span>Apparatus operating normally.</span>";
+  }
+  draw();
+});
+document.getElementById("btnRecord").addEventListener("click", function () {
+  const x = parseFloat(document.getElementById("xRange").value);
+  trials.push({ x: x, T: ENGINE.tempC, y: ENGINE.compute(x) });
+  renderTable();
+});
+document.getElementById("btnReset").addEventListener("click", function () {
+  document.getElementById("xRange").value = 10;
+  document.getElementById("xVal").textContent = "10";
+  document.getElementById("tempSel").value = "25";
+  ENGINE.tempC = 25;
+  document.getElementById("faultToggle").checked = false;
+  ENGINE.fault = false;
+  draw();
+});
+document.getElementById("btnClear").addEventListener("click", function () {
+  trials.length = 0; renderTable();
+});
+
+function flash(msg, ok) {
+  const el = document.getElementById("saveMsg");
+  el.style.display = "block";
+  el.className = "os-callout " + (ok === false ? "danger" : "ok");
+  el.textContent = msg;
+  setTimeout(function () { el.style.display = "none"; }, 4000);
+}
+
+document.getElementById("btnSave").addEventListener("click", async function () {
+  if (!trials.length) return flash("Record at least one reading first.", false);
+  await window.LabNotebook.open();
+  await window.LabNotebook.saveTrial(CONFIG.experimentId, {
+    class_level: CONFIG.classLevel, subject: CONFIG.subject, title: CONFIG.experimentTitle,
+    readings: trials.map(function (t) { return { "Water (mL)": t.x.toFixed(0), "Temp (C)": t.T, "Germ %": t.y.toFixed(1) }; }),
+    results: { "Mean %": document.getElementById("statMean").textContent, "Std. Error": document.getElementById("statErr").textContent }
+  });
+  flash("Trial saved to the IndexedDB notebook.", true);
+});
+
+document.getElementById("btnExport").addEventListener("click", async function () {
+  await window.LabNotebook.open();
+  const html = await window.LabNotebook.exportToCBSEFormat(CONFIG.experimentId);
+  const w = window.open("", "_blank");
+  if (w) { w.document.write(html); w.document.close(); }
+  else flash("Allow pop-ups to view the exported CBSE sheet.", false);
+});
+
+document.getElementById("tabs").addEventListener("click", function (ev) {
+  const tab = ev.target.closest(".os-tab"); if (!tab) return;
+  document.querySelectorAll(".os-tab").forEach(function (t) { t.classList.remove("active"); });
+  document.querySelectorAll(".os-tabpanel").forEach(function (p) { p.classList.remove("active"); });
+  tab.classList.add("active");
+  document.querySelector('.os-tabpanel[data-panel="' + tab.dataset.tab + '"]').classList.add("active");
+});
+
+const examiner = new window.AIExaminer({
+  experimentId: CONFIG.experimentId,
+  experimentTitle: CONFIG.experimentTitle,
+  subject: CONFIG.subject,
+  classLevel: CONFIG.classLevel,
+  vivaBank: VIVA_BANK,
+  getObservations: function () {
+    return trials.map(function (t) { return { "water_mL": t.x.toFixed(0), "germ_pct": t.y.toFixed(1) }; });
+  },
+  onToken: function (_chunk, full) { appendAI("examiner", full, true); },
+  onMessage: function (text) { appendAI("examiner", text, false); },
+  onError: function (e) { appendAI("system", "Error: " + (e.message || e), false); }
+});
+
+function appendAI(role, text, replaceLast) {
+  const host = document.getElementById("aiTranscript");
+  if (replaceLast) {
+    let last = host.querySelector('[data-stream="1"]');
+    if (!last) { last = document.createElement("div"); last.dataset.stream = "1"; last.className = "os-callout"; host.appendChild(last); }
+    last.textContent = text;
+  } else {
+    const d = document.createElement("div");
+    d.className = "os-callout " + (role === "student" ? "ok" : "warn");
+    d.textContent = (role === "student" ? "You: " : role === "examiner" ? "Examiner: " : "") + text;
+    host.appendChild(d);
+  }
+  host.scrollTop = host.scrollHeight;
+}
+
+function renderOffline() {
+  const q = examiner.offlineQuestion();
+  const host = document.getElementById("vivaQA");
+  host.innerHTML = "";
+  document.getElementById("vivaProgress").textContent =
+    "Offline viva: " + examiner.offline.index + " / " + VIVA_BANK.length + " questions answered — score " +
+    examiner.offline.score + "/" + examiner.offline.total + ".";
+  if (!q) {
+    host.innerHTML = '<div class="os-callout ok"><h4>Viva complete</h4><span>Final score ' +
+      examiner.offline.score + "/" + examiner.offline.total + ". Review the model answers below.</span></div>";
+    examiner.offline.answers.forEach(function (a) {
+      const d = document.createElement("div");
+      d.className = "os-viva-item open";
+      d.innerHTML = '<div class="os-viva-q"><span class="qmark">Q</span><span>' + a.question + ' <span class="os-chip">' + a.mark + '/2</span></span></div>' +
+        '<div class="os-viva-a"><b>Your answer:</b> ' + (a.answer || "<em>blank</em>") + "<br><b>Model answer:</b> " + a.model + "</div>";
+      host.appendChild(d);
+    });
+    return;
+  }
+  const wrap = document.createElement("div");
+  wrap.className = "os-callout";
+  wrap.innerHTML = "<h4>Question " + (q.index + 1) + "</h4><span>" + q.question + "</span>";
+  const input = document.createElement("textarea");
+  input.className = "os-input"; input.rows = 3; input.placeholder = "Type your answer…";
+  const btn = document.createElement("button");
+  btn.className = "os-btn primary"; btn.textContent = "Submit Answer";
+  btn.style.marginTop = "8px";
+  btn.addEventListener("click", function () {
+    examiner.offlineSubmit(input.value);
+    renderOffline();
+  });
+  host.appendChild(wrap); host.appendChild(input); host.appendChild(btn);
+}
+
+document.getElementById("vivaStart").addEventListener("click", function () {
+  examiner.offlineStart(); renderOffline();
+});
+document.getElementById("modeOffline").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeAI").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "block";
+  document.getElementById("aiViva").style.display = "none";
+});
+document.getElementById("modeAI").addEventListener("click", function () {
+  this.classList.add("active"); document.getElementById("modeOffline").classList.remove("active");
+  document.getElementById("offlineViva").style.display = "none";
+  document.getElementById("aiViva").style.display = "block";
+});
+document.getElementById("aiStart").addEventListener("click", function () {
+  examiner.configure({
+    provider: document.getElementById("aiProvider").value,
+    model: document.getElementById("aiModel").value.trim(),
+    endpoint: document.getElementById("aiEndpoint").value.trim(),
+    apiKey: document.getElementById("aiKey").value.trim()
+  });
+  document.getElementById("aiTranscript").innerHTML = "";
+  examiner.aiStart();
+});
+document.getElementById("aiSend").addEventListener("click", function () {
+  const box = document.getElementById("aiReply");
+  if (!box.value.trim()) return;
+  appendAI("student", box.value, false);
+  const text = box.value; box.value = "";
+  examiner.aiSend(text);
+});
+
+(async function () {
+  draw();
+  renderTable();
+  document.getElementById("xVal").textContent = "10";
+  try {
+    await window.LabNotebook.open();
+    document.getElementById("dbChip").textContent = window.LabNotebook.isFallback() ? "memory" : "IndexedDB";
+  } catch (e) { document.getElementById("dbChip").textContent = "unavailable"; }
+})();
+</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{var el=document.querySelector("[data-os-quiz]");if(el&&window.OSQuiz&&!el.getAttribute("data-os-quiz-done")){var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:"";window.OSQuiz.renderInto(el,id);}}catch(e){}});</script>
+<script>window.addEventListener("DOMContentLoaded",function(){try{if(window.OSProcedure&&window.OSProcedure.initFromBank)window.OSProcedure.initFromBank();}catch(e){}});</script>
+<script>/* OS-REPORT-WIRING: generic printable-report hook (idempotent). */
+window.addEventListener("DOMContentLoaded",function(){
+  var b=document.getElementById("btnReport");
+  if(!b||b.getAttribute("data-os-report-done"))return;
+  b.setAttribute("data-os-report-done","1");
+  b.addEventListener("click",function(){
+    try{
+      if(!window.OSReport){alert("Report helper (assets/js/report.js) failed to load.");return;}
+      var T=(typeof trials!=="undefined"&&Array.isArray(trials))?trials:[];
+      if(!T.length){alert("Record at least one reading first.");return;}
+      var cfg=(typeof CONFIG!=="undefined"&&CONFIG)?CONFIG:{};
+      var th=document.querySelector('[data-panel="theory"]');
+      var mEl=document.getElementById("statMean"),eEl=document.getElementById("statErr"),
+          nEl=document.getElementById("statN"),gEl=document.getElementById("statG");
+      window.OSReport.printLabReport({
+        experimentId:cfg.experimentId||document.title,
+        title:cfg.experimentTitle||document.title,
+        readings:T,
+        stats:{
+          mean:mEl?mEl.textContent:(gEl?gEl.textContent:""),
+          stderr:eEl?eEl.textContent:"",
+          n:nEl?nEl.textContent:T.length
+        },
+        canvasEl:document.getElementById("stage"),
+        theory:th?th.innerText.slice(0,600):""
+      });
+    }catch(err){alert("Report failed: "+(err&&err.message||err));}
+  });
+});</script>
+<script>/* OS-I18N-CHROME: re-render dynamic chrome on language toggle (guarded, idempotent). */
+(function(){function rr(){try{if(typeof renderHead==="function"&&document.getElementById("obsHead"))renderHead();}catch(e){}try{if(typeof renderTable==="function"&&document.getElementById("obsTable"))renderTable();}catch(e){}try{if(typeof recompute==="function")recompute();}catch(e){}}if(window.__osI18nChromeWired)return;window.__osI18nChromeWired=true;document.addEventListener("os-lang-change",rr);})();</script>
+
+<!-- OS-FLUID-SHELL hooks: toast stack + alert routing + proxy/fader/indicator targets.
+     CSS lives in lab-theme.css; motion.js sibling drives animation. Idempotent. -->
+<div class="os-toasts os-toast-stack" id="osToasts" role="status" aria-live="polite" aria-atomic="false"></div>
+<script>/* OS-TOAST: toast system replacing window.alert (guarded, idempotent). */
+(function(){
+  if(window.OSToast&&window.OSToast.__osFluid)return;
+  function host(){
+    var h=document.getElementById("osToasts");
+    if(h)return h;
+    h=document.createElement("div");
+    h.className="os-toasts os-toast-stack";h.id="osToasts";
+    h.setAttribute("role","status");h.setAttribute("aria-live","polite");h.setAttribute("aria-atomic","false");
+    document.body.appendChild(h);return h;
+  }
+  function show(msg,type){
+    try{
+      var h=host();
+      var t=document.createElement("div");
+      var kind=(type==="ok"||type==="success")?"ok":(type==="danger"||type==="error")?"danger":(type==="warn"?"warn":"");
+      t.className=("os-toast "+kind).trim();
+      var dot=document.createElement("span");dot.className="os-toast-dot";dot.setAttribute("aria-hidden","true");
+      var m=document.createElement("span");m.className="os-toast-msg";m.textContent=String(msg==null?"":msg);
+      var x=document.createElement("button");x.className="os-toast-close";x.type="button";x.textContent="×";x.setAttribute("aria-label","Dismiss");
+      x.addEventListener("click",function(){dismiss(t);});
+      t.appendChild(dot);t.appendChild(m);t.appendChild(x);
+      h.appendChild(t);
+      while(h.children.length>4)h.removeChild(h.firstChild);
+      setTimeout(function(){dismiss(t);},4200);
+      return t;
+    }catch(e){try{window.__osNativeAlert(String(msg));}catch(_){}return null;}
+  }
+  function dismiss(t){
+    if(!t||!t.parentNode||t.classList.contains("is-leaving"))return;
+    try{
+      t.classList.add("is-leaving");
+      setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},200);
+    }catch(e){if(t.parentNode)t.parentNode.removeChild(t);}
+  }
+  window.OSToast={show:show,dismiss:dismiss,__osFluid:true};
+  if(!window.__osNativeAlert){
+    try{window.__osNativeAlert=window.alert;}catch(e){}
+    try{window.alert=function(m){return show(m,"warn");};}catch(e){}
+  }
+  /* Sticky action-bar proxies: [data-os-proxy] clicks forward to #id buttons. */
+  document.addEventListener("click",function(ev){
+    var p=ev.target&&ev.target.closest?ev.target.closest("[data-os-proxy]"):null;
+    if(!p)return;
+    var target=document.getElementById(p.getAttribute("data-os-proxy"));
+    if(target&&target!==p&&typeof target.click==="function"){ev.preventDefault();target.click();}
+  });
+})();</script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="../../../assets/js/apparatus3d.js"></script>
+<script>/* OS-VIEW-TOGGLE: 2D/3D hero toggle (per-lab persist) + file:// 3D notice. Idempotent. */
+(function(){
+  if(window.__osViewToggle)return;window.__osViewToggle=true;
+  function labKey(){
+    try{
+      var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:location.pathname;
+      return "os-view:"+id;
+    }catch(e){return "os-view:lab";}
+  }
+  function apply(mode){
+    var show3D=(mode!=="2d");
+    var wrap=document.querySelector("[data-os-3d-wrap]");
+    if(wrap)wrap.style.display=show3D?"":"none";
+    var cvs=document.querySelectorAll("canvas[data-os-2d]");
+    for(var i=0;i<cvs.length;i++){cvs[i].style.display=show3D?"none":"";}
+    var pills=document.querySelectorAll("[data-os-view]");
+    for(var j=0;j<pills.length;j++){
+      var on=pills[j].getAttribute("data-os-view")===(show3D?"3d":"2d");
+      pills[j].classList.toggle("active",on);
+      pills[j].setAttribute("aria-pressed",on?"true":"false");
+    }
+  }
+  document.addEventListener("click",function(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest("[data-os-view]"):null;
+    if(!b)return;
+    var m=b.getAttribute("data-os-view");
+    try{localStorage.setItem(labKey(),m);}catch(e){}
+    apply(m);
+  });
+  function init(){
+    var m=null;
+    try{m=localStorage.getItem(labKey());}catch(e){}
+    apply(m==="2d"?"2d":"3d");
+    try{
+      if(location.protocol==="file:"){
+        var ns=document.querySelectorAll("[data-os-file-notice]");
+        for(var k=0;k<ns.length;k++){ns[k].hidden=false;}
+      }
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+<script>/* OS-ONLINE-SHELL: tab morph indicator + ScrollTrigger reveals + premium flag. Idempotent. */
+(function(){
+  if(window.__osOnlineShell)return;window.__osOnlineShell=true;
+  window.OSOnline={premium:true};
+  /* Tab morph indicator: glide #tabIndicator under the active tab. */
+  function moveIndicator(tabsEl){
+    try{
+      var ind=tabsEl.querySelector(".os-tab-indicator")||document.getElementById("tabIndicator");
+      var tab=tabsEl.querySelector(".os-tab.active");
+      if(!ind||!tab)return;
+      var tr=tabsEl.getBoundingClientRect(),r=tab.getBoundingClientRect();
+      ind.style.left=(r.left-tr.left)+"px";
+      ind.style.width=r.width+"px";
+      tabsEl.setAttribute("data-os-indicator-ready","1");
+    }catch(e){}
+  }
+  function wireTabs(){
+    document.querySelectorAll(".os-tabs").forEach(function(tabsEl){
+      moveIndicator(tabsEl);
+      ["click","keydown"].forEach(function(ev){
+        tabsEl.addEventListener(ev,function(){setTimeout(function(){moveIndicator(tabsEl);},0);});
+      });
+    });
+    window.addEventListener("resize",function(){
+      document.querySelectorAll(".os-tabs").forEach(moveIndicator);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireTabs);
+  else wireTabs();
+  /* ScrollTrigger reveals: one-shot panel entrances (motion.js guards reduced motion). */
+  function reveals(){
+    try{
+      if(!(window.gsap&&window.ScrollTrigger))return;
+      window.gsap.registerPlugin(window.ScrollTrigger);
+      window.gsap.utils.toArray(".os-panel").forEach(function(p){
+        window.gsap.fromTo(p,{y:14,opacity:0},{y:0,opacity:1,duration:.45,ease:"power2.out",
+          scrollTrigger:{trigger:p,start:"top 92%",once:true},clearProps:"transform,opacity"});
+      });
+    }catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",reveals);
+  else reveals();
+})();</script>
+</body>
+</html>

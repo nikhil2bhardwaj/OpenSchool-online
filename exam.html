@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenSchool NCERT — Exam Hall (Timed Practical Paper)</title>
+<link rel="stylesheet" href="assets/css/lab-theme.css" />
+<style>
+.os-exam-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:12px 0}
+.os-exam-meta label{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.os-exam-meta select,.os-exam-meta input{padding:8px 10px;font-size:14px}
+#timerChip{font-variant-numeric:tabular-nums;font-weight:700}
+#timerChip.over{color:#ff6b6b}
+.os-exam-sec{margin:22px 0;padding:16px;border:1px solid rgba(120,160,220,.25);border-radius:10px}
+.os-exam-sec h2{margin:0 0 4px}
+.os-exam-sec .marks{font-size:12px;opacity:.8}
+.os-quiz-q{margin:12px 0;padding:10px;border:1px solid rgba(120,160,220,.18);border-radius:8px}
+.os-quiz-q legend{font-weight:600;padding:0 6px}
+.os-quiz-opt{display:block;margin:6px 0;cursor:pointer}
+.os-exam-ta{width:100%;min-height:70px;margin-top:6px;font:inherit;padding:8px}
+.os-result-table{border-collapse:collapse;width:100%;margin-top:10px}
+.os-result-table th,.os-result-table td{border:1px solid #5f7aa8;padding:6px 8px;text-align:left}
+@media print{.no-print{display:none!important}.os-exam-sec{break-inside:avoid}}
+</style>
+</head>
+<body>
+<a class="os-skip-link" href="#main">Skip to main content</a>
+<div class="os-app">
+<header class="os-topbar">
+  <div class="os-brand"><div class="os-logo">OS</div><div>Exam Hall<small>NCERT VIRTUAL STEM LAB</small></div></div>
+  <div class="os-spacer"></div>
+  <span class="os-chip" id="timerChip" role="timer" aria-live="polite">Not started</span>
+  <span class="os-row" role="group" aria-label="Language">
+    <button class="os-filter-pill" data-os-lang-toggle="en" type="button">EN</button>
+    <button class="os-filter-pill" data-os-lang-toggle="hi" type="button">हिं</button>
+  </span>
+  <a class="os-btn sm ghost" href="index.html">← Hub</a>
+</header>
+<main class="os-wrap" id="main">
+  <section class="os-hero">
+    <span class="os-kicker">Offline · Deterministic · CBSE marking</span>
+    <h1 data-i18n="exam.title">Timed Practical Paper</h1>
+    <p>Same paper for everyone on the same date (seeded by date, fixed rotation — no randomness in grading).
+       30 marks: Simulation 10 + Viva 10 + MCQ 10. 100% offline, zero dependencies.</p>
+  </section>
+
+  <section class="os-exam-sec" aria-label="Exam setup">
+    <h2 data-i18n="exam.setup">Setup</h2>
+    <div class="os-exam-meta">
+      <label>Class
+        <select id="examClass">
+          <option value="9">Class 9</option>
+          <option value="10">Class 10</option>
+          <option value="11">Class 11</option>
+          <option value="12">Class 12</option>
+        </select>
+      </label>
+      <label>Duration
+        <select id="examDur">
+          <option value="30">30 min</option>
+          <option value="45" selected>45 min</option>
+          <option value="60">60 min</option>
+        </select>
+      </label>
+      <button class="os-btn primary" id="startBtn" type="button" data-i18n="exam.start">Start exam</button>
+      <span class="os-chip" id="seedChip">Paper seed: —</span>
+    </div>
+    <p class="os-dim" style="font-size:12px">Timer uses the wall clock only for countdown display — never for physics or grading.</p>
+  </section>
+
+  <form id="paper" hidden>
+    <section class="os-exam-sec" aria-label="Section A simulation">
+      <h2>Section A — Simulation task <span class="marks">(10 marks)</span></h2>
+      <div id="simBox"></div>
+    </section>
+    <section class="os-exam-sec" aria-label="Section B viva">
+      <h2>Section B — Viva <span class="marks">(10 marks: 3 theory × 2 + 2 written × 2)</span></h2>
+      <div id="vivaBox"></div>
+    </section>
+    <section class="os-exam-sec" aria-label="Section C MCQ">
+      <h2>Section C — MCQs <span class="marks">(10 marks: 10 × 1)</span></h2>
+      <div id="mcqBox"></div>
+    </section>
+    <div class="no-print" style="margin:16px 0;display:flex;gap:10px">
+      <button class="os-btn primary" id="submitBtn" type="submit" data-i18n="exam.submit">Submit paper</button>
+      <button class="os-btn ghost" id="resetBtn" type="button" data-i18n="exam.reset">Reset</button>
+    </div>
+  </form>
+
+  <section class="os-exam-sec" id="resultSec" hidden aria-label="Result sheet">
+    <h2><span data-i18n="exam.result">Result sheet</span> <span class="marks">/ 30 (CBSE scheme)</span></h2>
+    <div id="resultBox"></div>
+    <div class="no-print" style="margin-top:10px;display:flex;gap:10px">
+      <button class="os-btn primary" type="button" onclick="window.print()" data-i18n="exam.print">Print result</button>
+      <a class="os-btn ghost" href="index.html">Back to hub</a>
+    </div>
+  </section>
+</main>
+<footer class="os-footer">
+  <span>OpenSchool NCERT · Exam Hall · offline-first ·</span>
+  <a href="index.html">Hub</a> · <a href="teacher-dashboard.html">Teacher Dashboard</a>
+</footer>
+</div>
+
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/quiz-bank-1.js"></script>
+<script src="assets/js/quiz-bank-2.js"></script>
+<script src="assets/js/quiz-bank-3.js"></script>
+<script src="assets/js/quiz-bank-4.js"></script>
+<script src="assets/js/quiz-bank-5.js"></script>
+<script src="assets/js/quiz-bank-hi-1.js"></script>
+<script src="assets/js/quiz-bank-hi-2.js"></script>
+<script src="assets/js/quiz-bank-hi-3.js"></script>
+<script src="assets/js/quiz-bank-hi-4.js"></script>
+<script src="assets/js/quiz-bank-hi-5.js"></script>
+<script src="assets/js/quiz-bank.js"></script>
+<script src="assets/js/storage.js"></script>
+<script>
+"use strict";
+/* Exam Hall — deterministic timed paper. No randomness anywhere in this file:
+   paper is built by fixed-rotation sampling seeded by calendar date. */
+
+var CATALOG = [
+{id:"P-C09-01",cls:9,title:"Density of a Solid (Archimedes' Principle)",href:"labs/class9/density_archimedes.html"},
+{id:"P-C09-02",cls:9,title:"Verification of Ohm's Law",href:"labs/class9/ohm_law_basic.html"},
+{id:"P-C09-03",cls:9,title:"Refraction through a Glass Slab",href:"labs/class9/refraction_glass_slab.html"},
+{id:"P-C09-04",cls:9,title:"Laws of Reflection of Sound",href:"labs/class9/sound_reflection.html"},
+{id:"P-C09-05",cls:9,title:"Buoyant Force and Displaced Liquid",href:"labs/class9/buoyancy_relation.html"},
+{id:"P-C09-06",cls:9,title:"True Solution, Colloid and Suspension",href:"labs/class9/solution_types.html"},
+{id:"P-C09-07",cls:9,title:"Separation of a Mixture by Chromatography",href:"labs/class9/mixture_separation.html"},
+{id:"P-C09-08",cls:9,title:"Melting Point of Ice and Boiling Point of Water",href:"labs/class9/melting_boiling.html"},
+{id:"P-C09-09",cls:9,title:"Action of Acids and Bases on Indicators",href:"labs/class9/acid_base_indicator.html"},
+{id:"P-C09-10",cls:9,title:"Reaction of Acids with Metals and Carbonates",href:"labs/class9/acid_metal_carbonate.html"},
+{id:"P-C09-11",cls:9,title:"Osmosis by Potato Osmometer",href:"labs/class9/biology/osmosis_osmometer.html"},
+{id:"P-C09-12",cls:9,title:"Plasmolysis in Onion Peel",href:"labs/class9/biology/plasmolysis_onion.html"},
+{id:"P-C09-13",cls:9,title:"Binary Fission in Amoeba",href:"labs/class9/biology/binary_fission_amoeba.html"},
+{id:"P-C09-14",cls:9,title:"Seed Germination",href:"labs/class9/biology/seed_germination.html"},
+{id:"P-C10-01",cls:10,title:"Resistors in Series and Parallel",href:"labs/class10/resistance_combo.html"},
+{id:"P-C10-02",cls:10,title:"Image Formation by a Convex Lens",href:"labs/class10/convex_lens_focal.html"},
+{id:"P-C10-03",cls:10,title:"Image Formation by a Concave Mirror",href:"labs/class10/concave_mirror.html"},
+{id:"P-C10-04",cls:10,title:"Path of a Ray through a Prism",href:"labs/class10/prism_refraction.html"},
+{id:"P-C10-05",cls:10,title:"Magnetic Field around a Bar Magnet",href:"labs/class10/magnetic_field_lines.html"},
+{id:"P-C10-06",cls:10,title:"pH of Solutions (Dilution)",href:"labs/class10/ph_of_samples.html"},
+{id:"P-C10-07",cls:10,title:"Types of Chemical Reactions",href:"labs/class10/reaction_types.html"},
+{id:"P-C10-08",cls:10,title:"Cleansing Action of Soap and Micelle Formation",href:"labs/class10/soap_micelle.html"},
+{id:"P-C10-09",cls:10,title:"Properties of Acids and Bases",href:"labs/class10/acid_base_properties.html"},
+{id:"P-C10-10",cls:10,title:"Electrolysis of Water",href:"labs/class10/electrolysis.html"},
+{id:"P-C11-01",cls:11,title:"Acceleration due to Gravity (g) — Simple Pendulum",href:"labs/class11/physics/simple_pendulum.html"},
+{id:"P-C11-02",cls:11,title:"Laws of a Sonometer",href:"labs/class11/physics/sonometer_laws.html"},
+{id:"P-C11-03",cls:11,title:"Force Constant of a Helical Spring",href:"labs/class11/physics/spring_constant.html"},
+{id:"P-C11-04",cls:11,title:"Velocity of Sound — Resonance Tube",href:"labs/class11/physics/resonance_tube.html"},
+{id:"P-C11-05",cls:11,title:"Coefficient of Viscosity — Stokes' Method",href:"labs/class11/physics/viscosity_terminal.html"},
+{id:"P-C11-06",cls:11,title:"Surface Tension by Capillary Rise",href:"labs/class11/physics/capillary_rise.html"},
+{id:"P-C11-07",cls:11,title:"Young's Modulus — Searle's Apparatus",href:"labs/class11/physics/youngs_modulus.html"},
+{id:"P-C11-08",cls:11,title:"Force of Limiting Friction",href:"labs/class11/physics/friction.html"},
+{id:"P-C11-09",cls:11,title:"pH Change during Strong Acid–Strong Base Titration",href:"labs/class11/chemistry/ph_equilibrium.html"},
+{id:"P-C11-10",cls:11,title:"Functional Group Analysis — Dry Tests",href:"labs/class11/chemistry/salt_analysis_dry.html"},
+{id:"P-C11-11",cls:11,title:"Enthalpy of Neutralisation",href:"labs/class11/chemistry/enthalpy_neutralisation.html"},
+{id:"P-C11-12",cls:11,title:"Effect of Temperature on Reaction Rate",href:"labs/class11/chemistry/reaction_rates.html"},
+{id:"P-C11-13",cls:11,title:"Distribution (Partition) Coefficient",href:"labs/class11/chemistry/partition_coefficient.html"},
+{id:"P-C11-14",cls:11,title:"Standard Solution of Oxalic Acid",href:"labs/class11/chemistry/standard_solution.html"},
+{id:"P-C11-15",cls:11,title:"Functional Group Analysis — Wet Tests",href:"labs/class11/chemistry/functional_groups_wet.html"},
+{id:"P-C11-16",cls:11,title:"Doppler Effect — Moving Source and Observer",href:"labs/class11/physics/doppler_effect.html"},
+{id:"P-C11-17",cls:11,title:"Sonometer — Standing Waves and Frequency",href:"labs/class11/physics/sonometer_standing_waves.html"},
+{id:"P-C11-18",cls:11,title:"Beats Frequency — Two Close Tones",href:"labs/class11/physics/beats_frequency.html"},
+{id:"P-C11-19",cls:11,title:"Resonance Column — Air Column Length",href:"labs/class11/physics/resonance_column.html"},
+{id:"P-C11-20",cls:11,title:"Seebeck Effect — Thermoelectric Voltage",href:"labs/class11/physics/seebeck_effect.html"},
+{id:"P-C11-21",cls:11,title:"Study of Pollen Germination in Flowers",href:"labs/class11/biology/pollen_germination.html"},
+{id:"P-C11-22",cls:11,title:"Rate of Transpiration in Plants",href:"labs/class11/biology/transpiration_rate.html"},
+{id:"P-C11-23",cls:11,title:"Evolution of Oxygen during Photosynthesis",href:"labs/class11/biology/photosynthesis_oxygen.html"},
+{id:"P-C11-24",cls:11,title:"Release of CO2 during Respiration",href:"labs/class11/biology/respiration_co2.html"},
+{id:"P-C12-01",cls:12,title:"Resistance & Resistivity — Meter Bridge",href:"labs/class12/physics/meter_bridge.html"},
+{id:"P-C12-02",cls:12,title:"Comparison of EMFs using a Potentiometer",href:"labs/class12/physics/potentiometer_emf.html"},
+{id:"P-C12-03",cls:12,title:"Internal Resistance using a Potentiometer",href:"labs/class12/physics/potentiometer_internal_r.html"},
+{id:"P-C12-04",cls:12,title:"Focal Length of a Convex Lens (u–v)",href:"labs/class12/physics/convex_lens_uv.html"},
+{id:"P-C12-05",cls:12,title:"Focal Length of a Convex Mirror (auxiliary lens)",href:"labs/class12/physics/convex_mirror_aux.html"},
+{id:"P-C12-06",cls:12,title:"Angle of Minimum Deviation and Refractive Index of a Prism",href:"labs/class12/physics/prism_deviation.html"},
+{id:"P-C12-07",cls:12,title:"V–I Characteristics of a P-N Junction Diode",href:"labs/class12/physics/pn_diode_characteristics.html"},
+{id:"P-C12-08",cls:12,title:"Zener Diode Characteristics and Voltage Regulation",href:"labs/class12/physics/zener_rectifier.html"},
+{id:"P-C12-09",cls:12,title:"KMnO4 vs. Mohr's Salt — Redox Titration",href:"labs/class12/chemistry/titration_mohr_salt.html"},
+{id:"P-C12-10",cls:12,title:"NaOH vs Oxalic Acid Titration",href:"labs/class12/chemistry/titration_oxalic_acid.html"},
+{id:"P-C12-11",cls:12,title:"Qualitative Inorganic Salt Analysis",href:"labs/class12/chemistry/qualitative_salt_analysis.html"},
+{id:"P-C12-12",cls:12,title:"Functional Group Analysis of an Organic Compound",href:"labs/class12/chemistry/functional_group_analysis.html"},
+{id:"P-C12-13",cls:12,title:"Preparation of Acetanilide / Aspirin (Yield)",href:"labs/class12/chemistry/preparation_aspirin.html"},
+{id:"P-C12-14",cls:12,title:"Colorimetry — Concentration of a Coloured Solution",href:"labs/class12/chemistry/colorimetry.html"},
+{id:"P-C12-15",cls:12,title:"Kinetics of the Thiosulphate–Acid Reaction",href:"labs/class12/chemistry/kinetics.html"},
+{id:"P-C12-16",cls:12,title:"Photoelectric Effect",href:"labs/class12/physics/photoelectric_effect.html"},
+{id:"P-C12-17",cls:12,title:"Half-Wave Rectifier",href:"labs/class12/physics/halfwave_rectifier.html"},
+{id:"P-C12-18",cls:12,title:"Bohr Model of the Hydrogen Atom",href:"labs/class12/physics/bohr_model.html"},
+{id:"P-C12-19",cls:12,title:"Radioactive Decay and Half-life",href:"labs/class12/physics/radioactive_decay.html"},
+{id:"P-C12-20",cls:12,title:"Compound Microscope",href:"labs/class12/physics/compound_microscope.html"},
+{id:"P-C12-21",cls:12,title:"Resolving Power of a Telescope",href:"labs/class12/physics/resolving_power.html"},
+{id:"P-C12-22",cls:12,title:"Oxidation of Ethanol",href:"labs/class12/chemistry/ethanol_oxidation.html"},
+{id:"P-C12-23",cls:12,title:"Esterification Reaction",href:"labs/class12/chemistry/esterification.html"},
+{id:"P-C12-24",cls:12,title:"Iodine Clock Reaction",href:"labs/class12/chemistry/iodine_clock.html"},
+{id:"P-C12-25",cls:12,title:"Solubility Product of Calcium Hydroxide",href:"labs/class12/chemistry/solubility_product.html"},
+{id:"P-C12-26",cls:12,title:"Buffer Solutions",href:"labs/class12/chemistry/buffer_solutions.html"},
+{id:"P-C12-27",cls:12,title:"Mitosis in Onion Root Tip",href:"labs/class12/biology/mitosis_onion.html"},
+{id:"P-C12-28",cls:12,title:"Adaptations of Plants to Environment",href:"labs/class12/biology/adaptations_plants.html"},
+{id:"P-C12-29",cls:12,title:"Homologous and Analogous Organs",href:"labs/class12/biology/homologous_organs.html"},
+{id:"P-C12-30",cls:12,title:"Population Density by Quadrat Method",href:"labs/class12/biology/quadrat_ecology.html"}
+];
+
+var PAPER = null;      // built paper model
+var TIMER = { id: null, endAt: 0, durMin: 45 };
+var GRADED = false;
+
+function esc(s){
+  return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function dateSeed(d){
+  return d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate();
+}
+function dateStr(d){
+  function p(n){ return (n<10?"0":"")+n; }
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+}
+/* Fixed-rotation sampler: deterministic unique pick, no randomness. */
+function rotatePick(pool, offset, stride, count, skip){
+  var out = [], used = {}, n = pool.length;
+  if(!n) return out;
+  var idx = ((offset % n) + n) % n;
+  var taken = 0, steps = 0;
+  while(taken < count && steps < n*4){
+    if(!skip[idx] && !used[idx]){
+      out.push({ item: pool[idx], idx: idx });
+      used[idx] = true; taken++;
+    }
+    idx = (idx + stride) % n; steps++;
+    if(stride % n === 0) break;
+  }
+  return out;
+}
+
+function quizBank(){
+  return (window.OS_QUIZ_BANK && typeof window.OS_QUIZ_BANK === "object") ? window.OS_QUIZ_BANK : {};
+}
+function bankFor(labId){
+  var b = quizBank();
+  if(Object.prototype.hasOwnProperty.call(b, labId) && Array.isArray(b[labId])) return b[labId];
+  var base = String(labId).split("_")[0];
+  if(base !== labId && Object.prototype.hasOwnProperty.call(b, base) && Array.isArray(b[base])) return b[base];
+  return [];
+}
+
+function buildPaper(cls, now){
+  var seed = dateSeed(now);
+  var labs = CATALOG.filter(function(e){ return e.cls === cls; });
+  var simLab = labs.length ? labs[seed % labs.length] : null;
+  /* Pool all class MCQs in catalog order, bank order — deterministic. */
+  var pool = [];
+  labs.forEach(function(lab){
+    bankFor(lab.id).forEach(function(q){
+      pool.push({ labId: lab.id, labTitle: lab.title, q: q.q, options: q.options, answer: q.answer, explain: q.explain });
+    });
+  });
+  var usedIdx = {};
+  var vivaTheory = [], mcqs = [];
+  if(pool.length){
+    var strideV = 5, offV = (seed + 3);
+    var got = rotatePick(pool, offV, strideV, Math.min(3, pool.length), usedIdx);
+    got.forEach(function(g){ vivaTheory.push(g.item); usedIdx[g.idx] = true; });
+    var got2 = rotatePick(pool, seed*2 + 11, 3, Math.min(10, pool.length), usedIdx);
+    got2.forEach(function(g){ mcqs.push(g.item); usedIdx[g.idx] = true; });
+  }
+  /* 2 written viva prompts: from sim lab bank if present, else pool head rotation. */
+  var written = [];
+  var simQs = simLab ? bankFor(simLab.id) : [];
+  for(var i=0;i<2;i++){
+    if(simQs.length) written.push({ labId: simLab.id, prompt: simQs[(seed + i) % simQs.length].q });
+    else if(pool.length) written.push({ labId: pool[(seed + i) % pool.length].labId, prompt: pool[(seed + i) % pool.length].q });
+    else written.push({ labId: simLab ? simLab.id : "general", prompt: "State one precaution you observed while performing the simulation task." });
+  }
+  return { cls: cls, seed: seed, date: dateStr(now), simLab: simLab, vivaTheory: vivaTheory, written: written, mcqs: mcqs };
+}
+
+function renderPaper(){
+  var simBox = document.getElementById("simBox");
+  var vivaBox = document.getElementById("vivaBox");
+  var mcqBox = document.getElementById("mcqBox");
+  var lab = PAPER.simLab;
+  simBox.innerHTML =
+    '<p><b>Task:</b> Open the simulation lab below, perform the experiment, and record your readings.</p>' +
+    (lab
+      ? '<p><a class="os-btn primary sm" target="_blank" rel="noopener" href="'+esc(lab.href)+'">Open lab: '+esc(lab.title)+'</a> <span class="os-mono os-dim" style="font-size:11px">'+esc(lab.id)+'</span></p>'
+      : '<p class="os-dim">No lab mapped for this class.</p>') +
+    '<label style="display:block;margin:8px 0"><input type="checkbox" id="simOpened" /> I opened the lab and performed the simulation. <span class="os-dim">(4 marks)</span></label>' +
+    '<label style="display:block;margin:8px 0">Number of readings taken (enter count): <span class="os-dim">(≥4 → 4 marks, 1–3 → 2 marks)</span><br/>' +
+    '<input id="simCount" type="number" min="0" max="50" value="" style="padding:6px;width:120px" /></label>' +
+    '<label style="display:block;margin:8px 0">Key result / observation (one line): <span class="os-dim">(2 marks)</span><br/>' +
+    '<input id="simResult" type="text" style="padding:6px;width:100%;max-width:520px" placeholder="e.g. g = 9.8 m/s² from L–T² slope" /></label>';
+
+  var vh = "<p><b>Viva voce</b> — answer T1–T3 by choosing an option; W1–W2 in your own words (≥30 chars → 2 marks, 10–29 chars → 1 mark).</p>";
+  PAPER.vivaTheory.forEach(function(v, i){
+    vh += '<fieldset class="os-quiz-q" role="radiogroup" aria-label="Viva theory '+(i+1)+'"><legend><b>T'+(i+1)+'.</b> '+esc(v.q)+' <span class="os-dim">['+esc(v.labId)+']</span></legend>';
+    (v.options||[]).forEach(function(opt, oi){
+      vh += '<label class="os-quiz-opt"><input type="radio" name="viva_'+i+'" value="'+oi+'" /> '+esc(opt)+'</label>';
+    });
+    vh += "</fieldset>";
+  });
+  PAPER.written.forEach(function(w, i){
+    vh += '<div style="margin:10px 0"><label><b>W'+(i+1)+'.</b> '+esc(w.prompt)+' <span class="os-dim">['+esc(w.labId)+']</span><br/>' +
+      '<textarea class="os-exam-ta" id="written_'+i+'" placeholder="Write your answer here…"></textarea></label></div>';
+  });
+  vivaBox.innerHTML = vh;
+
+  var mh = "<p>Choose the single best option for each question (1 mark each). Option order is fixed as in the bank.</p>";
+  PAPER.mcqs.forEach(function(m, i){
+    mh += '<fieldset class="os-quiz-q" role="radiogroup" aria-label="MCQ '+(i+1)+'"><legend><b>Q'+(i+1)+'.</b> '+esc(m.q)+' <span class="os-dim">['+esc(m.labId)+']</span></legend>';
+    (m.options||[]).forEach(function(opt, oi){
+      mh += '<label class="os-quiz-opt"><input type="radio" name="mcq_'+i+'" value="'+oi+'" /> '+esc(opt)+'</label>';
+    });
+    mh += "</fieldset>";
+  });
+  mcqBox.innerHTML = mh || '<p class="os-dim">No MCQs available for this class bank.</p>';
+}
+
+function picked(name){
+  var el = document.querySelector('input[name="'+name+'"]:checked');
+  return el ? parseInt(el.value, 10) : -1;
+}
+
+function gradeOnce(auto){
+  if(GRADED) return;
+  GRADED = true;
+  stopTimer();
+  /* Section A — deterministic rubric. */
+  var opened = document.getElementById("simOpened").checked;
+  var count = parseInt(document.getElementById("simCount").value, 10);
+  if(!isFinite(count) || count < 0) count = 0;
+  var result = document.getElementById("simResult").value.trim();
+  var sim = (opened ? 4 : 0) + (count >= 4 ? 4 : (count >= 1 ? 2 : 0)) + (result.length >= 3 ? 2 : 0);
+
+  /* Section B — theory exact-index compare; written by length bands. */
+  var vivaDetail = [], viva = 0;
+  PAPER.vivaTheory.forEach(function(v, i){
+    var p = picked("viva_"+i), ok = (p === v.answer);
+    if(ok) viva += 2;
+    vivaDetail.push({ prompt: v.q, labId: v.labId, picked: p, answer: v.answer, correct: ok, marks: ok ? 2 : 0 });
+  });
+  var writtenDetail = [];
+  PAPER.written.forEach(function(w, i){
+    var t = document.getElementById("written_"+i).value.trim();
+    var m = t.length >= 30 ? 2 : (t.length >= 10 ? 1 : 0);
+    viva += m;
+    writtenDetail.push({ prompt: w.prompt, labId: w.labId, chars: t.length, marks: m, text: t.slice(0, 500) });
+  });
+
+  /* Section C — deterministic MCQ grading. */
+  var mcqDetail = [], mcq = 0;
+  PAPER.mcqs.forEach(function(m, i){
+    var p = picked("mcq_"+i), ok = (p === m.answer);
+    if(ok) mcq += 1;
+    mcqDetail.push({ q: m.q, labId: m.labId, picked: p, answer: m.answer, correct: ok });
+  });
+
+  var total = sim + viva + mcq;
+  var pct = Math.round((total / 30) * 100);
+  var verdict = total >= 12 ? "PASS" : "NEEDS PRACTICE";
+  showResult({ sim: sim, simMeta: { opened: opened, count: count, result: result },
+    viva: viva, vivaDetail: vivaDetail, writtenDetail: writtenDetail,
+    mcq: mcq, mcqDetail: mcqDetail, total: total, pct: pct, verdict: verdict, auto: !!auto });
+  persist(total, vivaDetail, writtenDetail, mcqDetail);
+}
+
+function showResult(r){
+  var box = document.getElementById("resultBox");
+  function row(sec, got, max, note){ return "<tr><td>"+sec+"</td><td>"+got+" / "+max+"</td><td>"+note+"</td></tr>"; }
+  box.innerHTML =
+    (r.auto ? '<div class="os-callout warn"><b>Time expired</b> — paper auto-submitted.</div>' : "") +
+    '<table class="os-result-table"><thead><tr><th>Section</th><th>Score</th><th>Detail</th></tr></thead><tbody>' +
+    row("A · Simulation ("+esc(PAPER.simLab ? PAPER.simLab.id : "-")+")", r.sim, 10,
+      "opened="+(r.simMeta.opened?"yes":"no")+"; readings="+r.simMeta.count+"; result="+(r.simMeta.result?esc(r.simMeta.result):"—")) +
+    row("B · Viva", r.viva, 10,
+      "theory "+r.vivaDetail.filter(function(d){return d.correct;}).length+"/"+r.vivaDetail.length+" correct; written ["+r.writtenDetail.map(function(d){return d.marks;}).join("+")+"]") +
+    row("C · MCQ", r.mcq, 10, r.mcqDetail.filter(function(d){return d.correct;}).length+"/"+r.mcqDetail.length+" correct") +
+    '</tbody></table>' +
+    '<h3 style="margin-top:12px">Total: '+r.total+' / 30 ('+r.pct+'%) — '+r.verdict+'</h3>' +
+    '<p class="os-dim" style="font-size:12px">Paper '+esc(PAPER.date)+' · Class '+PAPER.cls+' · seed '+PAPER.seed+' · Pass ≥ 12/30.</p>';
+  document.getElementById("resultSec").hidden = false;
+  document.getElementById("resultSec").scrollIntoView();
+}
+
+function persist(total, vivaDetail, writtenDetail, mcqDetail){
+  try {
+    if(window.LabNotebook && typeof window.LabNotebook.saveViva === "function"){
+      window.LabNotebook.saveViva("exam-C" + PAPER.cls + "-" + PAPER.date, {
+        score: total, total: 30, mode: "exam",
+        transcript: [{ seed: PAPER.seed, simLab: PAPER.simLab ? PAPER.simLab.id : null,
+          viva: vivaDetail, written: writtenDetail, mcq: mcqDetail }]
+      });
+    }
+  } catch(e){ /* notebook optional — result display unaffected */ }
+  /* Mastery hook (guarded — no-op when tracker absent). */
+  try {
+    if(window.OSMastery && typeof window.OSMastery.record === "function"){
+      window.OSMastery.record("exam-C" + PAPER.cls, { score: total, total: 30, date: PAPER.date });
+    } else if(window.OS_MASTERY && typeof window.OS_MASTERY.record === "function"){
+      window.OS_MASTERY.record("exam-C" + PAPER.cls, { score: total, total: 30, date: PAPER.date });
+    }
+  } catch(e){ /* mastery optional */ }
+}
+
+/* Timer — wall clock used ONLY for countdown display. */
+function fmt(ms){
+  if(ms < 0) ms = 0;
+  var s = Math.floor(ms/1000), m = Math.floor(s/60), h = Math.floor(m/60);
+  function p(n){ return (n<10?"0":"")+n; }
+  return h > 0 ? h+":"+p(m%60)+":"+p(s%60) : p(m)+":"+p(s%60);
+}
+function startTimer(){
+  stopTimer();
+  TIMER.endAt = Date.now() + TIMER.durMin*60*1000;
+  var chip = document.getElementById("timerChip");
+  TIMER.id = setInterval(function(){
+    var left = TIMER.endAt - Date.now();
+    chip.textContent = "⏳ " + fmt(left) + " left";
+    if(left <= 0){ chip.textContent = "⏳ 00:00 — time up"; chip.classList.add("over"); gradeOnce(true); }
+  }, 1000);
+  chip.classList.remove("over");
+  chip.textContent = "⏳ " + fmt(TIMER.durMin*60*1000) + " left";
+}
+function stopTimer(){ if(TIMER.id){ clearInterval(TIMER.id); TIMER.id = null; } }
+
+document.getElementById("startBtn").addEventListener("click", function(){
+  var cls = parseInt(document.getElementById("examClass").value, 10);
+  TIMER.durMin = parseInt(document.getElementById("examDur").value, 10) || 45;
+  PAPER = buildPaper(cls, new Date());
+  GRADED = false;
+  document.getElementById("seedChip").textContent = "Paper seed: " + PAPER.seed + " (" + PAPER.date + ")";
+  document.getElementById("resultSec").hidden = true;
+  document.getElementById("paper").hidden = false;
+  renderPaper();
+  startTimer();
+  document.getElementById("paper").scrollIntoView();
+});
+document.getElementById("paper").addEventListener("submit", function(ev){ ev.preventDefault(); gradeOnce(false); });
+document.getElementById("resetBtn").addEventListener("click", function(){
+  stopTimer(); GRADED = false;
+  document.getElementById("paper").hidden = true;
+  document.getElementById("resultSec").hidden = true;
+  document.getElementById("timerChip").textContent = "Not started";
+});
+</script>
+</body>
+</html>

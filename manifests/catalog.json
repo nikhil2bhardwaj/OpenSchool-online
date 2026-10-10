@@ -1,0 +1,782 @@
+[
+  {
+    "id": "P-C09-01",
+    "cls": 9,
+    "subject": "physics",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Density of a Solid (Archimedes' Principle)",
+    "aim": "Determine the density of a solid (denser than water) using a spring balance and a measuring cylinder.",
+    "ready": true,
+    "href": "labs/class9/density_archimedes.html"
+  },
+  {
+    "id": "P-C09-02",
+    "cls": 9,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Verification of Ohm's Law",
+    "aim": "Verify Ohm's law by studying the variation of current with potential difference across a resistor.",
+    "ready": true,
+    "href": "labs/class9/ohm_law_basic.html"
+  },
+  {
+    "id": "P-C09-03",
+    "cls": 9,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Refraction through a Glass Slab",
+    "aim": "Trace the path of a ray of light passing through a rectangular glass slab and measure the lateral displacement and angle of refraction.",
+    "ready": true,
+    "href": "labs/class9/refraction_glass_slab.html"
+  },
+  {
+    "id": "P-C09-04",
+    "cls": 9,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Laws of Reflection of Sound",
+    "aim": "Verify the laws of reflection of sound using two tubes and a reflecting surface.",
+    "ready": true,
+    "href": "labs/class9/sound_reflection.html"
+  },
+  {
+    "id": "P-C09-05",
+    "cls": 9,
+    "subject": "physics",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Buoyant Force and Displaced Liquid",
+    "aim": "Establish the relation between the weight of a body and the buoyant force acting on it.",
+    "ready": true,
+    "href": "labs/class9/buoyancy_relation.html"
+  },
+  {
+    "id": "P-C09-06",
+    "cls": 9,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "True Solution, Colloid and Suspension",
+    "aim": "Prepare a true solution, a colloid and a suspension, and distinguish them by their properties.",
+    "ready": true,
+    "href": "labs/class9/solution_types.html"
+  },
+  {
+    "id": "P-C09-07",
+    "cls": 9,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Separation of a Mixture by Chromatography",
+    "aim": "Separate the components of a mixture using sublimation and paper chromatography.",
+    "ready": true,
+    "href": "labs/class9/mixture_separation.html"
+  },
+  {
+    "id": "P-C09-08",
+    "cls": 9,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Melting Point of Ice and Boiling Point of Water",
+    "aim": "Determine the melting point of ice and the boiling point of water.",
+    "ready": true,
+    "href": "labs/class9/melting_boiling.html"
+  },
+  {
+    "id": "P-C09-09",
+    "cls": 9,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Action of Acids and Bases on Indicators",
+    "aim": "Study the action of acids and bases on indicators and test the pH of common solutions.",
+    "ready": true,
+    "href": "labs/class9/acid_base_indicator.html"
+  },
+  {
+    "id": "P-C09-10",
+    "cls": 9,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Reaction of Acids with Metals and Carbonates",
+    "aim": "Carry out the reaction of acids with metals and with metal carbonates and identify the gases evolved.",
+    "ready": true,
+    "href": "labs/class9/acid_metal_carbonate.html"
+  },
+  {
+    "id": "P-C10-01",
+    "cls": 10,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Resistors in Series and Parallel",
+    "aim": "Determine the equivalent resistance of a combination of resistors connected in series and in parallel.",
+    "ready": true,
+    "href": "labs/class10/resistance_combo.html"
+  },
+  {
+    "id": "P-C10-02",
+    "cls": 10,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Image Formation by a Convex Lens",
+    "aim": "Determine the focal length of a convex lens by focusing a distant object and by the u–v method.",
+    "ready": true,
+    "href": "labs/class10/convex_lens_focal.html"
+  },
+  {
+    "id": "P-C10-03",
+    "cls": 10,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Image Formation by a Concave Mirror",
+    "aim": "Study the nature and position of the image formed by a concave mirror for different object distances.",
+    "ready": true,
+    "href": "labs/class10/concave_mirror.html"
+  },
+  {
+    "id": "P-C10-04",
+    "cls": 10,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Path of a Ray through a Prism",
+    "aim": "Trace the path of a ray of light through a triangular glass prism and measure the angle of deviation.",
+    "ready": true,
+    "href": "labs/class10/prism_refraction.html"
+  },
+  {
+    "id": "P-C10-05",
+    "cls": 10,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Magnetic Field around a Bar Magnet",
+    "aim": "Trace the magnetic field lines around a bar magnet using a plotting compass.",
+    "ready": true,
+    "href": "labs/class10/magnetic_field_lines.html"
+  },
+  {
+    "id": "P-C10-06",
+    "cls": 10,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "pH of Solutions (Dilution)",
+    "aim": "Determine the pH of some common solutions using pH paper and a calibrated pH meter.",
+    "ready": true,
+    "href": "labs/class10/ph_of_samples.html"
+  },
+  {
+    "id": "P-C10-07",
+    "cls": 10,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Types of Chemical Reactions",
+    "aim": "Study the various types of chemical reactions: combination, decomposition, displacement and double displacement.",
+    "ready": true,
+    "href": "labs/class10/reaction_types.html"
+  },
+  {
+    "id": "P-C10-08",
+    "cls": 10,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Cleansing Action of Soap and Micelle Formation",
+    "aim": "Study the cleansing action of soap and the formation of micelles.",
+    "ready": true,
+    "href": "labs/class10/soap_micelle.html"
+  },
+  {
+    "id": "P-C10-09",
+    "cls": 10,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Properties of Acids and Bases",
+    "aim": "Study the properties of acids and bases by their reaction with metals, carbonates and the neutralisation reaction.",
+    "ready": true,
+    "href": "labs/class10/acid_base_properties.html"
+  },
+  {
+    "id": "P-C10-10",
+    "cls": 10,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Electrolysis of Water",
+    "aim": "Carry out the electrolysis of water and identify the gases liberated at the electrodes.",
+    "ready": true,
+    "href": "labs/class10/electrolysis.html"
+  },
+  {
+    "id": "P-C11-01",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Acceleration due to Gravity (g) — Simple Pendulum",
+    "aim": "Determine the acceleration due to gravity using a simple pendulum and plot L–T and L–T² graphs.",
+    "ready": true,
+    "href": "labs/class11/physics/simple_pendulum.html"
+  },
+  {
+    "id": "P-C11-02",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Laws of a Sonometer",
+    "aim": "Verify the laws of a sonometer (laws of length, tension and frequency).",
+    "ready": true,
+    "href": "labs/class11/physics/sonometer_laws.html"
+  },
+  {
+    "id": "P-C11-03",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Force Constant of a Helical Spring",
+    "aim": "Determine the force constant of a helical spring from the load–extension graph.",
+    "ready": true,
+    "href": "labs/class11/physics/spring_constant.html"
+  },
+  {
+    "id": "P-C11-04",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Velocity of Sound — Resonance Tube",
+    "aim": "Determine the velocity of sound in air using a resonance tube.",
+    "ready": true,
+    "href": "labs/class11/physics/resonance_tube.html"
+  },
+  {
+    "id": "P-C11-05",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Coefficient of Viscosity — Stokes' Method",
+    "aim": "Determine the coefficient of viscosity of a liquid by measuring the terminal velocity of a falling sphere (Stokes' method).",
+    "ready": true,
+    "href": "labs/class11/physics/viscosity_terminal.html"
+  },
+  {
+    "id": "P-C11-06",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Surface Tension by Capillary Rise",
+    "aim": "Determine the surface tension of water by the capillary-rise method.",
+    "ready": true,
+    "href": "labs/class11/physics/capillary_rise.html"
+  },
+  {
+    "id": "P-C11-07",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Young's Modulus — Searle's Apparatus",
+    "aim": "Determine Young's modulus of the material of a wire using Searle's apparatus.",
+    "ready": true,
+    "href": "labs/class11/physics/youngs_modulus.html"
+  },
+  {
+    "id": "P-C11-08",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Force of Limiting Friction",
+    "aim": "Study the relationship between the force of limiting friction and the normal reaction and find the coefficient of friction.",
+    "ready": true,
+    "href": "labs/class11/physics/friction.html"
+  },
+  {
+    "id": "P-C11-09",
+    "cls": 11,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "pH Change during Strong Acid–Strong Base Titration",
+    "aim": "Study the variation of pH during the titration of a strong acid with a strong base.",
+    "ready": true,
+    "href": "labs/class11/chemistry/ph_equilibrium.html"
+  },
+  {
+    "id": "P-C11-10",
+    "cls": 11,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Functional Group Analysis — Dry Tests",
+    "aim": "Detect the functional groups present in an organic compound using dry tests.",
+    "ready": true,
+    "href": "labs/class11/chemistry/salt_analysis_dry.html"
+  },
+  {
+    "id": "P-C11-11",
+    "cls": 11,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Enthalpy of Neutralisation",
+    "aim": "Determine the enthalpy of neutralisation of a strong acid with a strong base using a calorimeter.",
+    "ready": true,
+    "href": "labs/class11/chemistry/enthalpy_neutralisation.html"
+  },
+  {
+    "id": "P-C11-12",
+    "cls": 11,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Effect of Temperature on Reaction Rate",
+    "aim": "Study the effect of concentration and temperature on the rate of a chemical reaction.",
+    "ready": true,
+    "href": "labs/class11/chemistry/reaction_rates.html"
+  },
+  {
+    "id": "P-C11-13",
+    "cls": 11,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Distribution (Partition) Coefficient",
+    "aim": "Determine the distribution (partition) coefficient of a solute between two immiscible solvents.",
+    "ready": true,
+    "href": "labs/class11/chemistry/partition_coefficient.html"
+  },
+  {
+    "id": "P-C11-14",
+    "cls": 11,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Standard Solution of Oxalic Acid",
+    "aim": "Prepare a standard solution of oxalic acid and determine the strength of a given solution.",
+    "ready": true,
+    "href": "labs/class11/chemistry/standard_solution.html"
+  },
+  {
+    "id": "P-C11-15",
+    "cls": 11,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Functional Group Analysis — Wet Tests",
+    "aim": "Identify the functional groups of an organic compound using wet tests.",
+    "ready": true,
+    "href": "labs/class11/chemistry/functional_groups_wet.html"
+  },
+  {
+    "id": "P-C12-01",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Resistance & Resistivity — Meter Bridge",
+    "aim": "Determine the resistance of a given wire using a metre bridge and hence the resistivity of its material.",
+    "ready": true,
+    "href": "labs/class12/physics/meter_bridge.html"
+  },
+  {
+    "id": "P-C12-02",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Comparison of EMFs using a Potentiometer",
+    "aim": "Compare the electromotive forces of two primary cells using a potentiometer.",
+    "ready": true,
+    "href": "labs/class12/physics/potentiometer_emf.html"
+  },
+  {
+    "id": "P-C12-03",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Internal Resistance using a Potentiometer",
+    "aim": "Determine the internal resistance of a primary cell using a potentiometer.",
+    "ready": true,
+    "href": "labs/class12/physics/potentiometer_internal_r.html"
+  },
+  {
+    "id": "P-C12-04",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Focal Length of a Convex Lens (u–v)",
+    "aim": "Determine the focal length of a convex lens by plotting graphs between u and v and between 1/u and 1/v.",
+    "ready": true,
+    "href": "labs/class12/physics/convex_lens_uv.html"
+  },
+  {
+    "id": "P-C12-05",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Focal Length of a Convex Mirror (auxiliary lens)",
+    "aim": "Determine the focal length of a convex mirror using a convex auxiliary lens.",
+    "ready": true,
+    "href": "labs/class12/physics/convex_mirror_aux.html"
+  },
+  {
+    "id": "P-C12-06",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Angle of Minimum Deviation and Refractive Index of a Prism",
+    "aim": "Determine the angle of minimum deviation and the refractive index of the material of a prism.",
+    "ready": true,
+    "href": "labs/class12/physics/prism_deviation.html"
+  },
+  {
+    "id": "P-C12-07",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "V–I Characteristics of a P-N Junction Diode",
+    "aim": "Draw the V–I characteristics of a P-N junction diode in forward and reverse bias.",
+    "ready": true,
+    "href": "labs/class12/physics/pn_diode_characteristics.html"
+  },
+  {
+    "id": "P-C12-08",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Zener Diode Characteristics and Voltage Regulation",
+    "aim": "Study the characteristics of a Zener diode and its use as a voltage regulator / rectifier.",
+    "ready": true,
+    "href": "labs/class12/physics/zener_rectifier.html"
+  },
+  {
+    "id": "P-C12-09",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "KMnO₄ vs. Mohr's Salt — Redox Titration",
+    "aim": "Determine the molarity and strength of a given KMnO4 solution by titrating it against standard 0.05 M Mohr's salt solution.",
+    "ready": true,
+    "href": "labs/class12/chemistry/titration_mohr_salt.html"
+  },
+  {
+    "id": "P-C12-10",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "NaOH vs Oxalic Acid Titration",
+    "aim": "Determine the molarity and strength of a NaOH solution by titrating against a standard oxalic acid solution.",
+    "ready": true,
+    "href": "labs/class12/chemistry/titration_oxalic_acid.html"
+  },
+  {
+    "id": "P-C12-11",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Qualitative Inorganic Salt Analysis",
+    "aim": "Identify one cation and one anion in a given unknown inorganic salt by systematic qualitative analysis.",
+    "ready": true,
+    "href": "labs/class12/chemistry/qualitative_salt_analysis.html"
+  },
+  {
+    "id": "P-C12-12",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Functional Group Analysis of an Organic Compound",
+    "aim": "Identify the functional group present in a given organic compound by wet tests.",
+    "ready": true,
+    "href": "labs/class12/chemistry/functional_group_analysis.html"
+  },
+  {
+    "id": "P-C12-13",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Preparation of Acetanilide / Aspirin (Yield)",
+    "aim": "Prepare a sample of acetanilide (or aspirin) from the given starting material.",
+    "ready": true,
+    "href": "labs/class12/chemistry/preparation_aspirin.html"
+  },
+  {
+    "id": "P-C12-14",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Colorimetry — Concentration of a Coloured Solution",
+    "aim": "Determine the concentration of a coloured species in solution using a colorimeter (Beer–Lambert law).",
+    "ready": true,
+    "href": "labs/class12/chemistry/colorimetry.html"
+  },
+  {
+    "id": "P-C12-15",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Kinetics of the Thiosulphate–Acid Reaction",
+    "aim": "Study the kinetics of the reaction between sodium thiosulphate and hydrochloric acid and determine the order of reaction.",
+    "ready": true,
+    "href": "labs/class12/chemistry/kinetics.html"
+  },
+  {
+    "id": "P-C11-16",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Doppler Effect — Moving Source and Observer",
+    "aim": "Study the Doppler effect by varying the source and observer positions and measure the observed frequency shift.",
+    "ready": true,
+    "href": "labs/class11/physics/doppler_effect.html"
+  },
+  {
+    "id": "P-C11-17",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Sonometer — Standing Waves and Frequency",
+    "aim": "Verify the law of vibrating strings by varying tension and length and measure the fundamental frequency.",
+    "ready": true,
+    "href": "labs/class11/physics/sonometer_standing_waves.html"
+  },
+  {
+    "id": "P-C11-18",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Beats Frequency — Two Close Tones",
+    "aim": "Produce beats by sounding two nearly equal frequencies and measure the amplitude modulation period.",
+    "ready": true,
+    "href": "labs/class11/physics/beats_frequency.html"
+  },
+  {
+    "id": "P-C11-19",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Resonance Column — Air Column Length",
+    "aim": "Determine the velocity of sound in air by varying the air column length and finding resonance positions.",
+    "ready": true,
+    "href": "labs/class11/physics/resonance_column.html"
+  },
+  {
+    "id": "P-C11-20",
+    "cls": 11,
+    "subject": "physics",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Seebeck Effect — Thermoelectric Voltage",
+    "aim": "Measure the thermoelectric voltage developed across a junctions of two different metals for a given temperature difference.",
+    "ready": true,
+    "href": "labs/class11/physics/seebeck_effect.html"
+  },
+  {
+    "id": "P-C09-11",
+    "cls": 9,
+    "subject": "biology",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Osmosis by Potato Osmometer",
+    "aim": "Determine the phenomenon of osmosis using a potato osmometer and study the movement of water through a semi-permeable membrane.",
+    "ready": true,
+    "href": "labs/class9/biology/osmosis_osmometer.html"
+  },
+  {
+    "id": "P-C09-12",
+    "cls": 9,
+    "subject": "biology",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Plasmolysis in Onion Peel",
+    "aim": "Study the phenomenon of plasmolysis and deplasmolysis in epidermal peel of onion using hypertonic and hypotonic solutions.",
+    "ready": true,
+    "href": "labs/class9/biology/plasmolysis_onion.html"
+  },
+  {
+    "id": "P-C09-13",
+    "cls": 9,
+    "subject": "biology",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Binary Fission in Amoeba",
+    "aim": "Study the stages of binary fission in Amoeba using prepared slides and chart the sequence of nuclear and cytoplasmic division.",
+    "ready": true,
+    "href": "labs/class9/biology/binary_fission_amoeba.html"
+  },
+  {
+    "id": "P-C09-14",
+    "cls": 9,
+    "subject": "biology",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Seed Germination",
+    "aim": "Study the conditions necessary for seed germination and observe the emergence of the radicle and plumule.",
+    "ready": true,
+    "href": "labs/class9/biology/seed_germination.html"
+  },
+  {
+    "id": "P-C12-16",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Photoelectric Effect",
+    "aim": "Study the photoelectric effect, verify Einstein photoelectric equation and determine the work function and threshold frequency of the cathode material.",
+    "ready": true,
+    "href": "labs/class12/physics/photoelectric_effect.html"
+  },
+  {
+    "id": "P-C12-17",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "1D_BRIDGE",
+    "title": "Half-Wave Rectifier",
+    "aim": "Draw the input and output waveforms of a half-wave rectifier using a P-N junction diode and determine its ripple characteristics.",
+    "ready": true,
+    "href": "labs/class12/physics/halfwave_rectifier.html"
+  },
+  {
+    "id": "P-C12-18",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Bohr Model of the Hydrogen Atom",
+    "aim": "Study the Bohr model of the hydrogen atom and compute the radii of permitted orbits and the energies of stationary states.",
+    "ready": true,
+    "href": "labs/class12/physics/bohr_model.html"
+  },
+  {
+    "id": "P-C12-19",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Radioactive Decay and Half-life",
+    "aim": "Study the law of radioactive decay, plot the decay curve and determine the half-life of a given radioactive element using a simulated source.",
+    "ready": true,
+    "href": "labs/class12/physics/radioactive_decay.html"
+  },
+  {
+    "id": "P-C12-20",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Compound Microscope",
+    "aim": "Study the construction and working of a compound microscope and determine its magnifying power for different objective-eyepiece combinations.",
+    "ready": true,
+    "href": "labs/class12/physics/compound_microscope.html"
+  },
+  {
+    "id": "P-C12-21",
+    "cls": 12,
+    "subject": "physics",
+    "archetype": "OPTICS_RAIL",
+    "title": "Resolving Power of a Telescope",
+    "aim": "Determine the resolving power of a telescope and study its variation with aperture of the objective.",
+    "ready": true,
+    "href": "labs/class12/physics/resolving_power.html"
+  },
+  {
+    "id": "P-C12-22",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Oxidation of Ethanol",
+    "aim": "Study the oxidation of ethanol with alkaline potassium permanganate and identify the products of partial and complete oxidation.",
+    "ready": true,
+    "href": "labs/class12/chemistry/ethanol_oxidation.html"
+  },
+  {
+    "id": "P-C12-23",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Esterification Reaction",
+    "aim": "Prepare an ester from a carboxylic acid and an alcohol and study the esterification reaction.",
+    "ready": true,
+    "href": "labs/class12/chemistry/esterification.html"
+  },
+  {
+    "id": "P-C12-24",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Iodine Clock Reaction",
+    "aim": "Study the kinetics of the iodine clock reaction and determine the effect of concentration on the time of appearance of the blue colour.",
+    "ready": true,
+    "href": "labs/class12/chemistry/iodine_clock.html"
+  },
+  {
+    "id": "P-C12-25",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Solubility Product of Calcium Hydroxide",
+    "aim": "Determine the solubility product of calcium hydroxide by titrating its saturated solution against standard hydrochloric acid.",
+    "ready": true,
+    "href": "labs/class12/chemistry/solubility_product.html"
+  },
+  {
+    "id": "P-C12-26",
+    "cls": 12,
+    "subject": "chemistry",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Buffer Solutions",
+    "aim": "Prepare acidic and basic buffer solutions and study the change in pH on addition of small amounts of acid or base.",
+    "ready": true,
+    "href": "labs/class12/chemistry/buffer_solutions.html"
+  },
+  {
+    "id": "P-C11-21",
+    "cls": 11,
+    "subject": "biology",
+    "archetype": "HARMONIC_OSCILLATOR",
+    "title": "Study of Pollen Germination in Flowers",
+    "aim": "Study pollen germination in flowers by preparing a temporary mount and observing germination and pollen tube growth.",
+    "ready": true,
+    "href": "labs/class11/biology/pollen_germination.html"
+  },
+  {
+    "id": "P-C11-22",
+    "cls": 11,
+    "subject": "biology",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Rate of Transpiration in Plants",
+    "aim": "Study the rate of transpiration in plants using a Ganong potometer and compare water uptake under different conditions.",
+    "ready": true,
+    "href": "labs/class11/biology/transpiration_rate.html"
+  },
+  {
+    "id": "P-C11-23",
+    "cls": 11,
+    "subject": "biology",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Evolution of Oxygen during Photosynthesis",
+    "aim": "Demonstrate the evolution of oxygen gas during photosynthesis in an aquatic plant and measure the volume evolved.",
+    "ready": true,
+    "href": "labs/class11/biology/photosynthesis_oxygen.html"
+  },
+  {
+    "id": "P-C11-24",
+    "cls": 11,
+    "subject": "biology",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Release of CO2 during Respiration",
+    "aim": "Demonstrate the release of carbon dioxide during respiration in germinating seeds using lime water.",
+    "ready": true,
+    "href": "labs/class11/biology/respiration_co2.html"
+  },
+  {
+    "id": "P-C12-27",
+    "cls": 12,
+    "subject": "biology",
+    "archetype": "OPTICS_RAIL",
+    "title": "Mitosis in Onion Root Tip",
+    "aim": "Study the stages of mitosis in onion root tip cells using a prepared slide and identify prophase, metaphase, anaphase and telophase.",
+    "ready": true,
+    "href": "labs/class12/biology/mitosis_onion.html"
+  },
+  {
+    "id": "P-C12-28",
+    "cls": 12,
+    "subject": "biology",
+    "archetype": "CHEMICAL_FSM",
+    "title": "Adaptations of Plants to Environment",
+    "aim": "Study adaptations of plants to dry and aquatic environments using specimens and identify xerophytic and hydrophytic characters.",
+    "ready": true,
+    "href": "labs/class12/biology/adaptations_plants.html"
+  },
+  {
+    "id": "P-C12-29",
+    "cls": 12,
+    "subject": "biology",
+    "archetype": "OPTICS_RAIL",
+    "title": "Homologous and Analogous Organs",
+    "aim": "Study homologous and analogous organs in plants and animals using specimens and identify evidence of divergent and convergent evolution.",
+    "ready": true,
+    "href": "labs/class12/biology/homologous_organs.html"
+  },
+  {
+    "id": "P-C12-30",
+    "cls": 12,
+    "subject": "biology",
+    "archetype": "VOLUMETRIC_GLASSWARE",
+    "title": "Population Density by Quadrat Method",
+    "aim": "Determine population density of plant species in a given area using the quadrat method and compute frequency and abundance.",
+    "ready": true,
+    "href": "labs/class12/biology/quadrat_ecology.html"
+  }
+]
