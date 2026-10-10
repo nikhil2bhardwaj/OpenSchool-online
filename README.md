@@ -4,8 +4,9 @@ The premium, internet-connected sibling of the offline lab. Same **78 NCERT/CBSE
 experiments** and deterministic simulation kernels, dressed in an editorial
 hub, fluid GSAP motion, and CDN-powered typography.
 
-Live: `https://nikhil2bhardwaj.github.io/OpenSchool-online/`
-Offline sibling (zero-dependency, USB-ready): `https://github.com/nikhil2bhardwaj/OpenSchool`
+Live: https://nikhil2bhardwaj.github.io/OpenSchool-online/
+
+Offline sibling (zero-dependency, USB-ready): https://github.com/nikhil2bhardwaj/OpenSchool
 
 ## What it is
 
