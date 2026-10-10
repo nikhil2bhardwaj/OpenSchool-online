@@ -5,27 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>OpenSchool - Bohr Model (P-C12-18)</title>
 <link rel="stylesheet" href="../../../assets/css/lab-theme.css" />
-<!-- OS-ONLINE: premium shell — Google Fonts + GSAP CDN + ScrollTrigger + three importmap -->
+<!-- OS-ONLINE: premium shell — Google Fonts + GSAP CDN + ScrollTrigger -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <style>
-/* OS-ONLINE-PREMIUM: font system + hero topbar + 3D stage + morph indicator. */
+/* OS-ONLINE-PREMIUM: font system + hero topbar + morph indicator. */
 :root{--os-font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--os-display:"Space Grotesk","Inter",system-ui,sans-serif;--os-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
 body{font-family:var(--os-font)}
 .os-brand,.os-kicker,h1,h2,h3,.os-control-title{font-family:var(--os-display)}
 .os-mono,.os-readout b,.os-digital,.os-stat b{font-family:var(--os-mono);font-variant-numeric:tabular-nums}
 .os-topbar.os-bench{background:linear-gradient(120deg,#0d1b2a 0%,#123524 55%,#0d1b2a 100%)}
-.os-3d-wrap{margin-top:0;margin-bottom:10px}
-#apparatus3d.os-3d{position:relative;overflow:hidden;min-height:420px;height:420px;border-radius:12px;background:radial-gradient(120% 100% at 50% 0%,#12263f 0%,#0d1b2a 70%)}
-#apparatus3d.os-3d canvas{width:100%!important;height:420px!important;display:block}
-.os-viewbar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
-.os-viewbar .os-filter-pill[aria-pressed="true"]{outline:2px solid #4fd6ff}
-.os-3d-capline{font-size:11px;opacity:.75;padding:6px 2px 0}
-.os-file-notice{margin-top:8px}
-#apparatus3d .os-3d-cap{position:absolute;left:10px;bottom:8px;font-size:11px;opacity:.75}
 .os-tabs{position:relative}
 .os-tab-indicator{transition:left .28s cubic-bezier(.2,.7,.3,1),width .28s cubic-bezier(.2,.7,.3,1)}
 @media (prefers-reduced-motion:reduce){.os-tab-indicator{transition:none}}
@@ -60,16 +52,7 @@ body{font-family:var(--os-font)}
         </header>
         <div class="os-body os-controls">
           <div class="os-stage os-spotlight">
-            <div class="os-viewbar" data-os-viewbar role="group" aria-label="Apparatus view">
-              <button type="button" class="os-filter-pill" data-os-view="3d">3D Apparatus</button>
-              <button type="button" class="os-filter-pill" data-os-view="2d">2D Board</button>
-            </div>
-            <div class="os-3d-wrap os-3d-hero" data-os-3d-wrap>
-              <div id="apparatus3d" data-apparatus="optical-bench" aria-label="3D apparatus viewer"></div>
-              <div class="os-3d-capline" data-os-3d-caption>3D apparatus hero — drag to orbit. Switch to 2D Board for the measurement canvas.</div>
-              <div class="os-callout warn os-file-notice" data-os-file-notice hidden>3D needs a local server or GitHub Pages (ES modules + import maps do not run over file://); the 2D board works everywhere.</div>
-            </div>
-            <canvas data-os-2d="1" role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="stage" width="720" height="440"></canvas>
+            <canvas role="img" aria-label="Interactive experiment simulation canvas. Use the on-page controls to change the plotted scene." id="stage" width="720" height="440"></canvas>
 
             <div class="os-readout os-instrument" id="readout">
               <div class="row"><span>dE (eV)</span><b id="roX" data-os-rolling class="os-rolling">0.00</b></div>
@@ -358,9 +341,9 @@ function currentSel() {
 function draw() {
   var w = canvas.width, h = canvas.height;
   var grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, "#0d1b2a"); grad.addColorStop(1, "#0d1b2a");
+  grad.addColorStop(0, "#0e1a18"); grad.addColorStop(1, "#0b1413");
   ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "rgba(79,214,255,.12)"; ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(120,150,140,.12)"; ctx.lineWidth = 1;
   for (var gx = 0; gx <= w; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
   for (var gy = 0; gy <= h; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
 
@@ -374,7 +357,7 @@ function draw() {
     ctx.beginPath();
     ctx.arc(cx, cy, radii[n - 1], 0, Math.PI * 2);
     if (n === sel.ni || n === sel.nf) {
-      ctx.strokeStyle = n === sel.ni ? "#4fd6ff" : "#4fd6ff";
+      ctx.strokeStyle = n === sel.ni ? "#e8b34b" : "#e8b34b";
       ctx.lineWidth = 3;
     } else {
       ctx.strokeStyle = "rgba(140,170,210,.35)";
@@ -388,7 +371,7 @@ function draw() {
 
   ctx.fillStyle = "#ffb02e";
   ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = "#0d1b2a";
+  ctx.fillStyle = "#0e1a18";
   ctx.font = "bold 11px monospace";
   ctx.fillText("+e", cx - 8, cy + 4);
 
@@ -398,9 +381,9 @@ function draw() {
   var pi = ENGINE.compute(sel.ni, sel.nf);
   var pa = orbitPos(sel.ni, -0.6);
   var pb = orbitPos(sel.nf, -0.6);
-  ctx.fillStyle = "#4fd6ff";
+  ctx.fillStyle = "#e8b34b";
   ctx.beginPath(); ctx.arc(pa.x, pa.y, 7, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = "#4fd6ff";
+  ctx.fillStyle = "#e8b34b";
   ctx.beginPath(); ctx.arc(pb.x, pb.y, 7, 0, Math.PI * 2); ctx.fill();
   if (sel.ni !== sel.nf) {
     ctx.strokeStyle = "#ff6b81"; ctx.lineWidth = 2.5;
@@ -738,52 +721,7 @@ window.addEventListener("DOMContentLoaded",function(){
     if(target&&target!==p&&typeof target.click==="function"){ev.preventDefault();target.click();}
   });
 })();</script>
-<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
-<script type="module" src="../../../assets/js/apparatus3d.js"></script>
-<script>/* OS-VIEW-TOGGLE: 2D/3D hero toggle (per-lab persist) + file:// 3D notice. Idempotent. */
-(function(){
-  if(window.__osViewToggle)return;window.__osViewToggle=true;
-  function labKey(){
-    try{
-      var id=(typeof CONFIG!=="undefined"&&CONFIG&&CONFIG.experimentId)?CONFIG.experimentId:location.pathname;
-      return "os-view:"+id;
-    }catch(e){return "os-view:lab";}
-  }
-  function apply(mode){
-    var show3D=(mode!=="2d");
-    var wrap=document.querySelector("[data-os-3d-wrap]");
-    if(wrap)wrap.style.display=show3D?"":"none";
-    var cvs=document.querySelectorAll("canvas[data-os-2d]");
-    for(var i=0;i<cvs.length;i++){cvs[i].style.display=show3D?"none":"";}
-    var pills=document.querySelectorAll("[data-os-view]");
-    for(var j=0;j<pills.length;j++){
-      var on=pills[j].getAttribute("data-os-view")===(show3D?"3d":"2d");
-      pills[j].classList.toggle("active",on);
-      pills[j].setAttribute("aria-pressed",on?"true":"false");
-    }
-  }
-  document.addEventListener("click",function(ev){
-    var b=ev.target&&ev.target.closest?ev.target.closest("[data-os-view]"):null;
-    if(!b)return;
-    var m=b.getAttribute("data-os-view");
-    try{localStorage.setItem(labKey(),m);}catch(e){}
-    apply(m);
-  });
-  function init(){
-    var m=null;
-    try{m=localStorage.getItem(labKey());}catch(e){}
-    apply(m==="2d"?"2d":"3d");
-    try{
-      if(location.protocol==="file:"){
-        var ns=document.querySelectorAll("[data-os-file-notice]");
-        for(var k=0;k<ns.length;k++){ns[k].hidden=false;}
-      }
-    }catch(e){}
-  }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
-  else init();
-})();
-</script>
+
 <script>/* OS-ONLINE-SHELL: tab morph indicator + ScrollTrigger reveals + premium flag. Idempotent. */
 (function(){
   if(window.__osOnlineShell)return;window.__osOnlineShell=true;
